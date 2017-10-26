@@ -1,17 +1,9 @@
-//
-// Created by feross on 10/22/17.
-//
-
-
 #ifndef ILANG_AST_H
 #define ILANG_AST_H
 
 #include <iostream>
 #include <string>
 #include <sstream>
-
-#endif //ILANG_AST_H
-
 
 
 class Expr {};
@@ -78,3 +70,5 @@ class ArrayRef : public Node {};
 class Quantifier : public Node {};
 class While : public Node {};
 class For : public Node {};
+
+#endif //ILANG_AST_H
