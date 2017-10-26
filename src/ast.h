@@ -15,14 +15,14 @@ public:
     Node() : leftBranch(NULL), rightBranch(NULL) {
     }
 
-    Node(const Node& node) : leftBranch(NULL), rightBranch(NULL) {
-        if (node.leftBranch) {
-            leftBranch = node.leftBranch->clone();
-        }
-        if (node.rightBranch) {
-            rightBranch = node.rightBranch->clone();
-        }
-    }
+    // Node(const Node& node) : leftBranch(NULL), rightBranch(NULL) {
+    //     // if (node.leftBranch) {
+    //     //     leftBranch = node.leftBranch->clone();
+    //     // }
+    //     // if (node.rightBranch) {
+    //     //     rightBranch = node.rightBranch->clone();
+    //     // }
+    // }
 
     void set(Node* left, Node* right=NULL) {
         if (leftBranch) {

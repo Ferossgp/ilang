@@ -1,8 +1,27 @@
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 project(ilang VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_CXX_FLAGS "-std=c++14  -Werror -Wextra -Wall -Wundef -Wpointer-arith -Wno-sign-compare")
+
+find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
+include_directories(${LLVM_INCLUDE_DIRS})
+message(STATUS "include dirs: ${LLVM_INCLUDE_DIRS}")
+add_definitions(${LLVM_DEFINITIONS})
+
+find_package( Curses REQUIRED )
+include_directories( ${CURSES_INCLUDE_DIRS} )
+
+find_package (Threads)
+
 add_executable(voc
     main.cpp
 )
 
-set(CMAKE_CXX_FLAGS "-std=c++1z  -Werror -Wextra -Wall -Wundef -Wpointer-arith -Wno-sign-compare")
+llvm_map_components_to_libnames(llvm_libs all)
+
+target_link_libraries(voc ${llvm_libs} ${CURSES_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+
