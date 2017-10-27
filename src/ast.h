@@ -1,17 +1,8 @@
-//
-// Created by feross on 10/22/17.
-//
-
-
 #ifndef ILANG_AST_H
 #define ILANG_AST_H
 
-#include <iostream>
 #include <string>
 #include <sstream>
-
-#endif //ILANG_AST_H
-
 
 
 class Expr {};
@@ -24,14 +15,14 @@ public:
     Node() : leftBranch(NULL), rightBranch(NULL) {
     }
 
-    Node(const Node& node) : leftBranch(NULL), rightBranch(NULL) {
-        if (node.leftBranch) {
-            leftBranch = node.leftBranch->clone();
-        }
-        if (node.rightBranch) {
-            rightBranch = node.rightBranch->clone();
-        }
-    }
+    // Node(const Node& node) : leftBranch(NULL), rightBranch(NULL) {
+    //     // if (node.leftBranch) {
+    //     //     leftBranch = node.leftBranch->clone();
+    //     // }
+    //     // if (node.rightBranch) {
+    //     //     rightBranch = node.rightBranch->clone();
+    //     // }
+    // }
 
     void set(Node* left, Node* right=NULL) {
         if (leftBranch) {
@@ -78,3 +69,5 @@ class ArrayRef : public Node {};
 class Quantifier : public Node {};
 class While : public Node {};
 class For : public Node {};
+
+#endif //ILANG_AST_H

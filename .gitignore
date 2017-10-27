@@ -1,2 +1,7 @@
-cmake-build-debug/
+# Configuration files
 .idea/
+.vscode/
+
+# Build files
+cmake-build-debug/
+build/
