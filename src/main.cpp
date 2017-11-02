@@ -12,5 +12,4 @@ int main() {
     auto TheModule = llvm::make_unique<llvm::Module>("my cool jit", TheContext);
     auto TargetTriple = llvm::sys::getDefaultTargetTriple();
     TheModule->setTargetTriple(TargetTriple);
-    std::cout << "Hello World\n";
 }
