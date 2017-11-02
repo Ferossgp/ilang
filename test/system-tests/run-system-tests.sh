@@ -31,24 +31,31 @@ COMPILER_CMD=$1
 # Run test given test name
 #   1. Runs llc compiler on {TEST_NAME}.ll file
 #   2. Runs voc compiler on {TEST_NAME}.voc file
-#   3. Compares resulting binaries
-#   4. Clears up results
+#   3. Dumps both object files using objdum
+#   4. Compares resulted dumps
+#   5. Clears up results
 function test_program {
-    llc $1.ll -filetype=obj -o $1.llout 2>&1 > /dev/null
-    local _ret=$?
-    if [ $_ret -ne 0 ] ; then
-        return $_ret
-    fi
-    $($COMPILER_CMD -o $1.vocout $1.voc 2>&1 > /dev/null)
-    local _ret=$?
-    if [ $_ret -ne 0 ] ; then
-        return $_ret
-    fi
+    local llc_exec=$1.llout
+    local voc_exec=$1.vocout
 
-    cmp -l $1.llout $1.vocout 2>&1  
+    llc $1.ll -filetype=obj -o $llc_exec 2>&1 > /dev/null
     local _ret=$?
-    rm -f $1.llout
-    rm -f $1.vocout
+    if [ $_ret -ne 0 ] ; then
+        return $_ret
+    fi
+    ${COMPILER_CMD} -o $voc_exec $1.voc 2>&1 > /dev/null
+    local _ret=$?
+    if [ $_ret -ne 0 ] ; then
+        return $_ret
+    fi
+    objdump -d $llc_exec | tail -n +3 > f1.dump
+    objdump -d $voc_exec | tail -n +3 > f2.dump
+    cmp -l f1.dump f2.dump 2>&1  
+    local _ret=$?
+    rm -f f1.dump
+    rm -f f2.dump
+    rm -f $llc_exec
+    rm -f $voc_exec
     return $_ret    
 }
 
