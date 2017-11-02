@@ -17,6 +17,8 @@
 # Testcases
 tests=(
     "empty_function"
+    "arithmetic_int"
+    "arithmetic_float"
 )
 
 # Output colors
@@ -48,10 +50,35 @@ function test_program {
     if [ $_ret -ne 0 ] ; then
         return $_ret
     fi
-    objdump -d $llc_exec | tail -n +3 > f1.dump
-    objdump -d $voc_exec | tail -n +3 > f2.dump
+    objdump -d $llc_exec 2>&1 | tail -n +3 > f1.dump
+    local _ret=$?
+    if [ $_ret -ne 0 ] ; then
+        rm -f f1.dump
+        rm -f f2.dump
+        rm -f $llc_exec
+        rm -f $voc_exec
+        return $_ret
+    fi
+
+    objdump -d $voc_exec 2>&1 | tail -n +3 > f2.dump
+    if [ $_ret -ne 0 ] ; then
+        rm -f f1.dump
+        rm -f f2.dump
+        rm -f $llc_exec
+        rm -f $voc_exec
+        return $_ret
+    fi
+
     cmp -l f1.dump f2.dump 2>&1  
     local _ret=$?
+    if [ $_ret -ne 0 ] ; then
+        rm -f f1.dump
+        rm -f f2.dump
+        rm -f $llc_exec
+        rm -f $voc_exec
+        return $_ret
+    fi
+
     rm -f f1.dump
     rm -f f2.dump
     rm -f $llc_exec
@@ -61,13 +88,13 @@ function test_program {
 
 # Runs test case and prints result to stdout 
 function run_test {
-    printf "[$1/${#tests[@]}]      \"%s\"   ...\r" $2
+    printf "%-20s %-20s %-20s\r" "[$1/${#tests[@]}]" "\"${2}\""   "..."
     sleep 1
     if testout=$(test_program ${2}); then
-        printf "[$1/${#tests[@]}]      \"%s\"   ${GREEN}passed\n${NORMAL}" $2
+        printf "%-20s %-20s %-20s\n" "[$1/${#tests[@]}]" "\"$2\"" "${GREEN}passed${NORMAL}" 
         SUCCESFUL_TESTS=$((SUCCESFUL_TESTS + 1))
     else
-        printf "[$1/${#tests[@]}]      \"%s\"   ${RED}failed\n${NORMAL}" $2
+        printf "%-20s %-20s %-20s\n" "[$1/${#tests[@]}]"     "\"${2}\""   "${RED}failed${NORMAL}" 
     fi
     
     if ! [ -z "$testout" ]; then

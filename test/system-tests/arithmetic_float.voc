@@ -1,0 +1,19 @@
+routine add(x real, y real): real is
+    return x + y
+end
+
+routine sub(x real, y real): real is
+    return x - y
+end
+
+routine mul(x real, y real): real is
+    return x * y
+end
+
+routine div(x real, y real): real is
+    return x / y;
+end
+
+routine mod(x real, y real): real is
+    return x % y;
+end
