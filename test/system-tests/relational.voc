@@ -1,0 +1,15 @@
+routine and_op(x boolean, y boolean): boolean is
+    return x and y
+end
+
+routine or_op(x boolean, y boolean): boolean is
+    return x or y
+end
+
+routine xor_op(x boolean, y boolean): boolean is
+    return x xor y
+end
+
+routine not_op(x boolean): boolean is
+    return not x
+end

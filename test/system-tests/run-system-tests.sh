@@ -19,6 +19,8 @@ tests=(
     "empty_function"
     "arithmetic_int"
     "arithmetic_float"
+    "relational"
+    "unary_numeric"
 )
 
 # Output colors
