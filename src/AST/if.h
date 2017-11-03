@@ -4,10 +4,10 @@
 #include "node.h"
 
 class If : public ASTNode {
-    ASTNode *condition, *then, *else_conditon;
+    ASTNode *condition, *then, *else_body;
 
 public:
-    If(ASTNode *cond, ASTNode *then, ASTNode *else_condition);
+    If(ASTNode *condition, ASTNode *then, ASTNode *else_body);
 };
 
 
