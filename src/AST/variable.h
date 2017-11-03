@@ -11,6 +11,7 @@ class Variable : public ASTNode {
 
 public:
     Variable(const string &name);
+    const string getName() const;
 };
 
 #endif //ILANG_VARIABLE_H
