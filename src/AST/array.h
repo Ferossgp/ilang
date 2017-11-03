@@ -2,7 +2,6 @@
 #define ILANG_ARRAY_H
 #include <vector>
 
-
 #include "node.h"
 #include "arrayref.h"
 
