@@ -1,0 +1,7 @@
+routine neg_i(x integer): integer is 
+    return -x
+end
+
+routine neg_f(x real): real is 
+    return -x
+end
