@@ -28,7 +28,8 @@ enum class Token {
 class Lexer {
     int current_token;
     string identifier;
-    double number;
+    int integer_value;
+    double real_value;
     map <char, int> op_priority;
     map <string, Token> keyword_map;
 
@@ -38,7 +39,8 @@ public:
 
     int current_token() const;
     string identifier() const;
-    double  number() const;
+    int  integer_value() const;
+    double  real_value() const;
 
     void next();
 

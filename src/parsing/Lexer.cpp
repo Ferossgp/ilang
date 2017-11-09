@@ -54,17 +54,23 @@ void Lexer::next() {
         }
     }
 
-    if (isdigit(last_char) || last_char == '.' ) {
+    if (isdigit(last_char)) {
         string number_string;
-
+        bool is_double = false;
         do {
+            if (last_char == '.') is_double = true;
             number_string += last_char;
             last_char = getchar();
         } while ( isdigit(last_char) || last_char == '.' );
 
-        number_value_ = strtod(number_string.c_str(), 0);
+        if (is_double) {
+            real_value = strtod(number_string.c_str(), 0);
+            current_token = (int)Token::REAL;
+        }else{
+            integer_value = (int) strtol(number_string.c_str(), 0);
+            current_token = (int)Token::INTEGER;
+        }
 
-        current_token_ = (int)Token::NUMBER;
         return;
     }
 

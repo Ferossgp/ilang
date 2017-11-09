@@ -7,7 +7,7 @@ using std::string;
 
 class For: public ASTNode {
     string name;
-    ASTNode *start, *end, *step, *body;
+    ASTNode *start, *end, *body;
 
 public:
     For(const string &name, ASTNode *start, ASTNode *end, ASTNode *step, ASTNode *body);
