@@ -8,7 +8,9 @@
 using std::vector;
 
 class Array : public ASTNode {
-    vector<ArrayRef> &refs;
+    ASTNode *expression;
+    ASTNode *type;
+    vector<ASTNode> &refs;
 
 public:
     Array(const vector<ArrayRef> &refs);
