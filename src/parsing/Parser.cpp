@@ -92,7 +92,7 @@ ASTNode * Parser::parse_identifier() {
 
     lexer->next();
 
-    return new CallNode(identifier_name, args);
+    return new RoutinCall(identifier_name, args);
 }
 
 ASTNode * Parser::parse_var() {
@@ -122,7 +122,7 @@ ASTNode * Parser::parse_type() {
     string id_name;
 
     if ( lexer->current_token() != (int)Token::IDENTIFIER ) {
-        return Error("Expected identifier after var");
+        return Error("Expected identifier after 'type'");
     }
     id_name = lexer->curren_token();
     lexer->next();
@@ -197,7 +197,7 @@ ASTNode * Parser::parse_binary_op_rhs(int expression_priority, ASTNode *LHS) {
             RHS = parse_binary_op_rhs(token_priority + 1, RHS);
         }
 
-        LHS = new BinaryNode(binary_op, LHS, RHS);
+        LHS = new Binary(binary_op, LHS, RHS);
     }
 }
 
@@ -252,7 +252,7 @@ Prototype * Parser::parse_prototype() {
 
     lexer->next();
 
-    return new PrototypeNode(func_name, arg_names);
+    return new Prototype(func_name, arg_names);
 }
 
 Routine * Parser::parse_definition() {
