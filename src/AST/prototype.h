@@ -14,6 +14,6 @@ class Prototype : public ASTNode {
 
 public:
     Prototype(const string &name, const vector<ASTNode> &args);
-    const std::string &getName() const { return name; }
+    const string &getName() const { return name; }
 };
 #endif //ILANG_PROTOTYPE_H

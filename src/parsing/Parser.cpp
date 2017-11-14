@@ -1,20 +1,22 @@
-#include "AST/ast.h"
-#include "lexer.h"
-#include "parser.h"
-#include "errors.h"
+#include "../AST/ast.h"
+#include "Lexer.h"
+#include "Parser.h"
+#include "Errors.h"
 
 #include <cstdio>
+#include <memory>
 
 using std::move;
 using std::swap;
 using std::string;
 using std::vector;
 using std::make_pair;
+using std::unique_ptr;
 
 Parser::Parser() : lexer(new Lexer()) {}
 
 Parser::Parser(const Parser &other)
-        : lexer(unique_ptr<Lexer>(other.lexer.get())) {}
+        : lexer(std::unique_ptr<Lexer>(other.lexer.get())) {}
 
 Parser::Parser(Parser &&other) {
     lexer = move(other.lexer);
@@ -31,13 +33,13 @@ Parser::~Parser() {
 }
 
 ASTNode * Parser::parse_real() {
-    ASTNode *result = new Real(lexer->number_value());
+    ASTNode *result = new Real(lexer->real_value());
     lexer->next();
     return result;
 }
 
 ASTNode * Parser::parse_integer() {
-    ASTNode *result = new Integer(lexer->number_value());
+    ASTNode *result = new Integer(lexer->integer_value());
     lexer->next();
     return result;
 }
@@ -63,12 +65,12 @@ ASTNode * Parser::parse_identifier() {
     lexer->next();
 
     if ( lexer->current_token() != '(' ) {
-        return new VariableNode(identifier_name);
+        return new Variable(identifier_name);
     }
 
     lexer->next();
 
-    vector<*ASTNode> args;
+    vector<ASTNode*> args;
     if ( lexer->current_token() != ')' ) {
         while (1) {
             ASTNode *arg = parse_expression();
@@ -92,13 +94,13 @@ ASTNode * Parser::parse_identifier() {
 
     lexer->next();
 
-    return new RoutinCall(identifier_name, args);
+    return new RoutineCall(identifier_name, args);
 }
 
 ASTNode * Parser::parse_var() {
     lexer->next();
 
-    pair<string, *ASTNode> var_name;
+    pair<string, ASTNode*> var_name;
 
     if ( lexer->current_token() != (int)Token::IDENTIFIER ) {
         return Error("Expected identifier after var");
@@ -124,7 +126,7 @@ ASTNode * Parser::parse_type() {
     if ( lexer->current_token() != (int)Token::IDENTIFIER ) {
         return Error("Expected identifier after 'type'");
     }
-    id_name = lexer->curren_token();
+    id_name = lexer->current_token();
     lexer->next();
 
     if ( lexer->current_token() != (int)Token::IS ) {
@@ -137,7 +139,7 @@ ASTNode * Parser::parse_type() {
 
 ASTNode * Parser::parse_record() {
     lexer->next();
-    vector<*ASTNode> vars_decl;
+    vector<ASTNode*> vars_decl;
 
     while (lexer->current_token() == (int)Token::VAR) {
         vars_decl.push_back(parse_var());
@@ -212,7 +214,7 @@ ASTNode * Parser::parse_unary() {
     lexer->next();
 
     if ( ASTNode *operand = parse_unary() ) {
-        return new UnaryNode(unary_op, operand);
+        return new Unary(unary_op, operand);
     }
 
     return 0;
@@ -237,10 +239,11 @@ Prototype * Parser::parse_prototype() {
         return ErrorP("Expected '(' in prototype");
     }
 
-    vector<string> arg_names;
+    vector<ASTNode> arg_names;
 
     lexer->next();
 
+    // TODO: parse args as a ASTNode
     while ( lexer->current_token() == (int)Token::IDENTIFIER ) {
         arg_names.push_back(lexer->identifier());
         lexer->next();
@@ -280,7 +283,7 @@ Prototype * Parser::parse_extern() {
 
 Routine * Parser::parse_top_level_expression() {
     if ( ASTNode *expression = parse_expression() ) {
-        Prototype *proto = new Prototype("", vector<string>());
+        Prototype *proto = new Prototype("", vector<ASTNode>());
         return new Routine(proto, expression);
     }
 
@@ -331,15 +334,19 @@ ASTNode * Parser::parse_for() {
             lexer->current_token() != (int)Token::REVERSE) {
         return Error("expected 'in' or 'reverse' after 'for'");
     }
-    bool reverse = (lexer->current_toke() == (int)Token::REVERSE);
+    bool reverse = (lexer->current_token() == (int)Token::REVERSE);
     lexer->next();
 
     ASTNode *start = parse_expression();
     if ( start == 0 ) { return 0; }
 
-    if ( lexer->current_token() != '.' ||
-            (lexer->next() && lexer->current_token() != '.')) {
+    if ( lexer->current_token() != '.'){
         return Error("Expected '..' after for start value");
+    }else{
+        lexer->next();
+        if (lexer->current_token() != '.') {
+            return Error("Expected '..' after for start value");
+        }
     }
 
     lexer->next();
@@ -373,7 +380,7 @@ ASTNode * Parser::parse_while() {
     lexer->next();
 
     ASTNode *expression = parse_expression();
-    if ( body == 0 ) { return 0; }
+    if ( expression == 0 ) { return 0; }
 
     if (lexer->current_token() != (int)Token::LOOP) {
         return Error("Expected 'loop' after expression in 'while'");
@@ -400,7 +407,7 @@ ASTNode * Parser::parse_array() {
     }
     lexer->next();
 
-    ASTnode *expression = parse_expression();
+    ASTNode *expression = parse_expression();
     if (expression == 0) { return 0; }
 
     if (lexer->current_token() != ']'){

@@ -4,7 +4,7 @@ var one := 3/2
 
 type number is real
 
-var list : array[2+3] number
+var list : array[2*2*2*2+10] number
 
 var fractie : record
     var numarator : real
@@ -16,7 +16,7 @@ for a in 1..10 loop
 end
 
 for b reverse 10..1 loop
-    one := 10 / b
+    list[b] := b
 end
 
 var looper is true
@@ -31,7 +31,7 @@ else
     looper := false
 end
 
-routine add(a integer, b integer): integer is
+routine add(a intehger, b integer): integer is
     return a + b
 end
 

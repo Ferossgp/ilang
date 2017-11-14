@@ -5,8 +5,9 @@
 #include "../AST/prototype.h"
 #include "../AST/routine.h"
 
-#include "lexer.h"
+#include "Lexer.h"
 
+#include <memory>
 
 class Parser {
     Parser(const Parser &other);
@@ -15,6 +16,7 @@ class Parser {
     Parser &operator =(Parser other);
 
     ASTNode *parse_expression();
+    ASTNode *parse_primary();
     ASTNode *parse_if();
     ASTNode *parse_for();
     ASTNode *parse_while();
@@ -26,6 +28,7 @@ class Parser {
     ASTNode *parse_var();
     ASTNode *parse_array();
     ASTNode *parse_record();
+    ASTNode *parse_type();
     ASTNode *parse_binary_op_rhs(int priority, ASTNode *lhs);
     Prototype *parse_prototype();
 
@@ -33,7 +36,7 @@ public:
     Parser();
     ~Parser();
 
-    unique_ptr<Lexer> lexer;
+    std::unique_ptr<Lexer> lexer;
 
     Prototype *parse_extern();
     Routine *parse_definition();
