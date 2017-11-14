@@ -10,7 +10,7 @@ class For: public ASTNode {
     ASTNode *start, *end, *body;
 
 public:
-    For(const string &name, ASTNode *start, ASTNode *end, ASTNode *step, ASTNode *body);
+    For(const string &name, ASTNode *start, ASTNode *end, ASTNode *body);
 };
 
 

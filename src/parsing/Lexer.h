@@ -2,7 +2,7 @@
 #define ILANG_LEXER_H
 
 #include <string>
-#include <map>
+#include <unordered_map>
 
 using std::string;
 using std::unordered_map;
@@ -23,18 +23,22 @@ enum class Token {
     IS = -13,
     TYPE = -14,
     RECORD = -15,
-    RETURN = -16
+    RETURN = -16,
+    ARRAY = -17,
+    IDENTIFIER = -18,
+    REAL = -19,
+    INTEGER = -20,
 };
 
 // TODO: Implement enum also for operation chars
 
 class Lexer {
-    int current_token;
-    string identifier;
-    int integer_value;
-    double real_value;
-    map <char, int> op_priority;
-    map <string, Token> keyword_map;
+    int current_token_;
+    string identifier_;
+    int integer_value_;
+    double real_value_;
+    unordered_map <char, int> op_priority_;
+    unordered_map <string, Token> keyword_map_;
 
 public:
     Lexer();
@@ -47,8 +51,8 @@ public:
 
     void next();
 
-    int token_pr();
-    void add_op_pr(const char op, const int priority);
+    int token_priority();
+    void add_op_priority(const char op, const int priority);
     const unordered_map<char, int> op_priority() const;
 
 };
