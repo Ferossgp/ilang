@@ -1,0 +1,39 @@
+var one : real
+var two is 2
+var one := 3/2
+
+type number is real
+
+var list : array[2+3] number
+
+var fractie : record
+    var numarator : real
+    var numitor : real
+end
+
+for a in 1..10 loop
+    two := a
+end
+
+for b reverse 10..1 loop
+    one := 10 / b
+end
+
+var looper is true
+
+while looper loop
+    looper := false
+end
+
+if one > two then
+    looper := true
+else
+    looper := false
+end
+
+routine add(a integer, b integer): integer is
+    return a + b
+end
+
+add(one, 4)
+
