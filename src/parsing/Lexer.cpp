@@ -5,6 +5,7 @@
 #include "lexer.h"
 
 using std::string;
+using std::unordered_map;
 
 Lexer::Lexer() {
     op_priority['='] = 2;
@@ -29,7 +30,7 @@ Lexer::Lexer() {
     keyword_map["array"] = Token::ARRAY;
     keyword_map["while"] = Token::WHILE;
     keyword_map["loop"] = Token::LOOP;
-
+    keyyword_map["return"] = Token::RETURN;
 }
 
 void Lexer::next() {
@@ -114,10 +115,10 @@ int Lexer::token_priority() {
     return priority;
 }
 
-void Lexer::add_op_priority(const char &op, const int priority) {
+void Lexer::add_op_priority(const char op, const int priority) {
     op_priority[op] = priority;
 }
 
-const map<char, int> Lexer::op_priority() const {
+const unordered_map<char, int> Lexer::op_priority() const {
     return op_priority;
 }

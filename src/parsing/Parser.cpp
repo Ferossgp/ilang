@@ -255,6 +255,8 @@ Prototype * Parser::parse_prototype() {
     return new Prototype(func_name, arg_names);
 }
 
+
+//TODO: Parse return statement
 Routine * Parser::parse_definition() {
     lexer->next();
 
@@ -263,6 +265,7 @@ Routine * Parser::parse_definition() {
     if ( proto == 0 ) { return 0; }
 
     if ( ASTNode *expression = parse_expression() ) {
+
         return new Routine(proto, expression);
     }
 

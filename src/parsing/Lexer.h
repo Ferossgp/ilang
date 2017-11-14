@@ -5,7 +5,7 @@
 #include <map>
 
 using std::string;
-using std::map;
+using std::unordered_map;
 
 enum class Token {
     EOF_ = -1,
@@ -22,8 +22,11 @@ enum class Token {
     ROUTINE = -12,
     IS = -13,
     TYPE = -14,
-    RECORD = -15
+    RECORD = -15,
+    RETURN = -16
 };
+
+// TODO: Implement enum also for operation chars
 
 class Lexer {
     int current_token;
@@ -45,8 +48,8 @@ public:
     void next();
 
     int token_pr();
-    void add_op_pr(const char &op, const int priority);
-    const map<char, int> op_priority() const;
+    void add_op_pr(const char op, const int priority);
+    const unordered_map<char, int> op_priority() const;
 
 };
 #endif //ILANG_LEXER_H
