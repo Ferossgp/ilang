@@ -4,7 +4,5 @@
 #include "recorddecl.h"
 
 using std::vector;
-using std::pair;
-using std::string;
 
-RecordDecl::RecordDecl(vector<ASTNode*>  *refs): refs(refs) {}
+RecordDecl::RecordDecl(const vector<ASTNode*> &refs): refs(refs) {}

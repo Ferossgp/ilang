@@ -2,4 +2,4 @@
 #include "prototype.h"
 #include "routine.h"
 
-Routine::Routine(PrototypeNode *proto, ASTNode *body): proto(proto), body(body) {}
+Routine::Routine(Prototype *proto, ASTNode *body): proto(proto), body(body) {}

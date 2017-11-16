@@ -7,6 +7,7 @@ class Real : public ASTNode {
     double value;
 
 public:
+    Real();
     Real(double value);
 };
 

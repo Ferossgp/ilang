@@ -7,5 +7,5 @@ using std::string;
 using std::vector;
 
 Prototype::Prototype(const string &name,
-                     const vector<string> &args)
+                     const vector<ASTNode*> &args)
         : name(name), args(args) {}

@@ -7,7 +7,7 @@
 
 using std::string;
 
-class Type : public ASTNode {
+class TypeNode : public ASTNode {
 };
 
 #endif //ILANG_TYPE_H

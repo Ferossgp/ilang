@@ -5,7 +5,6 @@
 #include "typedecl.h"
 
 using std::string;
-using std::vector;
 
-TypeDecl::TypeDecl(const string &identifier, ASTNode &type):
-        identifier(identifier), type(type) {
+TypeDecl::TypeDecl(const string &identifier, ASTNode *type):
+        identifier(identifier), type(type) {};

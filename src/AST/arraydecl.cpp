@@ -5,4 +5,4 @@
 
 using std::vector;
 
-ArrayDecl::ArrayDecl(ASTNode *expression, Type *type): expression(expression), type(type){}
+ArrayDecl::ArrayDecl(ASTNode *expression, ASTNode *type): expression(expression), type(type){}

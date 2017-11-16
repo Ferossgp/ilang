@@ -4,10 +4,10 @@
 
 using std::string;
 
-VariableNode::VariableNode(const string &name)
+Variable::Variable(const string &name)
         : name(name) {}
 
 const string
-VariableNode::getName() const {
+Variable::getName() const {
     return name;
 }

@@ -7,6 +7,7 @@ class Integer : public ASTNode {
     int value;
 
 public:
+    Integer();
     Integer(int value);
 };
 

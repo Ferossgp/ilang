@@ -1,10 +1,12 @@
 #ifndef ILANG_ASSIGNMENT_H
 #define ILANG_ASSIGNMENT_H
 
-#import "node.h"
+#include "node.h"
 
 class Assignment : ASTNode {
-    std::string element;
-    ASTNode *value;
+    ASTNode *variable, *value;
+
+public:
+    Assignment(ASTNode *variable, ASTNode *type);
 };
 #endif //ILANG_ASSIGNMENT_H

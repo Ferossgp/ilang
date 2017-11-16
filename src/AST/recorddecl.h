@@ -6,11 +6,9 @@
 #include "node.h"
 
 using std::vector;
-using std::pair;
-using std::string;
 
 class RecordDecl : public ASTNode {
-    vector<ASTNode*> &refs;
+    vector<ASTNode*> refs;
 
 public:
     RecordDecl(const vector<ASTNode*> &refs);

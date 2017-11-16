@@ -10,10 +10,10 @@ using std::vector;
 
 class Prototype : public ASTNode {
     string name;
-    vector<ASTNode> args;
+    vector<ASTNode*> args;
 
 public:
-    Prototype(const string &name, const vector<ASTNode> &args);
-    const std::string &getName() const { return name; }
+    Prototype(const string &name, const vector<ASTNode*> &args);
+    const string &getName() const { return name; }
 };
 #endif //ILANG_PROTOTYPE_H
