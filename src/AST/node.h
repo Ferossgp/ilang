@@ -3,12 +3,6 @@
 
 #include "../visitor.h"
 
-// class Prototype;
-// class Visitor
-// {
-//     virtual void visit(Prototype& p) = 0;
-// };
-
 class ASTNode {
 public:
     virtual ~ASTNode() {};
