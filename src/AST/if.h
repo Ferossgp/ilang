@@ -8,6 +8,7 @@ class If : public ASTNode {
 
 public:
     If(ASTNode *condition, ASTNode *then, ASTNode *else_body);
+    If(ASTNode *condition, ASTNode *then);
 };
 
 
