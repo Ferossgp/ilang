@@ -2,6 +2,7 @@
 #define ILANG_ARRAY_H
 #include <vector>
 
+#include "type.h"
 #include "node.h"
 
 class ArrayDecl : public ASTNode {
@@ -9,6 +10,6 @@ class ArrayDecl : public ASTNode {
     ASTNode *type;
 
 public:
-    ArrayDecl(ASTNode *expression, Type *type);
+    ArrayDecl(ASTNode *expression, TypeNode *type);
 };
 #endif //ILANG_ARRAY_H

@@ -15,7 +15,7 @@ class Var : public ASTNode {
     ASTNode *body;
 
 public:
-    Var(const vector<pair<string, ASTNode* > &var_decl, STNode *body);
+    Var(const vector<pair<string, ASTNode*> > &var_decl, ASTNode *body);
 };
 
 #endif //ILANG_VAR_H
