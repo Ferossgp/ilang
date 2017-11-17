@@ -18,6 +18,7 @@ include_directories( ${CURSES_INCLUDE_DIRS} )
 find_package (Threads)
 
 add_executable(voc
+    codegen/codegen_visitor.cpp
     main.cpp
 )
 

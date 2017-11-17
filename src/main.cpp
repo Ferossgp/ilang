@@ -13,6 +13,7 @@
 #include "llvm/Support/FileSystem.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "AST/ast.h"
+#include "codegen/codegen_visitor.h"
 
 llvm::LLVMContext TheContext;
 llvm::IRBuilder<> Builder(TheContext);
@@ -79,4 +80,7 @@ int main()
     pass.run(*TheModule);
     dest.flush();
 
+    CodegenVisitor v;
+    Prototype p{"hello", std::vector<ASTNode*>{}};
+    v.visit(p);
 }
