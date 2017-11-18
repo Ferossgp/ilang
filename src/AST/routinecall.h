@@ -14,6 +14,7 @@ class RoutineCall : public Expression {
 
 public:
     RoutineCall(const string &callee, vector<ASTNode*> &args);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_ROUTINECALL_H

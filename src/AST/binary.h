@@ -9,6 +9,7 @@ class Binary : public Expression {
 
 public:
     Binary(char opchar, ASTNode *lhs, ASTNode *rhs);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_BINARY_H

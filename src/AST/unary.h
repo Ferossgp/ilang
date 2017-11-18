@@ -9,6 +9,7 @@ class Unary: public Expression {
 
 public:
     Unary(char opcode, ASTNode *operand);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_UNARY_H

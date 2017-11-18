@@ -15,7 +15,7 @@
 #include "llvm/IR/LegacyPassManager.h"
 #include "AST/ast.h"
 #include "codegen/codegen_visitor.h"
-#include "lib/cxxopts.hpp"
+#include "semantical_analysis/semantic_visitor.h"
 
 llvm::LLVMContext TheContext;
 llvm::IRBuilder<> Builder(TheContext);

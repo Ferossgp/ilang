@@ -19,6 +19,7 @@ find_package (Threads)
 
 add_executable(voc
     codegen/codegen_visitor.cpp
+    semantical_analysis/printname_visitor.cpp
     main.cpp
 )
 

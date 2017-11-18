@@ -8,6 +8,7 @@ class Boolean : public Expression {
 public:
     bool value;
     Boolean(bool value);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_BOOLEAN_H
