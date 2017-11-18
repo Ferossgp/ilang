@@ -81,8 +81,14 @@ public:
     }
 };
 
-int main() 
-{
+int main(int argc, char *argv[]) {
+
+    CmdArgsParser args(argc, argv);
+    if (args.error || args.printHelp) {
+        std::cout << args.helpText << std::endl;
+        return 0;
+    }
+
     using namespace llvm;
     TheModule = llvm::make_unique<llvm::Module>("my cool jit", TheContext);
     auto TargetTriple = llvm::sys::getDefaultTargetTriple();
@@ -131,4 +137,6 @@ int main()
     CodegenVisitor v;
     Prototype p{"hello", std::vector<ASTNode*>{}};
     v.visit(p);
+
+    return 0;
 }
