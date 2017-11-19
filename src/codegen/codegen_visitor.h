@@ -15,6 +15,9 @@
 
 #include "../visitor.h"
 #include "../AST/prototype.h"
+#include "../AST/argument.h"
+#include "../AST/integer.h"
+#include "../AST/real.h"
 
 // using namespace llvm;
 
@@ -27,6 +30,8 @@ private:
     llvm::TargetMachine* targetMachine;
     llvm::raw_fd_ostream output;
     std::error_code EC;
+
+    llvm::Value *last_constant;    
 
 public:
     CodegenVisitor(const std::string& filename);

@@ -56,8 +56,14 @@ void CodegenVisitor::visit(Boolean& node) {}
 // void CodegenVisitor::visit(Factor& node) {}
 void CodegenVisitor::visit(For& node) {}
 void CodegenVisitor::visit(If& node) {}
-void CodegenVisitor::visit(Integer& node) {}
-void CodegenVisitor::visit(Real& node) {}
+void CodegenVisitor::visit(Integer& node) 
+{
+    last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, node.getValue(), true));
+}
+void CodegenVisitor::visit(Real& node) 
+{
+    last_constant = llvm::ConstantFP::get(TheContext, llvm::APFloat(node.getValue()));
+}
 void CodegenVisitor::visit(RecordDecl& node) {}
 // void CodegenVisitor::visit(Relation& node) {}
 void CodegenVisitor::visit(Routine& node) {}
