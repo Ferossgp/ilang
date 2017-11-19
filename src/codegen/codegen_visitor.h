@@ -19,6 +19,7 @@
 #include "../AST/integer.h"
 #include "../AST/real.h"
 #include "../AST/routine.h"
+#include "../AST/binary.h"
 
 // using namespace llvm;
 

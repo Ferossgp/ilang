@@ -48,7 +48,28 @@ void CodegenVisitor::visit(Argument& node) {}
 void CodegenVisitor::visit(Array& node) {}
 void CodegenVisitor::visit(ArrayDecl& node) {}
 void CodegenVisitor::visit(Assignment& node) {}
-void CodegenVisitor::visit(Binary& node) {}
+void CodegenVisitor::visit(Binary& node) 
+{
+    node.getLHS()->accept(*this);
+    auto L = last_constant;
+    node.getRHS()->accept(*this);
+    auto R = last_constant;
+
+    switch (node.getOpchar()) {
+    case '+':
+        Builder.CreateAdd(L, R, "tmp");
+        break;
+    case '-':
+        Builder.CreateSub(L, R, "tmp");
+        break;
+    case '*':
+        Builder.CreateMul(L, R, "tmp");
+        break;
+    case '/':
+        Builder.CreateSDiv(L, R, "tmp");
+        break;
+    }
+}
 void CodegenVisitor::visit(Boolean& node) {}
 // void CodegenVisitor::visit(Factor& node) {}
 void CodegenVisitor::visit(For& node) {}
