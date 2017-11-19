@@ -2,12 +2,6 @@
 
 #include "variable.h"
 
-using std::string;
 
-Variable::Variable(const string &name)
-        : name(name) {}
-
-const string
-Variable::getName() const {
-    return name;
-}
+Variable::Variable(ASTNode *var, ASTNode *value)
+        : var(var), value(value) {}

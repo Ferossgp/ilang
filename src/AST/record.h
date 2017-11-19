@@ -1,4 +1,0 @@
-#ifndef ILANG_RECORD_H
-#define ILANG_RECORD_H
-
-#endif //ILANG_RECORD_H
