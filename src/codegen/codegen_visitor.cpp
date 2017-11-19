@@ -57,16 +57,16 @@ void CodegenVisitor::visit(Binary& node)
 
     switch (node.getOpchar()) {
     case '+':
-        Builder.CreateAdd(L, R, "tmp");
+        last_constant = Builder.CreateAdd(L, R, "tmp");
         break;
     case '-':
-        Builder.CreateSub(L, R, "tmp");
+        last_constant = Builder.CreateSub(L, R, "tmp");
         break;
     case '*':
-        Builder.CreateMul(L, R, "tmp");
+        last_constant = Builder.CreateMul(L, R, "tmp");
         break;
     case '/':
-        Builder.CreateSDiv(L, R, "tmp");
+        last_constant = Builder.CreateSDiv(L, R, "tmp");
         break;
     }
 }
@@ -95,7 +95,20 @@ void CodegenVisitor::visit(Routine& node)
         node.getBody()->accept(*this);
     }
 }
-void CodegenVisitor::visit(RoutineCall& node) {}
+
+void CodegenVisitor::visit(RoutineCall& node) 
+{
+    llvm::Function *f = TheModule->getFunction(node.getCallee());
+
+    std::vector<llvm::Value*> ArgsV;
+    auto& args = node.getArgs();
+    for (auto arg : args) {
+        arg->accept(*this);
+        ArgsV.push_back(last_constant);
+    }
+
+    last_constant = Builder.CreateCall(f, ArgsV, "call");
+}
 // void CodegenVisitor::visit(Sign& node) {}
 // void CodegenVisitor::visit(Type& node) {}
 void CodegenVisitor::visit(TypeDecl& node) {}
