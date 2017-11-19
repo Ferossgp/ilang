@@ -7,11 +7,10 @@
 using std::string;
 
 class Variable : public ASTNode {
-    string name;
+    ASTNode *var, *value;
 
 public:
-    Variable(const string &name);
-    const string getName() const;
+    Variable(ASTNode *var, ASTNode *value);
 };
 
 #endif //ILANG_VARIABLE_H

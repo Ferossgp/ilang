@@ -8,7 +8,6 @@ class Integer : public ASTNode {
 
 public:
     Integer();
-    Integer(int value);
 };
 
 #endif //ILANG_INTEGER_H
