@@ -40,11 +40,8 @@ void CodegenVisitor::generate()
 void CodegenVisitor::visit(Prototype& p)
 {
     llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), false);
-    llvm::Function *f = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
-    llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", f);
-    Builder.SetInsertPoint(BB);
-    Builder.CreateRetVoid();
-    verifyFunction(*f);
+    last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
+    
 }
 
 void CodegenVisitor::visit(Argument& node) {}
@@ -66,7 +63,17 @@ void CodegenVisitor::visit(Real& node)
 }
 void CodegenVisitor::visit(RecordDecl& node) {}
 // void CodegenVisitor::visit(Relation& node) {}
-void CodegenVisitor::visit(Routine& node) {}
+void CodegenVisitor::visit(Routine& node) 
+{
+    visit(*node.getPrototype());
+    llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", last_function);
+    Builder.SetInsertPoint(BB);
+    Builder.CreateRetVoid();
+    verifyFunction(*last_function);
+    if (node.getBody()) {
+        node.getBody()->accept(*this);
+    }
+}
 void CodegenVisitor::visit(RoutineCall& node) {}
 // void CodegenVisitor::visit(Sign& node) {}
 // void CodegenVisitor::visit(Type& node) {}

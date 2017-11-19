@@ -18,6 +18,7 @@
 #include "../AST/argument.h"
 #include "../AST/integer.h"
 #include "../AST/real.h"
+#include "../AST/routine.h"
 
 // using namespace llvm;
 
@@ -32,6 +33,7 @@ private:
     std::error_code EC;
 
     llvm::Value *last_constant;    
+    llvm::Function *last_function;
 
 public:
     CodegenVisitor(const std::string& filename);
