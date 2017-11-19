@@ -2,10 +2,10 @@
 #define ILANG_LEXER_H
 
 #include <string>
-#include <map>
+#include <unordered_map>
 
 using std::string;
-using std::map;
+using std::unordered_map;
 
 enum class Token {
     EOF_ = -1,
@@ -22,29 +22,48 @@ enum class Token {
     ROUTINE = -12,
     IS = -13,
     TYPE = -14,
-    RECORD = -15
+    RECORD = -15,
+    RETURN = -16,
+    ARRAY = -17,
+    IDENTIFIER = -18,
+    REAL = -19,
+    INTEGER = -20,
+    BOOLEAN = -21,
+    REAL_TYPE = -22,
+    INTEGER_TYPE = -23,
+    BOOLEAN_TYPE = -24,
+    NOT = -25,
 };
 
+// TODO: Implement enum also for operation chars
+
 class Lexer {
-    int current_token;
-    string identifier;
-    double number;
-    map <char, int> op_priority;
-    map <string, Token> keyword_map;
+    std::istream* inputStream;
+
+protected:
+    int current_token_;
+    string identifier_;
+    int integer_value_;
+    double real_value_;
+    bool  boolean_value_;
+    unordered_map <char, int> op_priority_;
+    unordered_map <string, Token> keyword_map_;
 
 public:
-    Lexer();
-    Lexer(const Lexer &other);
+
+    Lexer(std::istream* inputStream);
 
     int current_token() const;
     string identifier() const;
-    double  number() const;
+    int  integer_value() const;
+    double  real_value() const;
+    bool boolean_value() const;
 
     void next();
 
-    int token_pr();
-    void add_op_pr(const char &op, const int priority);
-    const map<char, int> op_priority() const;
+    int token_priority();
+    void add_op_priority(const char op, const int priority);
+    const unordered_map<char, int> op_priority() const;
 
 };
 #endif //ILANG_LEXER_H
