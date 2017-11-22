@@ -6,7 +6,6 @@
 #include "parsing/Lexer.h"
 #include "parsing/Parser.h"
 
-
 class CmdArgsParser {
 public:
     std::string input;
