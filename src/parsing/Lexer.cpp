@@ -130,5 +130,3 @@ void Lexer::add_op_priority(const char op, const int priority) {
 const unordered_map<char, int> Lexer::op_priority() const {
     return op_priority_;
 }
->>>>>>> Stashed changes
-
