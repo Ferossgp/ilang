@@ -4,9 +4,10 @@
 #include "node.h"
 
 class RecordAssign : ASTNode {
-    ASTNode *record, *ref, *value;
+    ASTNode *record, *value;
+    std::string ref;
 
 public:
-    RecordAssign(ASTNode *record, ASTNode *ref, ASTNode *value);
+    RecordAssign(ASTNode *record, std::string ref, ASTNode *value);
 };
 #endif //ILANG_RECORDASSIGN_H

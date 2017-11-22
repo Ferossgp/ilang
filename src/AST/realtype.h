@@ -1,7 +1,7 @@
 #ifndef ILANG_REALTYPE_H
 #define ILANG_REALTYPE_H
 
-#include "node.h";
+#include "node.h"
 
 class RealType : public ASTNode {
 
