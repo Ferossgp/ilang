@@ -1,4 +1,5 @@
 #include <memory>
+#include <unordered_map>
 
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/ADT/STLExtras.h"
@@ -21,6 +22,9 @@
 #include "../AST/routine.h"
 #include "../AST/binary.h"
 #include "../AST/routinecall.h"
+#include "../AST/return.h"
+#include "../AST/variable.h"
+#include "../AST/var.h"
 
 // using namespace llvm;
 
@@ -36,6 +40,7 @@ private:
 
     llvm::Value *last_constant;    
     llvm::Function *last_function;
+    std::unordered_map<std::string, llvm::Value*> last_params;
 
 public:
     CodegenVisitor(const std::string& filename);
@@ -63,5 +68,6 @@ public:
     void visit(Var& node);
     void visit(Variable& node);
     void visit(While& node);
+    void visit(Return& node);
     void generate();
 };

@@ -36,7 +36,6 @@ class Visitor
 {
 public:
     virtual void visit(Prototype& node) = 0;
-
     virtual void visit(ArrayDecl& node) = 0;
     virtual void visit(Assignment& node) = 0;
     virtual void visit(Binary& node) = 0;
