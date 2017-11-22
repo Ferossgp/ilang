@@ -135,7 +135,10 @@ void CodegenVisitor::visit(TypeDecl& node) {}
 
 void CodegenVisitor::visit(Unary& node) {}
 
-void CodegenVisitor::visit(Var& node) {}
+void CodegenVisitor::visit(Var& node) 
+{
+
+}
 
 void CodegenVisitor::visit(Variable& node) 
 {
