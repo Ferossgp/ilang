@@ -117,10 +117,12 @@ void CodegenVisitor::visit(Routine& node)
 void CodegenVisitor::visit(RoutineCall& node) 
 {
     llvm::Function *f = TheModule->getFunction(node.getCallee());
-
+    if (!f) {
+        std::cout << "no function\n";
+    }
     std::vector<llvm::Value*> ArgsV;
     auto& args = node.getArgs();
-    for (auto arg : args) {
+    for (auto& arg : args) {
         arg->accept(*this);
         ArgsV.push_back(last_constant);
     }
@@ -130,15 +132,22 @@ void CodegenVisitor::visit(RoutineCall& node)
 // void CodegenVisitor::visit(Sign& node) {}
 // void CodegenVisitor::visit(Type& node) {}
 void CodegenVisitor::visit(TypeDecl& node) {}
+
 void CodegenVisitor::visit(Unary& node) {}
+
 void CodegenVisitor::visit(Var& node) {}
+
 void CodegenVisitor::visit(Variable& node) 
 {
     std::string name = ((Argument*) node.getVar())->getName();
     last_constant = last_params[name];
 }
+
 void CodegenVisitor::visit(Return& node) {
     node.getExpression()->accept(*this);
     Builder.CreateRet(last_constant);
 }
-void CodegenVisitor::visit(While& node) {}
+
+void CodegenVisitor::visit(While& node) {
+
+}
