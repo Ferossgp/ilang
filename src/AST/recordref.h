@@ -4,7 +4,7 @@
 #include <string>
 #include "expression.h"
 
-class RecordRef : Expression {
+class RecordRef : public Expression {
 
 public:
     ASTNode *record;

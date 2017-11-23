@@ -12,10 +12,13 @@
 #include "Lexer.h"
 
 #include <memory>
+#include <utility>
+
+using std::pair;
 
 class Parser {
     Lexer* const lexer;
-    vector<pair<string, ASTNode>> NameTable;
+    vector<pair<string, ASTNode*>> NameTable;
 
     ASTNode *parse_expression();
     ASTNode *parse_primary();
@@ -37,13 +40,13 @@ class Parser {
     ASTNode *parse_types();
     ASTNode *parse_return();
     ASTNode *parse_statements();
-    ASTNode *parse_array_ref(ASTNode *a);
-    ASTNode *parse_record_ref(ASTNode *a);
+    ArrayRef *parse_array_ref(ASTNode *a);
+    RecordRef *parse_record_ref(ASTNode *a);
     ASTNode *parse_assignment(string identifier_name);
     ASTNode *parse_binary_op_rhs(int priority, ASTNode *lhs);
     Prototype *parse_prototype();
 // parse - on numbers
-// Statements 
+// Statements
 public:
     Parser(Lexer* const lexer) : lexer(lexer) { }
     ~Parser();

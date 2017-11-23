@@ -25,6 +25,11 @@ class Undefined;
 class Var;
 class Variable;
 class While;
+class Return;
+class RecordRef;
+class ArrayRef;
+class Program;
+class Statements;
 
 class Visitor
 {
@@ -56,6 +61,11 @@ public:
     virtual void visit(Var& node) = 0;
     virtual void visit(Variable& node) = 0;
     virtual void visit(While& node) = 0;
+    virtual void visit(Return& node) = 0;
+    virtual void visit(RecordRef& node) = 0;
+    virtual void visit(ArrayRef& node) = 0;
+    virtual void visit(Program& node) = 0;
+    virtual void visit(Statements& node) = 0;
 };
 
-#endif 
+#endif

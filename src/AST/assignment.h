@@ -3,7 +3,7 @@
 
 #include "node.h"
 
-class Assignment : ASTNode {
+class Assignment : public ASTNode {
     ASTNode *variable, *value;
 
 public:

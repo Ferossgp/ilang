@@ -3,10 +3,11 @@
 
 #include "expression.h"
 
-class ArrayAssign : Expression {
+class ArrayRef : public Expression {
 public:
     ASTNode *array, *pos;
-    ArrayAssign(ASTNode *array, ASTNode *pos);
+    ArrayRef(ASTNode *array, ASTNode *pos): array{array}, pos{pos} {};
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_ARRAYASSIGN_H

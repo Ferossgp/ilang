@@ -9,8 +9,7 @@
 class Expression : public ASTNode {
 public:
     Type *type;
-    Expression() : type(new Undefined()) {}
-    void accept(Visitor &v) { v.visit(*this); };
+    Expression() : type(new Undefined()) {};
 };
 
 #endif //ILANG_EXPRESSION_H
