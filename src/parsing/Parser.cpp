@@ -323,6 +323,26 @@ ASTNode * Parser::parse_primary() {
     }
 }
 
+ASTNode * Parser::parse_statements() {
+    switch( lexer->current_token() ) {
+        case (int)Token::IDENTIFIER:
+            return parse_identifier();
+        case (int)Token::IF:
+            return parse_if();
+        case (int)Token::FOR:
+            return parse_for();
+        case (int)Token::WHILE:
+            return parse_while();
+        case (int)Token::VAR:
+            return parse_var();
+        case (int)Token::TYPE:
+            return parse_type();
+        default:
+            fprintf(stderr, "Unknown token '%c' when expecting an expression", (char) lexer->current_token());
+            return 0;
+    }
+}
+
 ASTNode * Parser::parse_binary_op_rhs(int expression_priority, ASTNode *LHS) {
     while (1) {
         int token_priority = lexer->token_priority();
@@ -447,20 +467,12 @@ Routine * Parser::parse_routine() {
     closeScope();
     return new Routine(proto, expression);
 }
+                program_decl.push_back(parse_top_level_expression())
 
 Prototype * Parser::parse_extern() {
     lexer->next();
 
     return parse_prototype();
-}
-
-Routine * Parser::parse_top_level_expression() {
-    if ( ASTNode *expression = parse_expression() ) {
-        Prototype *proto = new Prototype("", vector<ASTNode*>());
-        return new Routine(proto, expression, nullptr);
-    }
-
-    return 0;
 }
 
 ASTNode * Parser::parse_if() {
@@ -572,49 +584,26 @@ ASTNode * Parser::parse_while() {
     return new While(condition, body);
 }
 
-void Parser::handleRoutine() {
-    if (parse_routine()) {
-        std::cerr << "Parsed a function definition." << std::endl;
-    } else {
-        // Skip token for error recovery.
-        lexer->next();
-    }
-}
-
-void Parser::handleExtern() {
-    if (parse_extern()) {
-        std::cerr << "Parsed an extern." << std::endl;
-    } else {
-        // Skip token for error recovery.
-        lexer->next();
-    }
-}
-
-void Parser::handleTopLevelExpression() {
-    if (parse_top_level_expression()) {
-        std::cerr << "Parsed a a top-level expression." << std::endl;
-    } else {
-        // Skip token for error recovery.
-        lexer->next();
-    }
-}
-
-void Parser::parse() {
+Program * Parser::parse() {
+    vector<ASTNode*> program_decl; 
     while (1) {
-        std::cerr << "ready> ";
         switch (lexer->current_token()) {
             case (int)Token::EOF_:
                 return;
-           // case (int)Token::VAR:
-           //     break;
-            case (int)Token::ROUTINE:
-                handleRoutine();
+            case (int)Token::VAR:
+                program_decl.push_back(parse_var());
                 break;
+            case (int)Token::ROUTINE:
+                program_decl.push_back(parse_routine());
+                break;
+            case (int)Token::TYPE:
+                program_decl.push_back(parse_type());
             default:
-                handleTopLevelExpression();
+                std::cerr << "Can't handle top level \n";
                 break;
         }
     }
+    return new Program(program_decl);
 }
 
 void Parser::addDecl(pair<string, ASTNode*> decl) {

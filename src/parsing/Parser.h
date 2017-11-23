@@ -35,14 +35,11 @@ class Parser {
     ASTNode *parse_type();
     ASTNode *parse_types();
     ASTNode *parse_return();
+    ASTNode *parse_statements();
     ASTNode *parse_assignment(string identifier_name);
     ASTNode *parse_binary_op_rhs(int priority, ASTNode *lhs);
     Prototype *parse_prototype();
 
-    void addDecl(pair<string, ASTNode*> name_pair);
-    ASTNode *findDecl(string name);
-    void openScope();
-    void closeScope();
 public:
     Parser(Lexer* const lexer) : lexer(lexer) { }
     ~Parser();
@@ -50,11 +47,16 @@ public:
     Prototype *parse_extern();
     Routine *parse_routine();
     Routine *parse_top_level_expression();
-    void parse();
+    Program *parse();
     void handleTopLevelExpression();
     void handleExtern();
     void handleRoutine();
     void handleVariable();
+
+    void addDecl(pair<string, ASTNode*> name_pair);
+    ASTNode *findDecl(string name);
+    void openScope();
+    void closeScope();
 };
 
 #endif //ILANG_PARSER_H
