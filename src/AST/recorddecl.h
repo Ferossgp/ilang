@@ -12,6 +12,7 @@ class RecordDecl : public Type {
 
 public:
     RecordDecl(const vector<ASTNode*> &refs);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_RECORDDECL_H

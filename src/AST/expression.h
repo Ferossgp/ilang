@@ -4,11 +4,12 @@
 
 #include "node.h"
 #include "type.h"
+#include "undefined.h"
 
 class Expression : public ASTNode {
 public:
     Type *type;
-    Expression() : type(types::Undefined) {}
+    Expression() : type(new Undefined()) {}
 };
 
 #endif //ILANG_EXPRESSION_H

@@ -9,6 +9,7 @@ public:
     BooleanType() {
          type = types::Boolean;
     };
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_BOOLEANTYPE_H

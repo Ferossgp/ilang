@@ -9,6 +9,7 @@ public:
     Undefined() {
         type = types::Undefined;
     };
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_UNDEFINED_H

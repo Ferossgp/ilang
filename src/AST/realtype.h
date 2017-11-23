@@ -9,6 +9,7 @@ public:
     RealType() {
         type = types::Real;
     };
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_REALTYPE_H

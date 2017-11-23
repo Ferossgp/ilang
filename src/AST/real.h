@@ -9,6 +9,7 @@ class Real : public Expression {
 public:
     Real();
     Real(double value);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_REAL_H

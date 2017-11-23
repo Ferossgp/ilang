@@ -9,5 +9,5 @@ using std::string;
 using std::pair;
 
 
-Var::Var(<pair<string, Type*> &var_decl,ASTNode *body):
+Var::Var(const pair<string, Type*> &var_decl, ASTNode *body):
         var_decl(var_decl), body(body) {}

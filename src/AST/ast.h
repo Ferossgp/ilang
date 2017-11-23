@@ -21,12 +21,9 @@
 #include "type.h"
 #include "assignment.h"
 #include "argument.h"
-#include "arrayassign.h"
 #include "integertype.h"
 #include "realtype.h"
 #include "boolean.h"
-#include "recordassign.h"
-#include "arrayassign.h"
 
 #include "integer.cpp"
 #include "real.cpp"
@@ -46,7 +43,5 @@
 #include "typedecl.cpp"
 #include "assignment.cpp"
 #include "argument.cpp"
-#include "arrayassign.cpp"
-#include "recordassign.cpp"
 
 #endif //ILANG_AST_H
