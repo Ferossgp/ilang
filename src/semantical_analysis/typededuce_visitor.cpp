@@ -7,11 +7,7 @@ void TypeDeduceVisitor::visit(Prototype& node)
 }
 void TypeDeduceVisitor::visit(Argument& node) 
 {
-    std::cout << "Visiting ArgumentNode: " << node.getName();
-}
-void TypeDeduceVisitor::visit(Array& node) 
-{
-    std::cout << "Foo";
+    std::cout << "Visiting ArgumentNode: ";
 }
 void TypeDeduceVisitor::visit(ArrayDecl& node) 
 {
@@ -29,6 +25,10 @@ void TypeDeduceVisitor::visit(Boolean& node)
 {
     std::cout << "Foo";
 }
+void TypeDeduceVisitor::visit(BooleanType& node)
+{
+    std::cout << "Foo";
+}
 void TypeDeduceVisitor::visit(For& node) 
 {
     std::cout << "Foo";
@@ -41,7 +41,15 @@ void TypeDeduceVisitor::visit(Integer& node)
 {
     std::cout << "Foo";
 }
+void TypeDeduceVisitor::visit(IntegerType& node) 
+{
+    std::cout << "Foo";
+}
 void TypeDeduceVisitor::visit(Real& node) 
+{
+    std::cout << "Foo";
+}
+void TypeDeduceVisitor::visit(RealType& node) 
 {
     std::cout << "Foo";
 }
@@ -62,6 +70,10 @@ void TypeDeduceVisitor::visit(TypeDecl& node)
     std::cout << "Foo";
 }
 void TypeDeduceVisitor::visit(Unary& node) 
+{
+    std::cout << "Foo";
+}
+void TypeDeduceVisitor::visit(Undefined& node) 
 {
     std::cout << "Foo";
 }

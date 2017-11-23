@@ -9,6 +9,7 @@ public:
     IntegerType() {
         type = types::Integer;
     };
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_INTEGERTYPE_H

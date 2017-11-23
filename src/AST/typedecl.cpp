@@ -6,5 +6,5 @@
 
 using std::string;
 
-TypeDecl::TypeDecl(const string &identifier, ASTNode *type):
+TypeDecl::TypeDecl(const string &identifier, Type *type):
         identifier(identifier), type(type) {};

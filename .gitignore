@@ -1,6 +1,7 @@
 # Configuration files
 .idea/
 .vscode/
+.DS_Store
 
 # Build files
 cmake-build-debug/

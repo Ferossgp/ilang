@@ -12,11 +12,11 @@ using std::vector;
 using std::pair;
 
 class Var : public ASTNode {
-    vector<pair<string, Type*>> var_decl;
+public:
+    pair<string, Type*> var_decl;
     ASTNode *body;
 
-public:
-    Var(const vector<pair<string, Type*> > &var_decl, ASTNode *body);
+    Var(const pair<string, Type*> &var_decl, ASTNode *body);
 };
 
 #endif //ILANG_VAR_H

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "node.h"
-#include "type"
+#include "type.h"
 
 using std::string;
 using std::pair;

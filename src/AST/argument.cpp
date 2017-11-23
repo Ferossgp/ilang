@@ -9,5 +9,5 @@ using std::string;
 using std::pair;
 
 
-Argument::Argument(const pair<string, ASTNode*> &arg_decl):
+Argument::Argument(const pair<string, Type*> &arg_decl):
         arg_decl(arg_decl) {}

@@ -16,6 +16,7 @@
 #include "AST/ast.h"
 #include "codegen/codegen_visitor.h"
 #include "semantical_analysis/semantic_visitor.h"
+#include "lib/cxxopts.hpp"
 
 llvm::LLVMContext TheContext;
 llvm::IRBuilder<> Builder(TheContext);
@@ -24,7 +25,7 @@ std::unique_ptr<llvm::Module> TheModule;
 llvm::Function *codegen_example() 
 {
     using namespace llvm;
-    FunctionType *ft = FunctionType::get(Type::getVoidTy(TheContext), false);
+    FunctionType *ft = FunctionType::get(llvm::Type::getVoidTy(TheContext), false);
     auto name = "empty_function";
     Function *f = Function::Create(ft, Function::ExternalLinkage, name, TheModule.get());
     BasicBlock *BB = BasicBlock::Create(TheContext, "entry", f);
@@ -134,9 +135,9 @@ int main(int argc, char *argv[]) {
     pass.run(*TheModule);
     dest.flush();
 
-    CodegenVisitor v;
-    Prototype p{"hello", std::vector<ASTNode*>{}};
-    v.visit(p);
+    // CodegenVisitor v;
+    // Prototype p{"hello", std::vector<ASTNode*>{}};
+    // v.visit(p);
 
     return 0;
 }

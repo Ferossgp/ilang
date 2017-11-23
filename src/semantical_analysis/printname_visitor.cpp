@@ -7,11 +7,7 @@ void PrintNameVisitor::visit(Prototype& node)
 }
 void PrintNameVisitor::visit(Argument& node) 
 {
-    std::cout << "Visiting ArgumentNode: " << node.getName();
-}
-void PrintNameVisitor::visit(Array& node) 
-{
-    std::cout << "Foo";
+    std::cout << "Visiting ArgumentNode: ";
 }
 void PrintNameVisitor::visit(ArrayDecl& node) 
 {
@@ -29,6 +25,10 @@ void PrintNameVisitor::visit(Boolean& node)
 {
     std::cout << "Foo";
 }
+void PrintNameVisitor::visit(BooleanType& node)
+{
+    std::cout << "Foo";
+}
 void PrintNameVisitor::visit(For& node) 
 {
     std::cout << "Foo";
@@ -41,7 +41,15 @@ void PrintNameVisitor::visit(Integer& node)
 {
     std::cout << "Foo";
 }
+void PrintNameVisitor::visit(IntegerType& node) 
+{
+    std::cout << "Foo";
+}
 void PrintNameVisitor::visit(Real& node) 
+{
+    std::cout << "Foo";
+}
+void PrintNameVisitor::visit(RealType& node) 
 {
     std::cout << "Foo";
 }
@@ -62,6 +70,10 @@ void PrintNameVisitor::visit(TypeDecl& node)
     std::cout << "Foo";
 }
 void PrintNameVisitor::visit(Unary& node) 
+{
+    std::cout << "Foo";
+}
+void PrintNameVisitor::visit(Undefined& node) 
 {
     std::cout << "Foo";
 }
