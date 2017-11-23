@@ -21,7 +21,7 @@
 #include "../AST/variable.h"
 #include "../AST/while.h"
 
-class PrintNameVisitor : public Visitor
+class TypeDeduceVisitor : public Visitor
 {
 public:
     void visit(Prototype& node);
