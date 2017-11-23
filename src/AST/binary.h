@@ -1,9 +1,9 @@
 #ifndef ILANG_BINARY_H
 #define ILANG_BINARY_H
 
-#include "node.h"
+#include "expression.h"
 
-class Binary : public ASTNode {
+class Binary : public Expression {
     char opchar;
     ASTNode *lhs, *rhs;
 

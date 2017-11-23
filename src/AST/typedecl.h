@@ -4,15 +4,14 @@
 #include <string>
 
 #include "node.h"
+#include "type.h"
 
-using std::string;
-
-class TypeDecl : public ASTNode {
-    string identifier;
-    ASTNode *type;
+class TypeDecl : public Type {
 
 public:
-    TypeDecl(const string &identifier, ASTNode *type);
+    string identifier;
+    Type *type;
+    TypeDecl(const string &identifier, Type *type);
 };
 
 #endif //ILANG_TYPEDECL_H

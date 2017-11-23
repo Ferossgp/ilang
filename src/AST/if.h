@@ -2,13 +2,15 @@
 #define ILANG_IF_H
 
 #include "node.h"
+#include "statements.h"
 
 class If : public ASTNode {
-    ASTNode *condition, *then, *else_body;
+    ASTNode *condition;
+    Statements *then, *else_body;
 
 public:
-    If(ASTNode *condition, ASTNode *then, ASTNode *else_body);
-    If(ASTNode *condition, ASTNode *then);
+    If(ASTNode *condition, Statements *then, Statements *else_body);
+    If(ASTNode *condition, Statements *then);
 };
 
 

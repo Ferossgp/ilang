@@ -4,12 +4,12 @@
 #include "node.h"
 #include "type.h"
 
-class ArrayDecl : public ASTNode {
-    ASTNode *expression;
-    ASTNode *type;
+class ArrayDecl : public Type {
 
 public:
-    ArrayDecl(ASTNode *expression, ASTNode *type);
+    ASTNode *expression;
+    Type *array_type;
+    ArrayDecl(ASTNode *expression, Type *array_type);
 };
 
 #endif //ILANG_ARRAY_H

@@ -1,13 +1,21 @@
 #ifndef ILANG_TYPE_H
 #define ILANG_TYPE_H
 
-#include <string>
-
 #include "node.h"
+enum class types {
+    Integer,
+    Real,
+    Boolean,
+    Void,
+    Undefined,
+    Record,
+    Array,
+    Alias,
+};
 
-using std::string;
-
-class TypeNode : public ASTNode {
+class Type : public ASTNode {
+public:
+    types type;
 };
 
 #endif //ILANG_TYPE_H

@@ -7,6 +7,6 @@ class Assignment : ASTNode {
     ASTNode *variable, *value;
 
 public:
-    Assignment(ASTNode *variable, ASTNode *type);
+    Assignment(ASTNode *variable, ASTNode *value);
 };
 #endif //ILANG_ASSIGNMENT_H

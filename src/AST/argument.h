@@ -5,15 +5,16 @@
 #include <vector>
 
 #include "node.h"
+#include "type"
 
 using std::string;
 using std::pair;
 
 class Argument : public ASTNode {
-    pair<string, ASTNode*> arg_decl;
+    pair<string, Type*> arg_decl;
 
 public:
-    Argument(const pair<string, ASTNode*> &arg_decl);
+    Argument(const pair<string, Type*> &arg_decl);
 };
 
 

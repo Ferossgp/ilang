@@ -1,13 +1,13 @@
 #ifndef ILANG_INTEGER_H
 #define ILANG_INTEGER_H
 
-#include "node.h"
+#include "expression.h"
 
-class Integer : public ASTNode {
-    int value;
+class Integer : public Expression {
 
 public:
-    Integer();
+    int value;
+    Integer(const int value);
 };
 
 #endif //ILANG_INTEGER_H

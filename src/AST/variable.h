@@ -2,15 +2,15 @@
 #define ILANG_VARIABLE_H
 #include <string>
 
-#include "node.h"
+#include "expression.h"
 
 using std::string;
 
-class Variable : public ASTNode {
-    ASTNode *var, *value;
-
+class Variable : public Expression {
 public:
-    Variable(ASTNode *var, ASTNode *value);
+    ASTNode *var;
+
+    Variable(ASTNode *var);
 };
 
 #endif //ILANG_VARIABLE_H

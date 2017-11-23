@@ -1,4 +1,6 @@
 #include "integer.h"
+#include "integertype.h"
 
-Integer::Integer() :value(0) {}
-Integer::Integer(int value) : value(value) {}
+Integer::Integer(int value) : value(value) {
+    type = new IntegerType();
+}

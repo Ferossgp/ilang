@@ -1,12 +1,14 @@
 #ifndef ILANG_BOOLEANTYPE_H
 #define ILANG_BOOLEANTYPE_H
 
-#include "node.h";
+#include "type.h"
 
-class BooleanType : public ASTNode {
+class BooleanType : public Type {
 
 public:
-    BooleanType();
+    BooleanType() {
+         type = types::Boolean;
+    };
 };
 
 #endif //ILANG_BOOLEANTYPE_H

@@ -1,9 +1,9 @@
 #ifndef ILANG_UNARY_H
 #define ILANG_UNARY_H
 
-#include "node.h"
+#include "expression.h"
 
-class Unary: public ASTNode {
+class Unary: public Expression {
     char opcode;
     ASTNode *operand;
 

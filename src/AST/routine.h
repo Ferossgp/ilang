@@ -4,15 +4,16 @@
 
 #include "node.h"
 #include "prototype.h"
+#include "statements.h"
 
 using std::string;
 
 class Routine : public ASTNode {
     Prototype *proto;
-    ASTNode *body;
+    Statements *body;
 
 public:
-    Routine(Prototype *proto, ASTNode *body);
+    Routine(Prototype *proto, Statements *body);
 };
 
 #endif //ILANG_FUNCTION_H

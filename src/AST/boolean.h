@@ -1,11 +1,12 @@
 #ifndef ILANG_BOOLEAN_H
 #define ILANG_BOOLEAN_H
 
-class Boolean : public ASTNode {
-    bool value;
+#include "expression.h"
+
+class Boolean : public Expression {
 
 public:
-    Boolean();
+    bool value;
     Boolean(bool value);
 };
 

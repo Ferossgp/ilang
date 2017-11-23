@@ -2,12 +2,14 @@
 #define ILANG_WHILE_H
 
 #include "node.h"
+#include "statements.h"
 
 class While : public ASTNode {
-    ASTNode *expression, *body;
+    ASTNode *expression;
+    Statements *body;
 
 public:
-    While(ASTNode *expression, ASTNode *body);
+    While(ASTNode *expression, Statements *body);
 };
 
 
