@@ -5,11 +5,12 @@
 #include "statements.h"
 
 class While : public ASTNode {
+public:
     ASTNode *expression;
     Statements *body;
 
-public:
     While(ASTNode *expression, Statements *body);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 

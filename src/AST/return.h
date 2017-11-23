@@ -4,8 +4,9 @@
 #include "node.h"
 
 class Return : ASTNode {
-    ASTNode *expression;
 public:
+    ASTNode *expression;
     Return::Return(ASTNode *expression);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 #endif //ILANG_RETURN_H

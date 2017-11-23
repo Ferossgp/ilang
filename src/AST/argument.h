@@ -15,6 +15,8 @@ class Argument : public ASTNode {
 
 public:
     Argument(const pair<string, Type*> &arg_decl);
+        void accept(Visitor &v) { v.visit(*this); };
+
 };
 
 

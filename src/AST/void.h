@@ -9,6 +9,7 @@ public:
     Void() {
         type = types::Void;
     };
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_VOID_H

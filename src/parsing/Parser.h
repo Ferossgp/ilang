@@ -27,7 +27,8 @@ class Parser {
     ASTNode *parse_integer();
     ASTNode *parse_boolean();
     ASTNode *parse_paren();
-    ASTNode *parse_identifier();
+    ASTNode *parse_identifier_statement();
+    ASTNode *parse_identifier_ref();
     ASTNode *parse_var();
     ASTNode *parse_array();
     ASTNode *parse_record();
@@ -36,10 +37,13 @@ class Parser {
     ASTNode *parse_types();
     ASTNode *parse_return();
     ASTNode *parse_statements();
+    ASTNode *parse_array_ref(ASTNode *a);
+    ASTNode *parse_record_ref(ASTNode *a);
     ASTNode *parse_assignment(string identifier_name);
     ASTNode *parse_binary_op_rhs(int priority, ASTNode *lhs);
     Prototype *parse_prototype();
-
+// parse - on numbers
+// Statements 
 public:
     Parser(Lexer* const lexer) : lexer(lexer) { }
     ~Parser();
@@ -48,10 +52,6 @@ public:
     Routine *parse_routine();
     Routine *parse_top_level_expression();
     Program *parse();
-    void handleTopLevelExpression();
-    void handleExtern();
-    void handleRoutine();
-    void handleVariable();
 
     void addDecl(pair<string, ASTNode*> name_pair);
     ASTNode *findDecl(string name);

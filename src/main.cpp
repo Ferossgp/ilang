@@ -17,6 +17,8 @@
 #include "codegen/codegen_visitor.h"
 #include "semantical_analysis/semantic_visitor.h"
 #include "lib/cxxopts.hpp"
+#include "parsing/Lexer.h"
+#include "parsing/Parser.h"
 
 llvm::LLVMContext TheContext;
 llvm::IRBuilder<> Builder(TheContext);
@@ -138,6 +140,10 @@ int main(int argc, char *argv[]) {
     // CodegenVisitor v;
     // Prototype p{"hello", std::vector<ASTNode*>{}};
     // v.visit(p);
+    std::ifstream fs(args.input);
+    Lexer lexer(&fs);
+    Parser parser(&lexer);
+    auto program = parser.parse();
 
     return 0;
 }

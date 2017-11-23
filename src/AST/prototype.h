@@ -4,16 +4,18 @@
 #include <vector>
 
 #include "node.h"
+#include "type.h"
 
 using std::string;
 using std::vector;
 
 class Prototype : public ASTNode {
     string name;
+    Type *type;
     vector<ASTNode*> args;
 
 public:
-    Prototype(const string &name, const vector<ASTNode*> &args);
+    Prototype(const string &name, const vector<ASTNode*> &args, Type *type);
     const string &getName() const { return name; }
     const vector<ASTNode*>& getArgs() { return args; };
     void accept(Visitor &v) { v.visit(*this); };

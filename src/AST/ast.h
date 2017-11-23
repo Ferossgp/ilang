@@ -24,6 +24,8 @@
 #include "integertype.h"
 #include "realtype.h"
 #include "boolean.h"
+#include "program.h"
+#include "statements.h"
 
 #include "integer.cpp"
 #include "real.cpp"

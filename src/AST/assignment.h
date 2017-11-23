@@ -8,5 +8,6 @@ class Assignment : ASTNode {
 
 public:
     Assignment(ASTNode *variable, ASTNode *value);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 #endif //ILANG_ASSIGNMENT_H

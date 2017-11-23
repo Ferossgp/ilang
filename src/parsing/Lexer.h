@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <sstream>
 
 using std::string;
 using std::unordered_map;

@@ -59,19 +59,26 @@ ASTNode * Parser::parse_paren() {
 }
 
 ASTNode * Parser::parse_types() {
+    //TODO: Parse current_token record or array
+        if(lexer->current_token() == (int)Token::ARRAY){
+            type = parse_array();
+        } else if (lexer->current_token() == (int)Token::RECORD) {
+            type = parse_record();
+        }
+
     if (lexer->current_token() == (int)Token::INTEGER_TYPE) {
         lexer->next();
-        return new Integer();
+        return new IntegerType();
     }
 
     if (lexer->current_token() == (int)Token::REAL_TYPE) {
         lexer->next();
-        return new Real();
+        return new RealType();
     }
 
     if (lexer->current_token() == (int)Token::BOOLEAN_TYPE) {
         lexer->next();
-        return new Boolean();
+        return new BooleanType();
     }
     // Check if current_token is in table
 
@@ -83,50 +90,64 @@ ASTNode * Parser::parse_types() {
 
     return nullptr;
 }
-ASTNode * Parser::parse_assignment(string identifier_name) {
+
+ArrayRef * Parser::parse_array_ref(ASTNode *assignee) {
+    lexer->next();
+    ASTNode *pos = parse_expression();
+
+    if ( lexer->current_token() != ']' ) {
+        return Error("expected ']' in array assignment");
+    }
+    lexer->next();
+    
+    return new ArrayRef(assignee, pos);
+}
+
+RecordRef * Parser::parse_record_ref(ASTNode *assignee) {
+    lexer->next();
+    string ref = lexer->identifier();
+    lexer->next();
+    return new RecordRef(assignee, ref);
+}
+
+/// Returns Variable or RoutineCall
+ASTNode * Parser::parse_identifier_statement() {
+    string identifier_name = lexer->identifier();
     ASTNode *assignee = findDecl(identifier_name);
     if(!assignee){
-        return nullptr;
+        return new Error("Undefined Identifier");
     }
-    // Array assign
+     // Array assign
     if ( lexer->current_token() == '[') {
-        lexer->next();
-        ASTNode *pos = parse_expression();
+        auto ref = parse_array_ref(assignee);
 
-        if ( lexer->current_token() != ']' ) {
-            return Error("expected ']' in array assignment");
-        }
-        lexer->next();
         if ( lexer->current_token() == ':' ){
             lexer->next();
             if (lexer->current_token() == '=') {
+                lexer->next();
                 ASTNode *value = parse_expression();
-                return ArrayAssign(assignee, pos, value);
+                return new Assignment(ref, value);
             }
-            return Error("Unknown ':' at this possition");
+            return new Error("Unknown ':' at this possition");
         }
         // Skip this node, non-sens empty assign;
-        return nullptr;
+        return new Error("No assginement found");
     }
-    // Record Assign
+        // Record Assign
     if ( lexer->current_token() == '.'){
-        lexer->next();
-        if (lexer->current_token() != (int) Token::IDENTIFIER ) {
-            return Error("expected identifier after '.'");
-        }
-        string ref_name = lexer->identifier();
-        lexer->next();
+        auto ref = parse_record_ref();
+
         if ( lexer->current_token() == ':' ){
             lexer->next();
             if (lexer->current_token() == '=') {
                 ASTNode *value = parse_expression();
-                return RecordAssign(assignee, ref_name, value);
+                return new Assignment(ref, value);
             }
-            return Error("Unknown ':' at this possition");
+            return new Error("Unknown ':' at this possition");
         }
-        // Skip this node, non-sens empty assign;
-        return nullptr;
+        return new Error("No assginement found");
     }
+
     // Variable Assign
     if ( lexer->current_token() != '('){
         lexer->next();
@@ -134,22 +155,11 @@ ASTNode * Parser::parse_assignment(string identifier_name) {
             lexer->next();
             if (lexer->current_token() == '=') {
                 ASTNode *value = parse_expression();
-                return Variable(assignee, value);
+                return new Assignment(assignee, value);
             }
-            return Error("Unknown ':' at this possition");
+            return new Error("Unknown ':' at this possition");
         }
-        // Skip this node, non-sens empty assign;
-        return nullptr;
-    }
-    return nullptr;
-}
-
-/// Returns Variable or RoutineCall
-ASTNode * Parser::parse_identifier() {
-    string identifier_name = lexer->identifier();
-
-    if ( lexer->current_token() != '(' ) {
-        return parse_assignment(identifier_name);
+        return new Error("No assginement found");
     }
 
     lexer->next();
@@ -158,18 +168,56 @@ ASTNode * Parser::parse_identifier() {
 
     while ( lexer->current_token() != ')' ) {
         ASTNode *arg = parse_expression();
-        if ( !arg ) {
-            return nullptr;
+        if ( arg ) {
+            args.push_back(arg);
         }
-
-        args.push_back(arg);
 
         if ( lexer->current_token() == ')' ) {
             break;
         }
 
         if ( lexer->current_token() != ',' ) {
-            return Error("expected ')' or ',' in argument list");
+            return new Error("expected ')' or ',' in argument list");
+        }
+
+        lexer->next();
+    }
+
+    lexer->next();
+
+    return new RoutineCall(identifier_name, args);
+}
+
+ASTNode * Parser::parse_identifier_ref(){
+    string identifier_name = lexer->identifier();
+    ASTNode *ref = findDecl(identifier_name);
+    lexer->next();
+    if (lexer->current_toke() == '.') {
+        return parse_record_ref(ref);
+    }
+    if (lexer->current_token() == '[') {
+        return parse_array_ref(ref);
+    }
+    if (lexer->current_token() != '(') {
+        return new Variable(ref);
+    }
+    
+    lexer->next();
+
+    vector<ASTNode*> args;
+
+    while ( lexer->current_token() != ')' ) {
+        ASTNode *arg = parse_expression();
+        if ( arg ) {
+            args.push_back(arg);
+        }
+
+        if ( lexer->current_token() == ')' ) {
+            break;
+        }
+
+        if ( lexer->current_token() != ',' ) {
+            return new Error("expected ')' or ',' in argument list");
         }
 
         lexer->next();
@@ -188,7 +236,7 @@ ASTNode * Parser::parse_var() {
     }
     string name = lexer->identifier();
     lexer->next();
-    ASTNode *type;
+    Type *type;
 
     if ( lexer->current_token() == ':') {
         lexer->next();
@@ -210,7 +258,7 @@ ASTNode * Parser::parse_var() {
     }
 
     if (!type){
-        return Error("Expected 'is' or ':' keyword after 'var'");
+        return new Error("Expected 'is' or ':' keyword after 'var'");
     }
 
     ASTNode *var = new Var(make_pair(name, type), nullptr);
@@ -224,28 +272,20 @@ ASTNode * Parser::parse_type() {
     string id_name;
 
     if ( lexer->current_token() != (int)Token::IDENTIFIER ) {
-        return Error("Expected identifier after 'type'");
+        return new Error("Expected identifier after 'type'");
     }
     id_name = lexer->current_token();
     lexer->next();
 
     if ( lexer->current_token() != (int)Token::IS ) {
-        return Error("Expected 'is' keyword after 'type'");
+        return new Error("Expected 'is' keyword after 'type'");
     }
     lexer->next();
 
     ASTNode *type = parse_types();
 
     if (!type) {
-        if(lexer->current_token() == (int)Token::ARRAY){
-            type = parse_array();
-        } else if (lexer->current_token() == (int)Token::RECORD) {
-            type = parse_record();
-        }
-    }
-
-    if (!type) {
-        return Error("Expected valid type after 'is'");
+        return new Error("Expected valid type after 'is'");
     }
 
     ASTNode *type_decl  = new TypeDecl(id_name, type);
@@ -262,7 +302,7 @@ ASTNode * Parser::parse_record() {
     }
 
     if (lexer->current_token() != (int)Token::END){
-        return Error("Expected 'end' at the end of the 'record' declaration");
+        return new Error("Expected 'end' at the end of the 'record' declaration");
     }
 
     lexer->next();
@@ -274,7 +314,7 @@ ASTNode * Parser::parse_array() {
     lexer->next();
 
     if (lexer->current_token() != '['){
-        return Error("Expected '[' at the beginning of array expression");
+        return new Error("Expected '[' at the beginning of array expression");
     }
     lexer->next();
 
@@ -282,7 +322,7 @@ ASTNode * Parser::parse_array() {
     if (!expression) { return nullptr; }
 
     if (lexer->current_token() != ']'){
-        return Error("Expected ']' at the end of the array expression");
+        return new Error("Expected ']' at the end of the array expression");
     }
     lexer->next();
 
@@ -292,31 +332,19 @@ ASTNode * Parser::parse_array() {
         return Error("Expected valid type after array declaration");
     }
 
-    return new ArrayDecl(expression, type);
+    return new ArrayDecl(expression, (Type*)type);
 }
 
 ASTNode * Parser::parse_primary() {
     switch( lexer->current_token() ) {
         case (int)Token::IDENTIFIER:
-            return parse_identifier();
+            return parse_identifier_reference();
         case (int)Token::INTEGER:
             return parse_integer();
         case (int)Token::REAL:
             return parse_real();
         case '(':
             return parse_paren();
-        case (int)Token::IF:
-            return parse_if();
-        case (int)Token::FOR:
-            return parse_for();
-        case (int)Token::WHILE:
-            return parse_while();
-        case (int)Token::VAR:
-            return parse_var();
-        case (int)Token::RECORD:
-            return parse_record();
-        case (int)Token::TYPE:
-            return parse_type();
         default:
             fprintf(stderr, "Unknown token '%c' when expecting an expression", (char) lexer->current_token());
             return 0;
@@ -326,7 +354,7 @@ ASTNode * Parser::parse_primary() {
 ASTNode * Parser::parse_statements() {
     switch( lexer->current_token() ) {
         case (int)Token::IDENTIFIER:
-            return parse_identifier();
+            return parse_identifier_statement();
         case (int)Token::IF:
             return parse_if();
         case (int)Token::FOR:
@@ -384,7 +412,7 @@ ASTNode * Parser::parse_unary() {
 
 ASTNode * Parser::parse_expression() {
     ASTNode *LHS = parse_unary();
-    if ( !LHS ) { return 0; }
+    if ( !LHS ) { return nullptr; }
 
     return parse_binary_op_rhs(0, LHS);
 }
@@ -407,7 +435,7 @@ ASTNode * Parser::parse_arg() {
     
     lexer->next();
 
-    return new Argument(make_pair(arg_name, type));
+    return new Argument(make_pair(arg_name, (Type*)type));
 }
 
 Prototype * Parser::parse_prototype() {
@@ -419,7 +447,7 @@ Prototype * Parser::parse_prototype() {
     }
 
     if ( lexer->current_token() != '(' ) {
-        return ErrorP("Expected '(' in prototype");
+        return new ErrorP("Expected '(' in prototype");
     }
 
     vector<ASTNode*> arg_names;
@@ -440,7 +468,15 @@ Prototype * Parser::parse_prototype() {
 
     lexer->next();
 
-    Prototype * prot = new Prototype(func_name, arg_names);
+    if ( lexer->current_token() != ':') {
+        ErrorR("Expected : before type declaration in routine");
+    }
+
+    lexer->next();
+    
+    ASTNode *type = parse_types();
+
+    Prototype * prot = new Prototype(func_name, arg_names, (Type*)type);
     addDecl(make_pair(func_name, prot));
     return prot;
 }
@@ -452,34 +488,21 @@ Routine * Parser::parse_routine() {
 
     if ( !proto ) { return nullptr; }
 
-    if ( lexer->current_token() != ':') {
-        ErrorR("Expected : before type declaration in routine");
-    }
-
-    ASTNode *type = parse_types();
-
     if (lexer->current_token() != (int) Token::IS ){
         ErrorR("Expected is before routine body declaration");
     }
     openScope();
-    ASTNode *expression = parse_expression();
+    ASTNode *expression = parse_statements();
 
     closeScope();
     return new Routine(proto, expression);
-}
-                program_decl.push_back(parse_top_level_expression())
-
-Prototype * Parser::parse_extern() {
-    lexer->next();
-
-    return parse_prototype();
 }
 
 ASTNode * Parser::parse_if() {
     lexer->next();
 
     ASTNode *condition = parse_expression();
-    if ( ! condition ) { return 0; }
+    if ( ! condition ) { return nullptr; }
 
     if ( lexer->current_token() != (int)Token::THEN ) {
         return Error("expected 'then'");
@@ -487,20 +510,18 @@ ASTNode * Parser::parse_if() {
 
     lexer->next();
 
-    ASTNode *then = parse_expression();
-    if ( ! then ) { return 0; }
+    ASTNode *then = parse_statements();
+    if ( ! then ) { return nullptr; }
 
-    if ( lexer->current_token() == (int)Token::ELSE ) {
+    if ( lexer->current_token() != (int)Token::ELSE ) {
         lexer->next();
-        ASTNode *_else = parse_expression();
-        if ( ! _else ) { return 0; }
         return new If(condition, then);
     }
 
     lexer->next();
 
-    ASTNode *else_body = parse_expression();
-    if ( ! else_body ) { return 0; }
+    ASTNode *else_body = parse_statements();
+    if ( ! else_body ) { return nullptr; }
 
     return new If(condition, then, else_body);
 }
@@ -509,16 +530,17 @@ ASTNode * Parser::parse_for() {
     lexer->next();
 
     if ( lexer->current_token() != (int)Token::IDENTIFIER ) {
-        return Error("expected identifier after 'for'");
+        return new Error("expected identifier after 'for'");
     }
 
     string id_name = lexer->identifier();
     lexer->next();
 
-    if ( lexer->current_token() != (int)Token::IN ||
-            lexer->current_token() != (int)Token::REVERSE) {
-        return Error("expected 'in' or 'reverse' after 'for'");
+    if ( lexer->current_token() != (int)Token::IN) {
+        return new Error("expected 'in' after 'for'");
     }
+    lexer->next();
+
     bool reverse = (lexer->current_token() == (int)Token::REVERSE);
     lexer->next();
 
@@ -526,11 +548,11 @@ ASTNode * Parser::parse_for() {
     if ( start == 0 ) { return 0; }
 
     if ( lexer->current_token() != '.'){
-        return Error("Expected '..' after for start value");
+        return new Error("Expected '..' after for start value");
     }else{
         lexer->next();
         if (lexer->current_token() != '.') {
-            return Error("Expected '..' after for start value");
+            return new Error("Expected '..' after for start value");
         }
     }
 
@@ -545,8 +567,8 @@ ASTNode * Parser::parse_for() {
 
     lexer->next();
 
-    ASTNode *body = parse_expression();
-    if ( body == 0 ) { return 0; }
+    ASTNode *body = parse_statements();
+    if ( body == 0 ) { return nullptr; }
 
     if (lexer->current_token() != (int)Token::END){
         return Error("Expected 'end' at the end of the 'loop' body expression");
@@ -554,6 +576,7 @@ ASTNode * Parser::parse_for() {
 
     lexer->next();
 
+    //TODO: Add reverse as a booolean
     if (reverse){
         return new For(id_name, end, start, body);
     } else {
@@ -573,7 +596,7 @@ ASTNode * Parser::parse_while() {
 
     lexer->next();
 
-    ASTNode *body = parse_expression();
+    ASTNode *body = parse_statements();
     if ( !body ) { return nullptr; }
 
     if (lexer->current_token() != (int)Token::END){
@@ -589,7 +612,7 @@ Program * Parser::parse() {
     while (1) {
         switch (lexer->current_token()) {
             case (int)Token::EOF_:
-                return;
+                return nullptr;
             case (int)Token::VAR:
                 program_decl.push_back(parse_var());
                 break;
@@ -599,7 +622,7 @@ Program * Parser::parse() {
             case (int)Token::TYPE:
                 program_decl.push_back(parse_type());
             default:
-                std::cerr << "Can't handle top level \n";
+               // std::cerr << "Can't handle top level \n";
                 break;
         }
     }

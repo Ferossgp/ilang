@@ -7,12 +7,13 @@
 using std::string;
 
 class For: public ASTNode {
+public:
     string name;
     ASTNode *start, *end;
-    Statements *body;
 
-public:
+    Statements *body;
     For(const string &name, ASTNode *start, ASTNode *end, Statements *body);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 
