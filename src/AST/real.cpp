@@ -1,5 +1,7 @@
+#include "real.h" 
+#include "realtype.h"
 
-#include "real.h"
-
-Real::Real() : value(0.0) {}
-Real::Real(double value) : value(value) {}
+Real::Real() : value(0.0) {} 
+Real::Real(double value) : value(value) {
+    type = new RealType();
+}

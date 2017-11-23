@@ -1,12 +1,14 @@
 #ifndef ILANG_REALTYPE_H
 #define ILANG_REALTYPE_H
 
-#include "node.h"
+#include "type.h"
 
-class RealType : public ASTNode {
+class RealType : public Type {
 
 public:
-    RealType();
+    RealType() {
+        type = types::Real;
+    };
 };
 
 #endif //ILANG_REALTYPE_H

@@ -3,14 +3,16 @@
 #include <string>
 
 #include "node.h"
+#include "statement.h"
 using std::string;
 
 class For: public ASTNode {
     string name;
-    ASTNode *start, *end, *body;
+    ASTNode *start, *end;
+    Statements *body;
 
 public:
-    For(const string &name, ASTNode *start, ASTNode *end, ASTNode *body);
+    For(const string &name, ASTNode *start, ASTNode *end, Statements *body);
 };
 
 

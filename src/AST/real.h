@@ -1,9 +1,9 @@
 #ifndef ILANG_REAL_H
 #define ILANG_REAL_H
 
-#include "node.h"
+#include "expression.h"
 
-class Real : public ASTNode {
+class Real : public Expression {
     double value;
 
 public:

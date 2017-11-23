@@ -1,12 +1,14 @@
 #ifndef ILANG_INTEGERTYPE_H
 #define ILANG_INTEGERTYPE_H
 
-#include "node.h"
+#include "type.h"
 
-class IntegerType : public ASTNode {
+class IntegerType : public Type {
 
 public:
-    IntegerType();
+    IntegerType() {
+        type = types::Integer;
+    };
 };
 
 #endif //ILANG_INTEGERTYPE_H

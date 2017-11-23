@@ -1,14 +1,14 @@
-#ifndef ILANG_FUNCTIONCALL_H
-#define ILANG_FUNCTIONCALL_H
+#ifndef ILANG_ROUTINECALL_H
+#define ILANG_ROUTINECALL_H
 #include <string>
 #include <vector>
 
-#include "node.h"
+#include "expression.h"
 
 using std::string;
 using std::vector;
 
-class RoutineCall : public ASTNode {
+class RoutineCall : public Expression {
     string callee;
     vector<ASTNode*> args;
 
@@ -16,4 +16,4 @@ public:
     RoutineCall(const string &callee, vector<ASTNode*> &args);
 };
 
-#endif //ILANG_FUNCTIONCALL_H
+#endif //ILANG_ROUTINECALL_H

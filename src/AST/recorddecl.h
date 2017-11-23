@@ -3,11 +3,11 @@
 
 #include <vector>
 
-#include "node.h"
+#include "type.h"
 
 using std::vector;
 
-class RecordDecl : public ASTNode {
+class RecordDecl : public Type {
     vector<ASTNode*> refs;
 
 public:
