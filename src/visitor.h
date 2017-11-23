@@ -30,6 +30,7 @@ class RecordRef;
 class ArrayRef;
 class Program;
 class Statements;
+class Void;
 
 class Visitor
 {
@@ -66,6 +67,7 @@ public:
     virtual void visit(ArrayRef& node) = 0;
     virtual void visit(Program& node) = 0;
     virtual void visit(Statements& node) = 0;
+    virtual void visit(Void& node) = 0;
 };
 
 #endif

@@ -30,5 +30,6 @@
 #include "arrayref.h"
 #include "return.h"
 #include "booleantype.h"
+#include "void.h"
 
 #endif //ILANG_AST_H

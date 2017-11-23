@@ -4,6 +4,7 @@
 #include "Errors.h"
 #include <cstdio>
 #include <memory>
+#include <iostream>
 
 using std::move;
 using std::swap;
@@ -366,6 +367,9 @@ ASTNode * Parser::parse_statements() {
             return parse_var();
         case (int)Token::TYPE:
             return parse_type();
+        case (int)Token::END:
+            lexer->next();
+            return nullptr;
         default:
             fprintf(stderr, "Unknown token '%c' when expecting an expression", (char) lexer->current_token());
             return 0;
@@ -445,6 +449,7 @@ Prototype * Parser::parse_prototype() {
     if ( lexer->current_token() == (int)Token::IDENTIFIER ) {
         func_name = lexer->identifier();
         lexer->next();
+        std::cout << "cur " << lexer->current_token() << "\n";
     }
 
     if ( lexer->current_token() != '(' ) {
@@ -469,13 +474,15 @@ Prototype * Parser::parse_prototype() {
 
     lexer->next();
 
-    if ( lexer->current_token() != ':') {
+    ASTNode *type;
+    if ( lexer->current_token() == ':') {
+        lexer->next();
+        type = parse_types();
+    } else {
+        type = new Void();
         ErrorR("Expected : before type declaration in routine");
     }
 
-    lexer->next();
-
-    ASTNode *type = parse_types();
 
     Prototype * prot = new Prototype(func_name, arg_names, (Type*)type);
     addDecl(make_pair(func_name, prot));
@@ -486,12 +493,13 @@ Routine * Parser::parse_routine() {
     lexer->next();
 
     Prototype *proto = parse_prototype();
-
+    std::cout << "prototype parsed cur: " << (int) lexer->current_token() << "\n";
     if ( !proto ) { return nullptr; }
 
     if (lexer->current_token() != (int) Token::IS ){
         ErrorR("Expected is before routine body declaration");
     }
+    lexer->next();
     openScope();
     ASTNode *expression = parse_statements();
 
@@ -610,10 +618,9 @@ ASTNode * Parser::parse_while() {
 
 Program * Parser::parse() {
     vector<ASTNode*> program_decl;
-    while (1) {
+    lexer->next();
+    while (lexer->current_token() != (int) Token::EOF_) {
         switch (lexer->current_token()) {
-            case (int)Token::EOF_:
-                return nullptr;
             case (int)Token::VAR:
                 program_decl.push_back(parse_var());
                 break;
@@ -622,8 +629,9 @@ Program * Parser::parse() {
                 break;
             case (int)Token::TYPE:
                 program_decl.push_back(parse_type());
+                break;
             default:
-               // std::cerr << "Can't handle top level \n";
+                std::cout << "Can't handle top level " << (int) lexer->current_token() << "\n";
                 break;
         }
     }
