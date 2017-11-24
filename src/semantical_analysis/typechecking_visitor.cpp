@@ -13,9 +13,76 @@ void TypeCheckingVisitor::visit(ArrayDecl& node)
 {
     std::cout << "Foo";
 }
+
+/*
+    Check that both sides of the assignment are of the same or
+    compatible types. If second variant, cast it
+*/
 void TypeCheckingVisitor::visit(Assignment& node) 
 {
-    std::cout << "Foo";
+    // Variable, array or record reference
+    auto left = (Expression*) node.variable;
+    auto left_type = left->type->type;
+    auto right = (Expression*) node.value;
+    auto right_type = right->type->type;
+    
+    if (left_type == types::Integer && right_type == types::Integer)
+    {
+        return;
+    }
+    else if (left_type == types::Integer && right_type == types::Real)
+    {
+        Cast cast_node { right, new IntegerType() };
+        node.value = &cast_node;
+    }
+    else if (left_type == types::Integer && right_type == types::Boolean)
+    {
+        Cast cast_node { right, new BooleanType() };
+        node.value = &cast_node;
+    }
+    else if (left_type == types::Real && right_type == types::Integer)
+    {
+        Cast cast_node { right, new IntegerType() };
+        node.value = &cast_node;
+    }
+    else if (left_type == types::Real && right_type == types::Real)
+    {
+        return;
+    }
+    else if (left_type == types::Real && right_type == types::Boolean)
+    {
+        Cast cast_node { right, new RealType() };
+        node.value = &cast_node;
+    }
+    else if (left_type == types::Boolean && right_type == types::Integer)
+    {
+        Cast cast_node { right, new BooleanType() };
+        node.value = &cast_node;
+    }
+    else if (left_type == types::Boolean && right_type == types::Boolean)
+    {
+        return;
+    }
+    else if (left_type == types::Array && right_type == types::Array)
+    {
+        if (*left->type != *right->type)
+        {
+            reportError("Trying to assign arrays of different types");
+        }
+        return;
+    }
+    else if (left_type == types::Record && right_type == types::Record)
+    {
+        if (*left->type != *right->type)
+        {
+            reportError("Trying to assign records of different types");
+        }
+        return;
+    }
+    else 
+    {
+        reportError("Trying to assign incompatible types");
+    }
 }
 void TypeCheckingVisitor::visit(Binary& node) 
 {

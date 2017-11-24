@@ -1,4 +1,5 @@
 #include "../visitor.h"
+#include "error.h"
 
 #include "../AST/prototype.h"
 #include "../AST/argument.h"

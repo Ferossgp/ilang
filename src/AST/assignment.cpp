@@ -1,3 +1,3 @@
 #include "assignment.h"
 
-Assignment::Assignment(ASTNode *variable, ASTNode *value) : variable(variable), value(value) {}
+Assignment::Assignment(ASTNode *variable, Expression *value) : variable(variable), value(value) {}
