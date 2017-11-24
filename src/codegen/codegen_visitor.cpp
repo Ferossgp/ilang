@@ -46,9 +46,19 @@ void CodegenVisitor::visit(Prototype& p)
     // Generate types of arguments
     std::vector<llvm::Type*> arg_types(p.args.size(), llvm::Type::getInt32Ty(TheContext));
 
-    // llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), arg_types, false);
-    llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getInt32Ty(TheContext), arg_types, false);
+    llvm::FunctionType *ft;
+    switch (p.type->type) {
+    case types::Integer:
+        ft = llvm::FunctionType::get(llvm::Type::getInt32Ty(TheContext), arg_types, false);
+        break;
+    case types::Void:
+        ft = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), arg_types, false);
+        break;
+    case types::Real:
+        ft = llvm::FunctionType::get(llvm::Type::getDoubleTy(TheContext), arg_types, false);
+    }
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
+
     unsigned Idx = 0;
     for (auto &Arg : last_function->args()) {
         std::string name = ((Argument *) p.args[Idx++])->arg_decl.first;
@@ -71,7 +81,7 @@ void CodegenVisitor::visit(Binary& node)
     std::cout << "Parsing Binary\n";
     node.lhs->accept(*this);
     auto L = last_constant;
-    node.lhs->accept(*this);
+    node.rhs->accept(*this);
     auto R = last_constant;
 
     switch (node.opchar) {

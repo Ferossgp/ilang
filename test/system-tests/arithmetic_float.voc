@@ -11,9 +11,9 @@ routine mul(x real, y real): real is
 end
 
 routine div(x real, y real): real is
-    return x / y;
+    return x / y
 end
 
 routine mod(x real, y real): real is
-    return x % y;
+    return x % y
 end

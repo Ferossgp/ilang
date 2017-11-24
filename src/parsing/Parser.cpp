@@ -195,6 +195,7 @@ ASTNode * Parser::parse_identifier_statement() {
 
 Expression * Parser::parse_identifier_ref(){
     string identifier_name = lexer->identifier();
+    std::cout << "Identifier: " << identifier_name << "\n";
     ASTNode *ref = findDecl(identifier_name);
     lexer->next();
     if (lexer->current_token() == '.') {
@@ -413,7 +414,7 @@ Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LH
 
         Expression *RHS = parse_unary();
         if ( !RHS ) { return nullptr; }
-    
+
         int next_priority = lexer->token_priority();
         if ( token_priority < next_priority ) {
             RHS = parse_binary_op_rhs(token_priority + 1, RHS);
@@ -681,7 +682,7 @@ Program * Parser::parse() {
 }
 
 void Parser::addDecl(pair<string, ASTNode*> decl) {
-    // name_table[scope][decl.first] = decl.second;
+    name_table[scope][decl.first] = decl.second;
 }
 
 ASTNode *Parser::findDecl(string name) {
@@ -698,6 +699,7 @@ ASTNode *Parser::findDecl(string name) {
 
     return Error("Can't find declaration ", name.c_str());
 }
+
 
 void Parser::openScope(){
     scope++;
