@@ -9,9 +9,10 @@
 class TypeDecl : public Type {
 
 public:
-    string identifier;
+    std::string identifier;
     Type *type;
-    TypeDecl(const string &identifier, Type *type);
+    TypeDecl(const std::string &identifier, Type *type);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_TYPEDECL_H

@@ -17,6 +17,7 @@ public:
     ASTNode *body;
 
     Var(const pair<string, Type*> &var_decl, ASTNode *body);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_VAR_H

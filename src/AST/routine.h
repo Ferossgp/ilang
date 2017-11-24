@@ -9,11 +9,12 @@
 using std::string;
 
 class Routine : public ASTNode {
+public:
     Prototype *proto;
     Statements *body;
 
-public:
     Routine(Prototype *proto, Statements *body);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_FUNCTION_H

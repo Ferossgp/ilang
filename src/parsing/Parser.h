@@ -12,10 +12,16 @@
 #include "Lexer.h"
 
 #include <memory>
+#include <utility>
+#include <unordered_map>
+
+using std::pair;
 
 class Parser {
     Lexer* const lexer;
-    vector<pair<string, ASTNode>> NameTable;
+    int scope = -1; //First scope will be at 0 pos in array
+    //TODO: make it dynamic
+    vector<std::unordered_map <string, ASTNode*>> name_table;
 
     ASTNode *parse_expression();
     ASTNode *parse_primary();
@@ -27,7 +33,8 @@ class Parser {
     ASTNode *parse_integer();
     ASTNode *parse_boolean();
     ASTNode *parse_paren();
-    ASTNode *parse_identifier();
+    ASTNode *parse_identifier_statement();
+    ASTNode *parse_identifier_ref();
     ASTNode *parse_var();
     ASTNode *parse_array();
     ASTNode *parse_record();
@@ -35,14 +42,14 @@ class Parser {
     ASTNode *parse_type();
     ASTNode *parse_types();
     ASTNode *parse_return();
+    ASTNode *parse_statements();
+    ArrayRef *parse_array_ref(ASTNode *a);
+    RecordRef *parse_record_ref(ASTNode *a);
     ASTNode *parse_assignment(string identifier_name);
     ASTNode *parse_binary_op_rhs(int priority, ASTNode *lhs);
     Prototype *parse_prototype();
-
-    void addDecl(pair<string, ASTNode*> name_pair);
-    ASTNode *findDecl(string name);
-    void openScope();
-    void closeScope();
+// parse - on numbers
+// Statements
 public:
     Parser(Lexer* const lexer) : lexer(lexer) { }
     ~Parser();
@@ -50,11 +57,12 @@ public:
     Prototype *parse_extern();
     Routine *parse_routine();
     Routine *parse_top_level_expression();
-    void parse();
-    void handleTopLevelExpression();
-    void handleExtern();
-    void handleRoutine();
-    void handleVariable();
+    Program *parse();
+
+    void addDecl(pair<string, ASTNode*> name_pair);
+    ASTNode *findDecl(string name);
+    void openScope();
+    void closeScope();
 };
 
 #endif //ILANG_PARSER_H

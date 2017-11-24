@@ -17,12 +17,14 @@
 #include "codegen/codegen_visitor.h"
 #include "semantical_analysis/semantic_visitor.h"
 #include "lib/cxxopts.hpp"
+#include "parsing/Lexer.h"
+#include "parsing/Parser.h"
 
 llvm::LLVMContext TheContext;
 llvm::IRBuilder<> Builder(TheContext);
 std::unique_ptr<llvm::Module> TheModule;
 
-llvm::Function *codegen_example() 
+llvm::Function *codegen_example()
 {
     using namespace llvm;
     FunctionType *ft = FunctionType::get(llvm::Type::getVoidTy(TheContext), false);
@@ -117,7 +119,7 @@ int main(int argc, char *argv[]) {
     auto Filename = "empty_function.vocout";
     std::error_code EC;
     raw_fd_ostream dest(Filename, EC, sys::fs::F_None);
-    
+
     if (EC) {
       errs() << "Could not open file: " << EC.message();
       return 1;
@@ -126,18 +128,22 @@ int main(int argc, char *argv[]) {
 
     legacy::PassManager pass;
     auto FileType = TargetMachine::CGFT_ObjectFile;
-    
+
     if (targetMachine->addPassesToEmitFile(pass, dest, FileType)) {
       errs() << "TargetMachine can't emit a file of this type";
       return 1;
     }
-    
+
     pass.run(*TheModule);
     dest.flush();
 
     // CodegenVisitor v;
     // Prototype p{"hello", std::vector<ASTNode*>{}};
     // v.visit(p);
+    std::ifstream fs(args.input);
+    Lexer lexer(&fs);
+    Parser parser(&lexer);
+    auto program = parser.parse();
 
     return 0;
 }

@@ -8,6 +8,7 @@ class Program : public ASTNode {
 public:
     std::vector<ASTNode*> program;
     Program(const std::vector<ASTNode*> &program) : program(program) {};
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_PROGRAM_H

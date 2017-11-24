@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <string>
 #include <unordered_map>
+#include <iostream>
 
 #include "Lexer.h"
 
@@ -14,6 +15,8 @@ Lexer::Lexer(std::istream* inputStream) : inputStream(inputStream) {
     op_priority_['+'] = 20;
     op_priority_['-'] = 20;
     op_priority_['*'] = 240;
+    op_priority_['/'] = 240;
+    op_priority_['%'] = 240;
 
     keyword_map_["var"] = Token::VAR;
     keyword_map_["end"] = Token::END;
@@ -46,7 +49,7 @@ void Lexer::next() {
 
     if (isalpha(last_char)) {
         identifier_ = last_char;
-        while (isalnum((last_char = inputStream->get()))) {
+        while (isalnum((last_char = inputStream->get())) || last_char == '_') {
             identifier_ += last_char;
         }
 
@@ -100,7 +103,10 @@ void Lexer::next() {
 }
 
 
-int Lexer::current_token() const { return current_token_; }
+int Lexer::current_token() const {
+    std::cout << (int) current_token_ << "\n";
+    return current_token_;
+}
 
 string Lexer::identifier() const { return identifier_; }
 

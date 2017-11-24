@@ -3,9 +3,10 @@
 
 #include "node.h"
 
-class Return : ASTNode {
-    ASTNode *expression;
+class Return : public ASTNode {
 public:
-    Return::Return(ASTNode *expression);
+    ASTNode *expression;
+    Return(ASTNode *expression);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 #endif //ILANG_RETURN_H

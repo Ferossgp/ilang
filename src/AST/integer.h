@@ -8,6 +8,7 @@ class Integer : public Expression {
 public:
     int value;
     Integer(const int value);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_INTEGER_H

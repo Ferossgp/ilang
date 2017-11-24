@@ -10,6 +10,7 @@ public:
     ASTNode *expression;
     Type *array_type;
     ArrayDecl(ASTNode *expression, Type *array_type);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_ARRAY_H

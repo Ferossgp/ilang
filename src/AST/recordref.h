@@ -4,12 +4,13 @@
 #include <string>
 #include "expression.h"
 
-class RecordRef : Expression {
+class RecordRef : public Expression {
 
 public:
     ASTNode *record;
     std::string ref;
     RecordRef (ASTNode *record, std::string ref) {};
+    void accept(Visitor &v) { v.visit(*this); };
 };
 
 #endif //ILANG_RECORDREF_H

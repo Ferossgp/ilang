@@ -3,10 +3,11 @@
 
 #include "node.h"
 
-class Assignment : ASTNode {
+class Assignment : public ASTNode {
     ASTNode *variable, *value;
 
 public:
     Assignment(ASTNode *variable, ASTNode *value);
+    void accept(Visitor &v) { v.visit(*this); };
 };
 #endif //ILANG_ASSIGNMENT_H

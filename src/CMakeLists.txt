@@ -19,11 +19,32 @@ find_package (Threads)
 
 add_executable(voc
     codegen/codegen_visitor.cpp
+    parsing/Lexer.cpp
+    parsing/Parser.cpp
+    parsing/Errors.cpp
     semantical_analysis/printname_visitor.cpp
     main.cpp
+    AST/integer.cpp
+    AST/real.cpp
+    AST/unary.cpp
+    AST/binary.cpp
+    AST/variable.cpp
+    AST/var.cpp
+    AST/routinecall.cpp
+    AST/prototype.cpp
+    AST/routine.cpp
+    AST/if.cpp
+    AST/for.cpp
+    AST/while.cpp
+    AST/recorddecl.cpp
+    AST/arraydecl.cpp
+    AST/boolean.cpp
+    AST/typedecl.cpp
+    AST/assignment.cpp
+    AST/argument.cpp
+    AST/return.cpp
 )
 
 llvm_map_components_to_libnames(llvm_libs all)
 
 target_link_libraries(voc ${llvm_libs} ${CURSES_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
-
