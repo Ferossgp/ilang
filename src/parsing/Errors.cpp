@@ -14,3 +14,7 @@ Routine *ErrorR(const char *message) {
     Error(message);
     return 0;
 }
+Expression *ErrorE(const char *message) {
+    Error(message);
+    return 0;
+}

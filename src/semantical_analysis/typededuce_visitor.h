@@ -7,6 +7,7 @@
 #include "../AST/binary.h"
 #include "../AST/boolean.h"
 #include "../AST/booleantype.h"
+#include "../AST/cast.h"
 #include "../AST/for.h"
 #include "../AST/if.h"
 #include "../AST/integer.h"
@@ -33,6 +34,7 @@ public:
     void visit(Binary& node);
     void visit(Boolean& node);
     void visit(BooleanType& node);
+    void visit(Cast& node);
     //void visit(Factor& node);
     void visit(For& node);
     void visit(If& node);

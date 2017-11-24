@@ -29,6 +29,10 @@ void TypeDeduceVisitor::visit(BooleanType& node)
 {
     std::cout << "Foo";
 }
+void TypeDeduceVisitor::visit(Cast& node)
+{
+    std::cout << "Foo";
+}
 void TypeDeduceVisitor::visit(For& node) 
 {
     std::cout << "Foo";

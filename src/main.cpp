@@ -84,66 +84,8 @@ public:
     }
 };
 
-int main(int argc, char *argv[]) {
-
-    CmdArgsParser args(argc, argv);
-    if (args.error || args.printHelp) {
-        std::cout << args.helpText << std::endl;
-        return 0;
-    }
-
-    using namespace llvm;
-    TheModule = llvm::make_unique<llvm::Module>("my cool jit", TheContext);
-    auto TargetTriple = llvm::sys::getDefaultTargetTriple();
-    InitializeAllTargetInfos();
-    InitializeAllTargets();
-    InitializeAllTargetMCs();
-    InitializeAllAsmParsers();
-    InitializeAllAsmPrinters();
-    std::string Error;
-    auto Target = TargetRegistry::lookupTarget(TargetTriple, Error);
-    if (!Target) {
-        errs() << Error;
-        return 1;
-    }
-
-    auto CPU = "generic";
-    auto Features = "";
-    TargetOptions opt;
-    auto RM = Optional<Reloc::Model>();
-    auto targetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, RM);
-
-    TheModule->setDataLayout(targetMachine->createDataLayout());
-    TheModule->setTargetTriple(TargetTriple);
-
-    auto Filename = "empty_function.vocout";
-    std::error_code EC;
-    raw_fd_ostream dest(Filename, EC, sys::fs::F_None);
-
-    if (EC) {
-      errs() << "Could not open file: " << EC.message();
-      return 1;
-    }
-    codegen_example();
-
-    legacy::PassManager pass;
-    auto FileType = TargetMachine::CGFT_ObjectFile;
-
-    if (targetMachine->addPassesToEmitFile(pass, dest, FileType)) {
-      errs() << "TargetMachine can't emit a file of this type";
-      return 1;
-    }
-
-    pass.run(*TheModule);
-    dest.flush();
-
-    // CodegenVisitor v;
-    // Prototype p{"hello", std::vector<ASTNode*>{}};
-    // v.visit(p);
-    std::ifstream fs(args.input);
-    Lexer lexer(&fs);
-    Parser parser(&lexer);
-    auto program = parser.parse();
+int main(int argc, char *argv[]) 
+{
 
     return 0;
 }

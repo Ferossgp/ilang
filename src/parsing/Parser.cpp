@@ -18,20 +18,20 @@ using std::unique_ptr;
 
 Parser::~Parser() {}
 
-ASTNode * Parser::parse_real() {
-    ASTNode *result = new Real(lexer->real_value());
+Expression * Parser::parse_real() {
+    Expression *result = new Real(lexer->real_value());
     lexer->next();
     return result;
 }
 
-ASTNode * Parser::parse_integer() {
-    ASTNode *result = new Integer(lexer->integer_value());
+Expression * Parser::parse_integer() {
+    Expression *result = new Integer(lexer->integer_value());
     lexer->next();
     return result;
 }
 
-ASTNode * Parser::parse_boolean() {
-    ASTNode *result = new Boolean(lexer->boolean_value());
+Expression * Parser::parse_boolean() {
+    Expression *result = new Boolean(lexer->boolean_value());
     lexer->next();
     return result;
 }
@@ -43,15 +43,15 @@ ASTNode * Parser::parse_return() {
     return new Return(ret);
 }
 
-ASTNode * Parser::parse_paren() {
+Expression * Parser::parse_paren() {
     lexer->next();
 
-    ASTNode *value = parse_expression();
+    Expression *value = parse_expression();
     if ( !value ) {
         return nullptr;
     }
     if ( lexer->current_token() != ')' ) {
-        return Error("expected ')'");
+        return ErrorE("expected ')'");
     }
 
     lexer->next();
@@ -128,7 +128,7 @@ ASTNode * Parser::parse_identifier_statement() {
             lexer->next();
             if (lexer->current_token() == '=') {
                 lexer->next();
-                ASTNode *value = parse_expression();
+                Expression *value = parse_expression();
                 return new Assignment(ref, value);
             }
             return Error("Unknown ':' at this possition");
@@ -143,7 +143,7 @@ ASTNode * Parser::parse_identifier_statement() {
         if ( lexer->current_token() == ':' ){
             lexer->next();
             if (lexer->current_token() == '=') {
-                ASTNode *value = parse_expression();
+                Expression *value = parse_expression();
                 return new Assignment(ref, value);
             }
             return Error("Unknown ':' at this possition");
@@ -157,7 +157,7 @@ ASTNode * Parser::parse_identifier_statement() {
         if ( lexer->current_token() == ':' ){
             lexer->next();
             if (lexer->current_token() == '=') {
-                ASTNode *value = parse_expression();
+                Expression *value = parse_expression();
                 return new Assignment(assignee, value);
             }
             return Error("Unknown ':' at this possition");
@@ -191,7 +191,7 @@ ASTNode * Parser::parse_identifier_statement() {
     return new RoutineCall((Routine*)callee, args);
 }
 
-ASTNode * Parser::parse_identifier_ref(){
+Expression * Parser::parse_identifier_ref(){
     string identifier_name = lexer->identifier();
     ASTNode *ref = findDecl(identifier_name);
     lexer->next();
@@ -220,7 +220,7 @@ ASTNode * Parser::parse_identifier_ref(){
         }
 
         if ( lexer->current_token() != ',' ) {
-            return Error("expected ')' or ',' in argument list");
+            return ErrorE("expected ')' or ',' in argument list");
         }
 
         lexer->next();
@@ -338,7 +338,7 @@ ASTNode * Parser::parse_array() {
     return new ArrayDecl(expression, (Type*)type);
 }
 
-ASTNode * Parser::parse_primary() {
+Expression * Parser::parse_primary() {
     switch( lexer->current_token() ) {
         case (int)Token::IDENTIFIER:
             return parse_identifier_ref();
@@ -388,7 +388,7 @@ ASTNode * Parser::parse_statements() {
     return new Statements{statements};
 }
 
-ASTNode * Parser::parse_binary_op_rhs(int expression_priority, ASTNode *LHS) {
+Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LHS) {
     while (1) {
         int token_priority = lexer->token_priority();
         if ( token_priority < expression_priority ) {
@@ -398,7 +398,7 @@ ASTNode * Parser::parse_binary_op_rhs(int expression_priority, ASTNode *LHS) {
         int binary_op = lexer->current_token();
         lexer->next();
 
-        ASTNode *RHS = parse_unary();
+        Expression *RHS = parse_unary();
         if ( !RHS ) { return nullptr; }
 
         int next_priority = lexer->token_priority();
@@ -410,7 +410,7 @@ ASTNode * Parser::parse_binary_op_rhs(int expression_priority, ASTNode *LHS) {
     }
 }
 
-ASTNode * Parser::parse_unary() {
+Expression * Parser::parse_unary() {
     if ( !isascii(lexer->current_token())
          || lexer->current_token() == '('
          || lexer->current_token() == ')' ) {
@@ -427,8 +427,8 @@ ASTNode * Parser::parse_unary() {
     return 0;
 }
 
-ASTNode * Parser::parse_expression() {
-    ASTNode *LHS = parse_unary();
+Expression * Parser::parse_expression() {
+    Expression *LHS = parse_unary();
     if ( !LHS ) { return nullptr; }
 
     return parse_binary_op_rhs(0, LHS);

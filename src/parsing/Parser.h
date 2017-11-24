@@ -8,6 +8,7 @@
 #include "../AST/node.h"
 #include "../AST/prototype.h"
 #include "../AST/routine.h"
+#include "../AST/expression.h"
 
 #include "Lexer.h"
 
@@ -22,18 +23,18 @@ class Parser {
     int scope = -1; //First scope will be at 0 pos in array
     vector<std::unordered_map <string, ASTNode*>> name_table;
 
-    ASTNode *parse_expression();
-    ASTNode *parse_primary();
+    Expression *parse_expression();
+    Expression *parse_primary();
     ASTNode *parse_if();
     ASTNode *parse_for();
     ASTNode *parse_while();
-    ASTNode *parse_unary();
-    ASTNode *parse_real();
-    ASTNode *parse_integer();
-    ASTNode *parse_boolean();
-    ASTNode *parse_paren();
+    Expression *parse_unary();
+    Expression *parse_real();
+    Expression *parse_integer();
+    Expression *parse_boolean();
+    Expression *parse_paren();
     ASTNode *parse_identifier_statement();
-    ASTNode *parse_identifier_ref();
+    Expression *parse_identifier_ref();
     ASTNode *parse_var();
     ASTNode *parse_array();
     ASTNode *parse_record();
@@ -45,7 +46,7 @@ class Parser {
     ArrayRef *parse_array_ref(ASTNode *a);
     RecordRef *parse_record_ref(ASTNode *a);
     ASTNode *parse_assignment(string identifier_name);
-    ASTNode *parse_binary_op_rhs(int priority, ASTNode *lhs);
+    Expression *parse_binary_op_rhs(int priority, Expression *lhs);
     Prototype *parse_prototype();
 // parse - on numbers
 // Statements

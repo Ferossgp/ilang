@@ -2,12 +2,15 @@
 #define ILANG_ASSIGNMENT_H
 
 #include "node.h"
+#include "expression.h"
 
 class Assignment : public ASTNode {
-    ASTNode *variable, *value;
-
 public:
-    Assignment(ASTNode *variable, ASTNode *value);
+
+    ASTNode *variable;
+    Expression *value;
+    
+    Assignment(ASTNode *variable, Expression *value);
     void accept(Visitor &v) { v.visit(*this); };
 };
 #endif //ILANG_ASSIGNMENT_H
