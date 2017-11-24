@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include "AST/ast.h"
 #include "codegen/codegen_visitor.h"
@@ -64,13 +65,15 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    // CodegenVisitor v;
+
     // Prototype p{"hello", std::vector<ASTNode*>{}};
     // v.visit(p);
     std::ifstream fs(args.input);
     Lexer lexer(&fs);
     Parser parser(&lexer);
     auto program = parser.parse();
-
+    CodegenVisitor v{args.output};
+    v.visit(*program);
+    v.generate();
     return 0;
 }
