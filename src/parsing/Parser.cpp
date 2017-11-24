@@ -68,7 +68,7 @@ ASTNode * Parser::parse_types() {
     }
 
     if (lexer->current_token() == (int)Token::INTEGER_TYPE) {
-        lexer->next();
+        // lexer->next();
         return new IntegerType();
     }
 
@@ -354,26 +354,37 @@ ASTNode * Parser::parse_primary() {
 }
 
 ASTNode * Parser::parse_statements() {
+    std::vector<ASTNode *> statements;
     switch( lexer->current_token() ) {
         case (int)Token::IDENTIFIER:
-            return parse_identifier_statement();
+            statements.push_back(parse_identifier_statement());
+            break;
         case (int)Token::IF:
-            return parse_if();
+            statements.push_back(parse_if());
+            break;
         case (int)Token::FOR:
-            return parse_for();
+            statements.push_back(parse_for());
+            break;
         case (int)Token::WHILE:
-            return parse_while();
+            statements.push_back(parse_while());
+            break;
         case (int)Token::VAR:
-            return parse_var();
+            statements.push_back(parse_var());
+            break;
         case (int)Token::TYPE:
-            return parse_type();
+            statements.push_back(parse_type());
+            break;
+        case (int)Token::RETURN:
+            statements.push_back(parse_return());
+            break;
         case (int)Token::END:
             lexer->next();
-            return nullptr;
+            break;
         default:
             fprintf(stderr, "Unknown token '%c' when expecting an expression", (char) lexer->current_token());
             return 0;
     }
+    return new Statements{statements};
 }
 
 ASTNode * Parser::parse_binary_op_rhs(int expression_priority, ASTNode *LHS) {
@@ -449,7 +460,7 @@ Prototype * Parser::parse_prototype() {
     if ( lexer->current_token() == (int)Token::IDENTIFIER ) {
         func_name = lexer->identifier();
         lexer->next();
-        std::cout << "cur " << lexer->current_token() << "\n";
+        std::cout << "cur " << lexer->identifier() << "\n";
     }
 
     if ( lexer->current_token() != '(' ) {
@@ -478,6 +489,7 @@ Prototype * Parser::parse_prototype() {
     if ( lexer->current_token() == ':') {
         lexer->next();
         type = parse_types();
+        lexer->next();
     } else {
         type = new Void();
         ErrorR("Expected : before type declaration in routine");
@@ -503,6 +515,7 @@ Routine * Parser::parse_routine() {
     openScope();
     ASTNode *expression = parse_statements();
 
+    lexer->next();
     closeScope();
     return new Routine(proto, (Statements *) expression);
 }

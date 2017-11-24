@@ -11,9 +11,9 @@ routine mul(x integer, y integer): integer is
 end
 
 routine div(x integer, y integer): integer is
-    return x / y;
+    return x / y
 end
 
 routine mod(x integer, y integer): integer is
-    return x % y;
+    return x % y
 end
