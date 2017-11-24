@@ -29,7 +29,7 @@ void TypeDeduceVisitor::visit(BooleanType& node)
 {
     std::cout << "Foo";
 }
-void PrintNameVisitor::visit(Cast& node)
+void TypeDeduceVisitor::visit(Cast& node)
 {
     std::cout << "Foo";
 }
