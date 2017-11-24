@@ -46,8 +46,8 @@ void CodegenVisitor::visit(Prototype& p)
     // Generate types of arguments
     std::vector<llvm::Type*> arg_types(p.args.size(), llvm::Type::getInt32Ty(TheContext));
 
-    llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), arg_types, false);
-    // llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getInt32Ty(TheContext), arg_types, false);
+    // llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), arg_types, false);
+    llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getInt32Ty(TheContext), arg_types, false);
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
     unsigned Idx = 0;
     for (auto &Arg : last_function->args()) {
@@ -68,6 +68,7 @@ void CodegenVisitor::visit(Assignment& node) {}
 
 void CodegenVisitor::visit(Binary& node)
 {
+    std::cout << "Parsing Binary\n";
     node.lhs->accept(*this);
     auto L = last_constant;
     node.lhs->accept(*this);
@@ -161,13 +162,19 @@ void CodegenVisitor::visit(Var& node)
 
 void CodegenVisitor::visit(Variable& node)
 {
-    // std::string name = ((Argument*) node.getVar())->getName();
-    // last_constant = last_params[name];
+    std::cout << "Parsing Variable\n";
+    if (!node.var ) {
+        std::cout << "var is 0\n";
+    }
+    std::string name = ((Argument*) node.var)->arg_decl.first;
+    last_constant = last_params[name];
 }
 
 void CodegenVisitor::visit(Return& node) {
+    std::cout << "Parsing Return\n";
     node.expression->accept(*this);
     Builder.CreateRet(last_constant);
+
 }
 
 void CodegenVisitor::visit(While& node) {
@@ -189,7 +196,11 @@ void CodegenVisitor::visit(Program& node) {
 }
 
 void CodegenVisitor::visit(Statements& node) {
+    std::cout << "parsing statements\n";
     for (auto& n : node.statements) {
+        if (!n) {
+            std::cout << "Node is nullptr\n";
+        }
         n->accept(*this);
     }
 }
