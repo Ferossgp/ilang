@@ -61,6 +61,7 @@ ASTNode * Parser::parse_paren() {
 ASTNode * Parser::parse_types() {
     //TODO: Parse current_token record or array
     ASTNode *type;
+    
     if(lexer->current_token() == (int)Token::ARRAY){
         type = parse_array();
     } else if (lexer->current_token() == (int)Token::RECORD) {
@@ -68,15 +69,15 @@ ASTNode * Parser::parse_types() {
     }
 
     if (lexer->current_token() == (int)Token::INTEGER_TYPE) {
-        // lexer->next();
+        lexer->next();
         return new IntegerType();
     }
-
+        
     if (lexer->current_token() == (int)Token::REAL_TYPE) {
         lexer->next();
         return new RealType();
-    }
-
+    }        
+    
     if (lexer->current_token() == (int)Token::BOOLEAN_TYPE) {
         lexer->next();
         return new BooleanType();
@@ -88,7 +89,7 @@ ASTNode * Parser::parse_types() {
         lexer->next();
         return type;
     }
-
+    
     return nullptr;
 }
 
@@ -187,7 +188,7 @@ ASTNode * Parser::parse_identifier_statement() {
 
     lexer->next();
     ASTNode *callee = findDecl(identifier_name);
-    return new RoutineCall(callee, args);
+    return new RoutineCall((Routine*)callee, args);
 }
 
 ASTNode * Parser::parse_identifier_ref(){
@@ -227,7 +228,7 @@ ASTNode * Parser::parse_identifier_ref(){
 
     lexer->next();
     ASTNode *callee = findDecl(identifier_name);
-    return new RoutineCall(callee, args);
+    return new RoutineCall((Routine*)callee, args);
 }
 
 ASTNode * Parser::parse_var() {
@@ -440,7 +441,6 @@ ASTNode * Parser::parse_arg() {
     }
 
     string arg_name = lexer->identifier();
-
     lexer->next();
 
     ASTNode *type = parse_types();
@@ -448,10 +448,9 @@ ASTNode * Parser::parse_arg() {
     if (!type){
         return Error("Expected valid type for argument");
     }
-
-    lexer->next();
-
-    return new Argument(make_pair(arg_name, (Type*) type));
+    ASTNode *argument = new Argument(make_pair(arg_name, (Type*) type));
+    addDecl(make_pair(arg_name, argument));
+    return argument;
 }
 
 Prototype * Parser::parse_prototype() {
@@ -464,9 +463,10 @@ Prototype * Parser::parse_prototype() {
     }
 
     if ( lexer->current_token() != '(' ) {
-        return ErrorP("Expected '(' in prototype");
+        return ErrorP("Expected '(' in prototype \n");
     }
-
+    openScope();
+    
     vector<ASTNode*> arg_names;
 
     lexer->next();
@@ -480,21 +480,20 @@ Prototype * Parser::parse_prototype() {
     }
 
     if ( lexer->current_token() != ')' ) {
-        return ErrorP("Expected ')' in prototype");
+        std::cout << func_name;
+        return ErrorP("Expected ')' in prototype \n");
     }
 
     lexer->next();
 
     ASTNode *type;
     if ( lexer->current_token() == ':') {
-        lexer->next();
+        lexer->next();                
         type = parse_types();
-        lexer->next();
     } else {
         type = new Void();
         ErrorR("Expected : before type declaration in routine");
     }
-
 
     Prototype * prot = new Prototype(func_name, arg_names, (Type*)type);
     addDecl(make_pair(func_name, prot));
@@ -505,18 +504,18 @@ Routine * Parser::parse_routine() {
     lexer->next();
 
     Prototype *proto = parse_prototype();
-    std::cout << "prototype parsed cur: " << (int) lexer->current_token() << "\n";
     if ( !proto ) { return nullptr; }
 
     if (lexer->current_token() != (int) Token::IS ){
         ErrorR("Expected is before routine body declaration");
     }
     lexer->next();
-    openScope();
+
     ASTNode *expression = parse_statements();
 
     lexer->next();
     closeScope();
+    
     return new Routine(proto, (Statements *) expression);
 }
 
@@ -646,7 +645,7 @@ Program * Parser::parse() {
                 break;
             default:
                 std::cout << "Can't handle top level " << (int) lexer->current_token() << "\n";
-                break;
+                return nullptr;
         }
     }
     closeScope();
@@ -660,19 +659,25 @@ void Parser::addDecl(pair<string, ASTNode*> decl) {
 ASTNode *Parser::findDecl(string name) {
     int local_scope = scope;
     ASTNode *value;
-    while (local_scope <= 0){
-        if(name_table[local_scope][name]) {
+    
+    while (local_scope >= 0){
+        if(name_table[local_scope].find(name) != name_table[local_scope].end()) {
             return name_table[local_scope][name];    
         }
         local_scope--;
     }
-    return Error("Can't find declaration");    
+
+    return Error("Can't find declaration ");    
 }
 
 void Parser::openScope(){
     scope++;    
+    if (name_table.size() <= scope){
+        name_table.push_back(std::unordered_map <string, ASTNode*>());
+    }
 }
 
 void Parser::closeScope(){
+    name_table[scope].clear(); 
     scope--;
 }
