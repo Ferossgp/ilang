@@ -6,9 +6,9 @@
 class Unary: public Expression {
 public:
     char opcode;
-    ASTNode *operand;
+	Expression *operand;
 
-    Unary(char opcode, ASTNode *operand);
+    Unary(char opcode, Expression *operand);
     void accept(Visitor &v) { v.visit(*this); };
 };
 

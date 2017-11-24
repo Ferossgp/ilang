@@ -14,9 +14,9 @@ using std::pair;
 class Var : public ASTNode {
 public:
     pair<string, Type*> var_decl;
-    ASTNode *body;
+    Expression *body;
 
-    Var(const pair<string, Type*> &var_decl, ASTNode *body);
+    Var(const pair<string, Type*> &var_decl, Expression *body);
     void accept(Visitor &v) { v.visit(*this); };
 };
 
