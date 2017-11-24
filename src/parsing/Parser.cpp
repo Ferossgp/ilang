@@ -231,6 +231,9 @@ Expression * Parser::parse_identifier_ref(){
 
     lexer->next();
     ASTNode *callee = findDecl(identifier_name);
+    if (!callee) {
+        std::cout << "couldn't find " << identifier_name << "\n";
+    }
     return new RoutineCall((Routine*)callee, args);
 }
 
@@ -511,7 +514,7 @@ Prototype * Parser::parse_prototype() {
     }
 
     Prototype * prot = new Prototype(func_name, arg_names, (Type*)type);
-    addDecl(make_pair(func_name, prot));
+
     return prot;
 }
 
@@ -529,9 +532,14 @@ Routine * Parser::parse_routine() {
     ASTNode *expression = parse_statements();
 
     lexer->next();
-    closeScope();
 
-    return new Routine(proto, (Statements *) expression);
+
+    auto r = new Routine(proto, (Statements *) expression);
+
+    closeScope();
+    addDecl(make_pair(r->proto->name, r));
+
+    return r;
 }
 
 ASTNode * Parser::parse_if() {
