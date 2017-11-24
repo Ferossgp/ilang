@@ -15,6 +15,8 @@ Lexer::Lexer(std::istream* inputStream) : inputStream(inputStream) {
     op_priority_['+'] = 20;
     op_priority_['-'] = 20;
     op_priority_['*'] = 240;
+    op_priority_['/'] = 240;
+    op_priority_['%'] = 240;
 
     keyword_map_["var"] = Token::VAR;
     keyword_map_["end"] = Token::END;

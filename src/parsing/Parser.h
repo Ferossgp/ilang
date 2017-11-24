@@ -13,12 +13,15 @@
 
 #include <memory>
 #include <utility>
+#include <unordered_map>
 
 using std::pair;
 
 class Parser {
     Lexer* const lexer;
-    vector<pair<string, ASTNode*>> NameTable;
+    int scope = -1; //First scope will be at 0 pos in array
+    //TODO: make it dynamic
+    vector<std::unordered_map <string, ASTNode*>> name_table;
 
     ASTNode *parse_expression();
     ASTNode *parse_primary();

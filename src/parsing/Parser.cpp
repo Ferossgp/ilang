@@ -186,8 +186,8 @@ ASTNode * Parser::parse_identifier_statement() {
     }
 
     lexer->next();
-
-    return new RoutineCall(identifier_name, args);
+    ASTNode *callee = findDecl(identifier_name);
+    return new RoutineCall(callee, args);
 }
 
 ASTNode * Parser::parse_identifier_ref(){
@@ -226,8 +226,8 @@ ASTNode * Parser::parse_identifier_ref(){
     }
 
     lexer->next();
-
-    return new RoutineCall(identifier_name, args);
+    ASTNode *callee = findDecl(identifier_name);
+    return new RoutineCall(callee, args);
 }
 
 ASTNode * Parser::parse_var() {
@@ -632,6 +632,7 @@ ASTNode * Parser::parse_while() {
 Program * Parser::parse() {
     vector<ASTNode*> program_decl;
     lexer->next();
+    openScope();
     while (lexer->current_token() != (int) Token::EOF_) {
         switch (lexer->current_token()) {
             case (int)Token::VAR:
@@ -648,21 +649,30 @@ Program * Parser::parse() {
                 break;
         }
     }
+    closeScope();
     return new Program(program_decl);
 }
 
 void Parser::addDecl(pair<string, ASTNode*> decl) {
-
+    name_table[scope][decl.first] = decl.second;
 }
 
 ASTNode *Parser::findDecl(string name) {
-
+    int local_scope = scope;
+    ASTNode *value;
+    while (local_scope <= 0){
+        if(name_table[local_scope][name]) {
+            return name_table[local_scope][name];    
+        }
+        local_scope--;
+    }
+    return Error("Can't find declaration");    
 }
 
 void Parser::openScope(){
-
+    scope++;    
 }
 
 void Parser::closeScope(){
-
+    scope--;
 }
