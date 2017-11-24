@@ -10,6 +10,7 @@ class Assignment;
 class Binary;
 class Boolean;
 class BooleanType;
+class Cast;
 class For;
 class If;
 class Integer;
@@ -43,6 +44,7 @@ public:
     virtual void visit(Binary& node) = 0;
     virtual void visit(Boolean& node) = 0;
     virtual void visit(BooleanType& node) = 0;
+    virtual void visit(Cast& node) = 0;
     //virtual void visit(Factor& node) = 0;
     virtual void visit(For& node) = 0;
     virtual void visit(If& node) = 0;

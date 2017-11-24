@@ -29,6 +29,10 @@ void PrintNameVisitor::visit(BooleanType& node)
 {
     std::cout << "Foo";
 }
+void PrintNameVisitor::visit(Cast& node)
+{
+    std::cout << "Foo";
+}
 void PrintNameVisitor::visit(For& node) 
 {
     std::cout << "Foo";
