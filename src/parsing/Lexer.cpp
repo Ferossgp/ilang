@@ -104,7 +104,6 @@ void Lexer::next() {
 
 
 int Lexer::current_token() const {
-    std::cout << (int) current_token_ << "\n";
     return current_token_;
 }
 

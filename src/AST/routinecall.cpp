@@ -5,5 +5,5 @@
 
 using std::vector;
 
-RoutineCall::RoutineCall(ASTNode *callee, vector<ASTNode*> &args):
+RoutineCall::RoutineCall(Routine *callee, vector<ASTNode*> &args):
         callee(callee), args(args) {}
