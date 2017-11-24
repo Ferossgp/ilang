@@ -44,7 +44,21 @@ void CodegenVisitor::visit(Prototype& p)
     std::cout << "Parsing Prototype\n";
     last_params.clear();
     // Generate types of arguments
-    std::vector<llvm::Type*> arg_types(p.args.size(), llvm::Type::getInt32Ty(TheContext));
+    std::vector<llvm::Type*> arg_types{};
+    for (int i =0; i < p.args.size(); i++) {
+        auto arg = (Argument *) p.args[i];
+        switch (arg->arg_decl.second->type) {
+        case types::Integer:
+            arg_types.push_back(llvm::Type::getInt32Ty(TheContext));
+            break;
+        case types::Real:
+            arg_types.push_back(llvm::Type::getDoubleTy(TheContext));
+            break;
+        case types::Boolean:
+            arg_types.push_back(llvm::Type::getInt1Ty(TheContext));
+            break;
+        }
+    }
 
     llvm::FunctionType *ft;
     switch (p.type->type) {
@@ -56,6 +70,10 @@ void CodegenVisitor::visit(Prototype& p)
         break;
     case types::Real:
         ft = llvm::FunctionType::get(llvm::Type::getDoubleTy(TheContext), arg_types, false);
+        break;
+    case types::Boolean:
+        ft = llvm::FunctionType::get(llvm::Type::getInt1Ty(TheContext), arg_types, false);
+        break;
     }
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
 
@@ -86,37 +104,60 @@ void CodegenVisitor::visit(Binary& node)
 
     switch (node.opchar) {
     case '+':
-        last_constant = Builder.CreateAdd(L, R, "tmp");
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateAdd(L, R, "tmp");
+        } else if (node.type->type == types::Real){
+            last_constant = Builder.CreateFAdd(L, R, "tmp");
+        }
         break;
     case '-':
-        last_constant = Builder.CreateSub(L, R, "tmp");
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateSub(L, R, "tmp");
+        } else if (node.type->type == types::Real){
+            last_constant = Builder.CreateFSub(L, R, "tmp");
+        }
         break;
     case '*':
-        last_constant = Builder.CreateMul(L, R, "tmp");
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateMul(L, R, "tmp");
+        } else if (node.type->type == types::Real){
+            last_constant = Builder.CreateFMul(L, R, "tmp");
+        }
         break;
     case '/':
-        last_constant = Builder.CreateSDiv(L, R, "tmp");
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateSDiv(L, R, "tmp");
+        } else if (node.type->type == types::Real){
+            last_constant = Builder.CreateFDiv(L, R, "tmp");
+        }
         break;
     case '%':
-        last_constant = Builder.CreateSRem(L, R, "tmp");
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateSRem(L, R, "tmp");
+        } else if (node.type->type == types::Real){
+            last_constant = Builder.CreateFRem(L, R, "tmp");
+        }
         break;
     }
 }
-void CodegenVisitor::visit(Boolean& node) {}
+void CodegenVisitor::visit(Boolean& node)
+{
+    last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(1, node.value ? 1 : 0, false));
+}
 void CodegenVisitor::visit(BooleanType& node) {}
 
 void CodegenVisitor::visit(For& node) {}
 void CodegenVisitor::visit(If& node) {}
 void CodegenVisitor::visit(Integer& node)
 {
-    // last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, node.getValue(), true));
+    last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, node.value, true));
 }
 
 void CodegenVisitor::visit(IntegerType& node) {}
 
 void CodegenVisitor::visit(Real& node)
 {
-    // last_constant = llvm::ConstantFP::get(TheContext, llvm::APFloat(node.getValue()));
+    last_constant = llvm::ConstantFP::get(TheContext, llvm::APFloat(node.value));
 }
 
 void CodegenVisitor::visit(RealType& node) {}

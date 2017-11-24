@@ -354,6 +354,8 @@ Expression * Parser::parse_primary() {
             return parse_boolean(true);
         case (int)Token::REAL:
             return parse_real();
+        case (int)Token::BOOLEAN:
+            return parse_boolean();
         case '(':
             return parse_paren();
         default:

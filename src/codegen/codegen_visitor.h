@@ -26,6 +26,7 @@
 #include "../AST/variable.h"
 #include "../AST/var.h"
 #include "../AST/program.h"
+#include "../AST/boolean.h"
 
 // using namespace llvm;
 

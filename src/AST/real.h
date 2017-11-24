@@ -4,9 +4,9 @@
 #include "expression.h"
 
 class Real : public Expression {
+public:
     double value;
 
-public:
     Real();
     Real(double value);
     void accept(Visitor &v) { v.visit(*this); };
