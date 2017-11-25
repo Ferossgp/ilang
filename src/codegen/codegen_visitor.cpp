@@ -199,6 +199,31 @@ void CodegenVisitor::visit(For& node)
 void CodegenVisitor::visit(If& node)
 {
     std::cout << "Generating If Statement\n";
+    auto then = llvm::BasicBlock::Create(TheContext, "then");
+    auto elsecond = llvm::BasicBlock::Create(TheContext, "else");
+    auto after_if = llvm::BasicBlock::Create(TheContext, "ifend");
+
+    // insert condition
+    node.condition->accept(*this);
+    if (node.else_body) {
+        Builder.CreateCondBr(last_constant, then, elsecond);
+    } else {
+        Builder.CreateCondBr(last_constant, then, after_if);
+    }
+    // //
+    last_function->getBasicBlockList().push_back(then);
+    Builder.SetInsertPoint(then);
+    node.then->accept(*this);
+    Builder.CreateBr(after_if);
+    if (node.else_body) {
+        std::cout << "Else block\n";
+        last_function->getBasicBlockList().push_back(elsecond);
+        Builder.SetInsertPoint(elsecond);
+        node.else_body->accept(*this);
+        Builder.CreateBr(after_if);
+    }
+    last_function->getBasicBlockList().push_back(after_if);
+    Builder.SetInsertPoint(after_if);
 }
 
 void CodegenVisitor::visit(Integer& node)
