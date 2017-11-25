@@ -1,3 +1,5 @@
-routine ass(a integer) is
+routine ass(a integer): integer is
     var b : integer
+    b := 3
+    return b
 end

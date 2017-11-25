@@ -79,18 +79,15 @@ void CodegenVisitor::visit(Prototype& p)
     }
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
 
-    // arguments generation
-    unsigned Idx = 0;
-    for (auto &Arg : last_function->args()) {
-        std::string name = ((Var *) p.args[Idx++])->var_decl.first;
-        Arg.setName(name);
-        last_params[name] = &Arg;
-    }
+
 }
 
 void CodegenVisitor::visit(ArrayDecl& node) {}
 
-void CodegenVisitor::visit(Assignment& node) {}
+void CodegenVisitor::visit(Assignment& node)
+{
+
+}
 
 void CodegenVisitor::visit(Binary& node)
 {
@@ -182,6 +179,16 @@ void CodegenVisitor::visit(Routine& node)
     llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", last_function);
     Builder.SetInsertPoint(BB);
     std::cout << "Basic Block Created\n";
+    // arguments generation
+    unsigned Idx = 0;
+    for (auto &Arg : last_function->args()) {
+        std::string name = ((Var *) node.proto->args[Idx++])->var_decl.first;
+        auto v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
+        Builder.CreateStore(&Arg, v);
+        Arg.setName(name);
+        last_params[name] = v;
+    }
+
     if (node.body->statements.size() > 0) {
         std::cout << "Creating function body\n";
         node.body->accept(*this);
@@ -223,6 +230,7 @@ void CodegenVisitor::visit(Var& node)
     std::cout << "Creating Var declaration\n";
     auto name = node.var_decl.first.c_str();
     auto v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
+
     last_params[name] = v;
     std::cout << "Created Var declaration\n";
 }
@@ -234,7 +242,8 @@ void CodegenVisitor::visit(Variable& node)
         std::cout << "var is 0\n";
     }
     std::string name = node.var->var_decl.first;
-    last_constant = last_params[name];
+    auto value = last_params[name];
+    last_constant = Builder.CreateLoad(value, name.c_str());
 }
 
 void CodegenVisitor::visit(Return& node) {
