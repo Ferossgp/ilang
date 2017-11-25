@@ -4,7 +4,6 @@
 
 // class ASTNode;
 class Prototype;
-class Argument;
 class ArrayDecl;
 class Assignment;
 class Binary;
@@ -38,7 +37,6 @@ class Visitor
 public:
     virtual void visit(Prototype& node) = 0;
 
-    virtual void visit(Argument& node) = 0;
     virtual void visit(ArrayDecl& node) = 0;
     virtual void visit(Assignment& node) = 0;
     virtual void visit(Binary& node) = 0;

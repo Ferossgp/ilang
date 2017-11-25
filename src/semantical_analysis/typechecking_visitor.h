@@ -2,7 +2,6 @@
 #include "error.h"
 
 #include "../AST/prototype.h"
-#include "../AST/argument.h"
 #include "../AST/arraydecl.h"
 #include "../AST/arrayref.h"
 #include "../AST/assignment.h"
@@ -34,8 +33,6 @@ class TypeCheckingVisitor : public Visitor
 {
 public:
     void visit(Prototype& node);
-
-    void visit(Argument& node);
     void visit(ArrayDecl& node);
     void visit(Assignment& node);
     void visit(Binary& node);

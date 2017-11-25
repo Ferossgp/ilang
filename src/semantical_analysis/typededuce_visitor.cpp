@@ -5,10 +5,6 @@ void TypeDeduceVisitor::visit(Prototype& node)
 {
     std::cout << "Visiting PrototypeNode: " << node.getName();
 }
-void TypeDeduceVisitor::visit(Argument& node) 
-{
-    std::cout << "Visiting ArgumentNode: ";
-}
 void TypeDeduceVisitor::visit(ArrayDecl& node) 
 {
     std::cout << "Foo";

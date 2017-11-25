@@ -5,10 +5,7 @@ void TypeCheckingVisitor::visit(Prototype& node)
 {
     std::cout << "Visiting PrototypeNode: " << node.getName();
 }
-void TypeCheckingVisitor::visit(Argument& node) 
-{
-    std::cout << "Visiting ArgumentNode: ";
-}
+\
 void TypeCheckingVisitor::visit(ArrayDecl& node) 
 {
     std::cout << "Foo";

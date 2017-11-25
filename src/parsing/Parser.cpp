@@ -204,7 +204,7 @@ Expression * Parser::parse_identifier_ref(){
         return parse_array_ref(ref);
     }
     if (lexer->current_token() != '(') {
-        return new Variable(ref);
+        return new Variable((Var*)ref);
     }
 
     lexer->next();
@@ -401,6 +401,9 @@ ASTNode * Parser::parse_statements() {
 
 Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LHS) {
     while (1) {
+        if (lexer->current_token() == (int)Token::RANGE) {
+            return nullptr;
+        }
         int token_priority = lexer->token_priority();
         if ( token_priority < expression_priority ) {
             return LHS;
@@ -411,7 +414,7 @@ Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LH
 
         Expression *RHS = parse_unary();
         if ( !RHS ) { return nullptr; }
-
+    
         int next_priority = lexer->token_priority();
         if ( token_priority < next_priority ) {
             RHS = parse_binary_op_rhs(token_priority + 1, RHS);
@@ -424,7 +427,7 @@ Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LH
 Expression * Parser::parse_unary() {
     if ( !isascii(lexer->current_token())
          || lexer->current_token() == '('
-         || lexer->current_token() == ')' ) {
+         || lexer->current_token() == ')') {
         return parse_primary();
     }
 
@@ -459,7 +462,7 @@ ASTNode * Parser::parse_arg() {
     if (!type){
         return Error("Expected valid type for argument");
     }
-    ASTNode *argument = new Argument(make_pair(arg_name, (Type*) type));
+    ASTNode *argument = new Var(make_pair(arg_name, (Type*) type), nullptr);
     addDecl(make_pair(arg_name, argument));
     return argument;
 }
@@ -579,14 +582,9 @@ ASTNode * Parser::parse_for() {
 
     ASTNode *start = parse_expression();
     if ( !start ) { return nullptr; }
-
-    if ( lexer->current_token() != '.'){
+    std::cout << "TEST";
+    if ( lexer->current_token() != (int)Token::RANGE){
         return Error("Expected '..' after for start value");
-    }else{
-        lexer->next();
-        if (lexer->current_token() != '.') {
-            return Error("Expected '..' after for start value");
-        }
     }
 
     lexer->next();

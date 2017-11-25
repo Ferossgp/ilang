@@ -9,9 +9,9 @@ using std::string;
 
 class Variable : public Expression {
 public:
-    ASTNode *var;
+    Var *var;
 
-    Variable(ASTNode *var);
+    Variable(Var *var);
     void accept(Visitor &v) { v.visit(*this); };
 };
 

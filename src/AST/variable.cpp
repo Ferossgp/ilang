@@ -3,5 +3,5 @@
 #include "variable.h"
 
 
-Variable::Variable(ASTNode *var)
+Variable::Variable(Var *var)
         : var(var) {}
