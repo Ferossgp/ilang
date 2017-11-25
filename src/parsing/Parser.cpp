@@ -406,6 +406,9 @@ ASTNode * Parser::parse_statements() {
 
 Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LHS) {
     while (1) {
+        if (lexer->current_token() == (int)Token::RANGE) {
+            return nullptr;
+        }
         int token_priority = lexer->token_priority();
 
         if ( token_priority < expression_priority ) {
