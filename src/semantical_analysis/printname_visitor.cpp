@@ -5,10 +5,6 @@ void PrintNameVisitor::visit(Prototype& node)
 {
     std::cout << "Visiting PrototypeNode: " << node.getName();
 }
-void PrintNameVisitor::visit(Argument& node) 
-{
-    std::cout << "Visiting ArgumentNode: ";
-}
 void PrintNameVisitor::visit(ArrayDecl& node) 
 {
     std::cout << "Foo";
