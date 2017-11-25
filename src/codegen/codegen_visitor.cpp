@@ -144,6 +144,8 @@ void CodegenVisitor::visit(Binary& node)
             last_constant = Builder.CreateFRem(L, R, "tmp");
         }
         break;
+    case opchars::NOTEQ:
+        last_constant = Builder.CreateICmpNE(L, R, "cond");
     }
 }
 
