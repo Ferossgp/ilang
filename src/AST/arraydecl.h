@@ -4,14 +4,14 @@
 #include <string>
 #include "node.h"
 #include "type.h"
+#include "expression.h"
 
 class ArrayDecl : public Type {
 
 public:
-    ASTNode *expression;
+    Expression *expression;
     Type *array_type;
-    std::string name;
-    ArrayDecl(ASTNode *expression, Type *array_type);
+    ArrayDecl(Expression *expression, Type *array_type);
     void accept(Visitor &v) { v.visit(*this); };
 };
 

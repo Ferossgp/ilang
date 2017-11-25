@@ -5,10 +5,17 @@ void TypeCheckingVisitor::visit(Prototype& node)
 {
     std::cout << "Visiting PrototypeNode: " << node.getName();
 }
-\
+
+/*
+    Check that array's size is an integer constant
+*/
 void TypeCheckingVisitor::visit(ArrayDecl& node) 
 {
-    std::cout << "Foo";
+    auto sizeExpression = node.expression;
+    if (sizeExpression->type->type != types::Integer)
+    {
+        reportError("Size of array is not compile-time integer constanst\n");
+    }
 }
 
 /*
@@ -81,6 +88,7 @@ void TypeCheckingVisitor::visit(Assignment& node)
         reportError("Trying to assign incompatible types");
     }
 }
+
 void TypeCheckingVisitor::visit(Binary& node) 
 {
     std::cout << "Foo";
