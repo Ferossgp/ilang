@@ -4,15 +4,13 @@
 
 #include "node.h"
 #include "statements.h"
-using std::string;
 
 class For: public ASTNode {
 public:
-    string name;
-    ASTNode *start, *end;
+    ASTNode *name, *start, *end;
 
     Statements *body;
-    For(const string &name, ASTNode *start, ASTNode *end, Statements *body);
+    For(ASTNode *name, ASTNode *start, ASTNode *end, Statements *body);
     void accept(Visitor &v) { v.visit(*this); };
 };
 

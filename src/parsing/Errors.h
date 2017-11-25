@@ -8,6 +8,7 @@
 
 
 ASTNode *Error(const char *message);
+ASTNode *Error(const char *message, const char *name);
 Prototype *ErrorP(const char *message);
 Routine *ErrorR(const char *message);
 Expression *ErrorE(const char *message);

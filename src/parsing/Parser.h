@@ -31,7 +31,7 @@ class Parser {
     Expression *parse_unary();
     Expression *parse_real();
     Expression *parse_integer();
-    Expression *parse_boolean();
+    Expression *parse_boolean(bool val);
     Expression *parse_paren();
     ASTNode *parse_identifier_statement();
     Expression *parse_identifier_ref();
