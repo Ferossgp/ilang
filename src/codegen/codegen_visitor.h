@@ -29,6 +29,7 @@
 #include "../AST/if.h"
 #include "../AST/unary.h"
 #include "../AST/assignment.h"
+#include "../AST/while.h"
 
 // using namespace llvm;
 

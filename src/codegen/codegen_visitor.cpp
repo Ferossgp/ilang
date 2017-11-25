@@ -32,9 +32,9 @@ void CodegenVisitor::generate()
     auto FileType = llvm::TargetMachine::CGFT_ObjectFile;
 
     targetMachine->addPassesToEmitFile(pass, output, FileType);
-
+    std::cout << "Generating Object Code\n";
     pass.run(*TheModule);
-
+    std::cout << "Printing IR\n";
     TheModule->print(llvm::errs(), nullptr);
     output.flush();
 }
@@ -289,6 +289,23 @@ void CodegenVisitor::visit(Return& node) {
 
 void CodegenVisitor::visit(While& node) {
     std::cout << "Generating While loop\n";
+    auto cond = llvm::BasicBlock::Create(TheContext, "loopcond");
+    auto loop = llvm::BasicBlock::Create(TheContext, "loop");
+    last_function->getBasicBlockList().push_back(cond);
+    auto end = llvm::BasicBlock::Create(TheContext, "loopend");
+    Builder.CreateBr(cond);
+    Builder.SetInsertPoint(cond);
+
+    // insert condition
+    node.expression->accept(*this);
+    Builder.CreateCondBr(last_constant, loop, end);
+    // //
+    last_function->getBasicBlockList().push_back(loop);
+    Builder.SetInsertPoint(loop);
+    node.body->accept(*this);
+    Builder.CreateBr(cond);
+    last_function->getBasicBlockList().push_back(end);
+    Builder.SetInsertPoint(end);
 }
 
 void CodegenVisitor::visit(RecordRef& node) {
@@ -304,6 +321,7 @@ void CodegenVisitor::visit(Program& node) {
     for (auto& n : node.program) {
         n->accept(*this);
     }
+    std::cout << "Program Generated\n";
 }
 
 void CodegenVisitor::visit(Statements& node) {
@@ -314,6 +332,7 @@ void CodegenVisitor::visit(Statements& node) {
         }
         n->accept(*this);
     }
+    std::cout << "Statements generated\n";
 }
 
 void CodegenVisitor::visit(Void& node) {
