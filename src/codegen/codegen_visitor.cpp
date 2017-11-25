@@ -95,8 +95,6 @@ void CodegenVisitor::visit(Assignment& node)
     }
     node.value->accept(*this);
     auto name = ((Var *) node.variable)->var_decl.first;
-    // auto a = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, "tmp");
-    // last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, 3, true));
     Builder.CreateStore(last_constant, last_params[name]);
     std::cout << "Assignment generated\n";
 }
@@ -264,7 +262,10 @@ void CodegenVisitor::visit(Var& node)
     std::cout << "Creating Var declaration\n";
     auto name = node.var_decl.first;
     auto v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
-
+    if (node.body) {
+        node.body->accept(*this);
+        Builder.CreateStore(last_constant, v);
+    }
     last_params[name] = v;
     std::cout << "Created Var declaration\n";
 }

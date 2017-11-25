@@ -1,5 +1,5 @@
 routine gcd(p integer, q integer): integer is
-    while (q /= 0) loop
+    while q /= 0 loop
         var temp : integer is q
         q := p % q
         p := temp
