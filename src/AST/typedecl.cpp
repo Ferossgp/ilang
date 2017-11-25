@@ -6,5 +6,7 @@
 
 using std::string;
 
-TypeDecl::TypeDecl(const string &identifier, Type *type):
-        identifier(identifier), type(type) {};
+TypeDecl::TypeDecl(const string &identifier, Type *original):
+        identifier(identifier), original(original) {
+    type = types::Alias;
+}
