@@ -109,35 +109,35 @@ void CodegenVisitor::visit(Binary& node)
     auto R = last_constant;
 
     switch (node.opchar) {
-    case '+':
+    case opchars::PLUS:
         if (node.type->type == types::Integer) {
             last_constant = Builder.CreateAdd(L, R, "tmp");
         } else if (node.type->type == types::Real){
             last_constant = Builder.CreateFAdd(L, R, "tmp");
         }
         break;
-    case '-':
+    case opchars::MINUS:
         if (node.type->type == types::Integer) {
             last_constant = Builder.CreateSub(L, R, "tmp");
         } else if (node.type->type == types::Real){
             last_constant = Builder.CreateFSub(L, R, "tmp");
         }
         break;
-    case '*':
+    case opchars::MUL:
         if (node.type->type == types::Integer) {
             last_constant = Builder.CreateMul(L, R, "tmp");
         } else if (node.type->type == types::Real){
             last_constant = Builder.CreateFMul(L, R, "tmp");
         }
         break;
-    case '/':
+    case opchars::DIV:
         if (node.type->type == types::Integer) {
             last_constant = Builder.CreateSDiv(L, R, "tmp");
         } else if (node.type->type == types::Real){
             last_constant = Builder.CreateFDiv(L, R, "tmp");
         }
         break;
-    case '%':
+    case opchars::MOD:
         if (node.type->type == types::Integer) {
             last_constant = Builder.CreateSRem(L, R, "tmp");
         } else if (node.type->type == types::Real){
