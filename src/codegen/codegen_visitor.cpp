@@ -61,7 +61,7 @@ void CodegenVisitor::visit(Prototype& p)
         }
     }
 
-    // return type generation
+    // function type generation
     llvm::FunctionType *ft;
     switch (p.type->type) {
     case types::Integer:
@@ -143,6 +143,7 @@ void CodegenVisitor::visit(Binary& node)
         break;
     }
 }
+
 void CodegenVisitor::visit(Boolean& node)
 {
     last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(1, node.value ? 1 : 0, false));
@@ -156,8 +157,8 @@ void CodegenVisitor::visit(For& node)
 
 void CodegenVisitor::visit(If& node)
 {
-
 }
+
 void CodegenVisitor::visit(Integer& node)
 {
     last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, node.value, true));
