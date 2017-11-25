@@ -274,3 +274,5 @@ void CodegenVisitor::visit(Void& node) {
 void CodegenVisitor::visit(Undefined& node) {
 
 }
+
+void CodegenVisitor::visit(Cast& node) {}

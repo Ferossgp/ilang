@@ -76,5 +76,6 @@ public:
     void visit(Program& node);
     void visit(Statements& node);
     void visit(Void& node);
+    void visit(Cast& node);
     void generate();
 };
