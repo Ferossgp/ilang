@@ -1,6 +1,9 @@
 #include "typechecking_visitor.h"
 #include <iostream>
 
+/*
+    Just a dummy method, exapmple of how it is used
+*/
 void TypeCheckingVisitor::visit(Prototype& node) 
 {
     std::cout << "Visiting PrototypeNode: " << node.getName();
@@ -133,14 +136,41 @@ void TypeCheckingVisitor::visit(RecordDecl& node)
 {
     std::cout << "Foo";
 }
+
+/*
+    Check that function will return value of the expected type
+*/
 void TypeCheckingVisitor::visit(Routine& node) 
 {
-    std::cout << "Foo";
+    // Go through all statements in body, find and check all returns
 }
+
+/*
+    Check that arguments are exactly as in the routine declaration
+*/
 void TypeCheckingVisitor::visit(RoutineCall& node) 
 {
-    std::cout << "Foo";
+    auto actualArguments = node.args;
+    auto expectedArguments = node.callee->proto->args;
+    auto routineName = node.callee->proto->name;
+
+    // Check arguments
+    auto argsLength = expectedArguments.size();
+    if (actualArguments.size() != argsLength)
+        reportError("Arguments of function " + routineName + " are incorrect! Expected " + 
+            std::to_string(argsLength) + ", got " + std::to_string(actualArguments.size()));
+
+    for (int i = 0; i < argsLength; i++)
+    {
+        if (((Expression*) expectedArguments[i])->type->type != ((Expression*) actualArguments[i])->type->type)
+            reportError("Arguments of function " + routineName + 
+                " are incorrect! Expected another type on " + std::to_string(i));
+    }
+
+    // Forward further
+    node.callee->accept(*this);
 }
+
 void TypeCheckingVisitor::visit(TypeDecl& node) 
 {
     std::cout << "Foo";
