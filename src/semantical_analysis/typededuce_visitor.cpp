@@ -10,25 +10,61 @@ void TypeDeduceVisitor::visit(ArrayDecl& node) {
 void TypeDeduceVisitor::visit(Assignment& node) {
     node.value->accept(*this);
 }
-// TODO: wait: "and", "or", "xor", "/=", "<=", ">=" binary operator decoding
-// TODO: if non-equal then cast
-// TODO: implement
+void TypeDeduceVisitor::visit(Assignment& node) {
+    node.value->accept(*this);
 void TypeDeduceVisitor::visit(Binary& node) {
     node.lhs->accept(*this);
     node.rhs->accept(*this);
     if (!Type::isPrimitive(*node.lhs->type) || !Type::isPrimitive(*node.rhs->type)) {
         reportError("error: TypeDeduceVisitor: binary with non-primitive");
     }
-    // cmp, int|real->bool
-    // log, bool->bool
-    // math, int|real->int|real
-    if (strchr("+-/*", node.opchar)) {
-        if (node.lhs->type != node.rhs->type) {
-            // ...
-        }
-        // ...
+// TODO: wait: "and", "or", "xor", "/=", "<=", ">=" binary operator decoding
+void TypeDeduceVisitor::visit(Binary& node) {
+    node.lhs->accept(*this);
+    node.rhs->accept(*this);
+    if (!Type::isPrimitive(*node.lhs->type) || !Type::isPrimitive(*node.rhs->type)) {
+        reportError("error: TypeDeduceVisitor: binary with non-primitive");
     }
-    reportError("bug: TypeDeduceVisitor: visit Binary node not implemented");
+    bool isMath = strchr("+-/*", node.opchar);
+    // TODO: real `isLogic`
+    bool isLogic = false;
+    // TODO: real `isCmp`
+    bool isCmp = false;
+    // TODO: real `isEq`
+    bool isEq = false;
+    if (isMath + isLogic + isCmp + isEq != 1) {
+        reportError("bug: TypeDeduceVisitor: Binary node bad opcode");
+    }
+    auto ltype = node.lhs->type;
+    auto rtype = node.rhs->type;
+    if (isMath || isCmp || isEq) {
+        if (*ltype == *rtype) {
+            if (!isEq && *ltype == types::Boolean) {
+                node.lhs = new Cast(node.lhs, new IntegerType());
+                node.rhs = new Cast(node.rhs, new IntegerType());
+            }
+        } else {
+            if (*ltype == types::Boolean || *rtype == types::Real) {
+                node.lhs = new Cast(node.lhs, rtype);
+            }
+            if (*rtype == types::Boolean || *ltype == types::Real) {
+                node.rhs = new Cast(node.rhs, ltype);
+            }
+        }
+    node.body->accept(*this);
+    }
+    if (isLogic) {
+        if (*ltype != types::Boolean) {
+            node.lhs = new Cast(node.lhs, new BooleanType());
+        }
+        if (*rtype != types::Boolean) {
+            node.rhs = new Cast(node.rhs, new BooleanType());
+        }
+    }
+    if (*node.lhs->type != *node.rhs->type) {
+        reportError("bug: TypeDeduceVisitor: Binary node math cmp non-equal");
+    }
+    node.type = isMath ? node.lhs->type : new BooleanType();
 }
 void TypeDeduceVisitor::visit(Boolean& node) {
     reportError("bug: TypeDeduceVisitor: visit Boolean node");
