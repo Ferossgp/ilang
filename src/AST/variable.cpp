@@ -2,6 +2,8 @@
 
 #include "variable.h"
 
-
-Variable::Variable(ASTNode *var)
-        : var(var) {}
+Variable::Variable(Var *var)
+        : var(var) 
+        {
+                type = ((Var*) var)->var_decl.second;
+        }
