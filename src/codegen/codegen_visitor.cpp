@@ -249,8 +249,22 @@ void CodegenVisitor::visit(Routine& node)
     // arguments generation
     unsigned Idx = 0;
     for (auto &Arg : last_function->args()) {
-        std::string name = ((Var *) node.proto->args[Idx++])->var_decl.first;
-        auto v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
+        std::string name = ((Var *) node.proto->args[Idx])->var_decl.first;
+        llvm::AllocaInst *v;
+        switch (((Var *) node.proto->args[Idx++])->var_decl.second->type) {
+        case types::Integer:
+            v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
+            break;
+        case types::Real:
+            v = Builder.CreateAlloca(llvm::Type::getDoubleTy(TheContext), 0, name);
+            break;
+        case types::Boolean:
+            v = Builder.CreateAlloca(llvm::Type::getInt1Ty(TheContext), 0, name);
+            break;
+        default:
+            std::cout << "Not type for declaration\n";
+            break;
+        }
         Builder.CreateStore(&Arg, v);
         Arg.setName(name);
         last_params[name] = v;
@@ -304,7 +318,22 @@ void CodegenVisitor::visit(Var& node)
 {
     std::cout << "Creating Var declaration\n";
     auto name = node.var_decl.first;
-    auto v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
+    llvm::AllocaInst *v;
+    switch (node.var_decl.second->type) {
+    case types::Integer:
+        v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
+        break;
+    case types::Real:
+        v = Builder.CreateAlloca(llvm::Type::getDoubleTy(TheContext), 0, name);
+        break;
+    case types::Boolean:
+        v = Builder.CreateAlloca(llvm::Type::getInt1Ty(TheContext), 0, name);
+        break;
+    default:
+        std::cout << "Not type for declaration\n";
+        break;
+    }
+
     if (node.body) {
         node.body->accept(*this);
         Builder.CreateStore(last_constant, v);
