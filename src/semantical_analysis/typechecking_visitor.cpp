@@ -22,25 +22,25 @@ void TypeCheckingVisitor::visit(Assignment& node)
     auto left_type = left->type->type;
     auto right = (Expression*) node.value;
     auto right_type = right->type->type;
-    
+
     if (left_type == types::Integer && right_type == types::Integer)
     {
         return;
     }
     else if (left_type == types::Integer && right_type == types::Real)
     {
-        Cast cast_node { right, new IntegerType() };
-        node.value = &cast_node;
+        auto cast_node = new Cast { right, new IntegerType() };
+        node.value = cast_node;
     }
     else if (left_type == types::Integer && right_type == types::Boolean)
     {
-        Cast cast_node { right, new BooleanType() };
-        node.value = &cast_node;
+        auto cast_node = new Cast { right, new BooleanType() };
+        node.value = cast_node;
     }
     else if (left_type == types::Real && right_type == types::Integer)
     {
-        Cast cast_node { right, new IntegerType() };
-        node.value = &cast_node;
+        auto cast_node = new Cast { right, new IntegerType() };
+        node.value = cast_node;
     }
     else if (left_type == types::Real && right_type == types::Real)
     {
@@ -48,13 +48,13 @@ void TypeCheckingVisitor::visit(Assignment& node)
     }
     else if (left_type == types::Real && right_type == types::Boolean)
     {
-        Cast cast_node { right, new RealType() };
-        node.value = &cast_node;
+        auto cast_node = new Cast { right, new RealType() };
+        node.value = cast_node;
     }
     else if (left_type == types::Boolean && right_type == types::Integer)
     {
-        Cast cast_node { right, new BooleanType() };
-        node.value = &cast_node;
+        auto cast_node = new Cast { right, new BooleanType() };
+        node.value = cast_node;
     }
     else if (left_type == types::Boolean && right_type == types::Boolean)
     {

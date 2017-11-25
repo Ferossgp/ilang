@@ -1,8 +1,6 @@
 #ifndef ILANG_VISITOR_H
 #define ILANG_VISITOR_H
-// #include "AST/prototype.h"
 
-// class ASTNode;
 class Prototype;
 class ArrayDecl;
 class Assignment;
@@ -36,14 +34,12 @@ class Visitor
 {
 public:
     virtual void visit(Prototype& node) = 0;
-
     virtual void visit(ArrayDecl& node) = 0;
     virtual void visit(Assignment& node) = 0;
     virtual void visit(Binary& node) = 0;
     virtual void visit(Boolean& node) = 0;
     virtual void visit(BooleanType& node) = 0;
     virtual void visit(Cast& node) = 0;
-    //virtual void visit(Factor& node) = 0;
     virtual void visit(For& node) = 0;
     virtual void visit(If& node) = 0;
     virtual void visit(Integer& node) = 0;
@@ -51,11 +47,8 @@ public:
     virtual void visit(Real& node) = 0;
     virtual void visit(RealType& node) = 0;
     virtual void visit(RecordDecl& node) = 0;
-    //virtual void visit(Relation& node) = 0;
     virtual void visit(Routine& node) = 0;
     virtual void visit(RoutineCall& node) = 0;
-    //virtual void visit(Sign& node) = 0;
-    //virtual void visit(Type& node) = 0;
     virtual void visit(TypeDecl& node) = 0;
     virtual void visit(Unary& node) = 0;
     virtual void visit(Undefined& node) = 0;
