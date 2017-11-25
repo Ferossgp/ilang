@@ -100,6 +100,7 @@ void CodegenVisitor::visit(Assignment& node) {}
 void CodegenVisitor::visit(Binary& node)
 {
     std::cout << "Parsing Binary\n";
+    node.type->type = types::Integer;
     node.lhs->accept(*this);
     auto L = last_constant;
     node.rhs->accept(*this);
@@ -189,6 +190,11 @@ void CodegenVisitor::visit(Routine& node)
     if (node.body->statements.size() > 0) {
         std::cout << "Creating function body\n";
         node.body->accept(*this);
+        std::cout << "Created function body\n";
+        if (last_function->getReturnType() == llvm::Type::getVoidTy(TheContext)) {
+            Builder.CreateRetVoid();
+            return;
+        }
     } else {
         std::cout << "Creating Return void\n";
         Builder.CreateRetVoid();
@@ -219,9 +225,11 @@ void CodegenVisitor::visit(Unary& node) {}
 
 void CodegenVisitor::visit(Var& node)
 {
+    std::cout << "Creating Var declaration\n";
     auto name = node.var_decl.first.c_str();
     auto v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
-    last_params[name] = v;
+    last_variables[name] = v;
+    std::cout << "Created Var declaration\n";
 }
 
 void CodegenVisitor::visit(Variable& node)
@@ -238,7 +246,6 @@ void CodegenVisitor::visit(Return& node) {
     std::cout << "Parsing Return\n";
     node.expression->accept(*this);
     Builder.CreateRet(last_constant);
-
 }
 
 void CodegenVisitor::visit(While& node) {

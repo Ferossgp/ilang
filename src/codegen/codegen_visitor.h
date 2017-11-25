@@ -44,6 +44,7 @@ private:
     llvm::Value *last_constant;
     llvm::Function *last_function;
     std::unordered_map<std::string, llvm::Value*> last_params;
+    std::unordered_map<std::string, llvm::Value*> last_variables;
 
 public:
     CodegenVisitor(const std::string& filename);
