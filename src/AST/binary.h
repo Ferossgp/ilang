@@ -7,7 +7,7 @@
 class Binary : public Expression {
 public:
     opchars opchar;
-    ASTNode *lhs, *rhs;
+    Expression *lhs, *rhs;
 
     Binary(opchars opchar, ASTNode *lhs, ASTNode *rhs);
     void accept(Visitor &v) { v.visit(*this); };
