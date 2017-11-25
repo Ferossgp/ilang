@@ -20,6 +20,9 @@ public:
 	bool operator==(types other) const {
 		return other != types::Array && other != types::Record && this->type == other;
 	}
+    bool operator!=(types other) const {
+        return !(*this == other);
+    }
 	virtual bool operator==(const Type &other) const {
 		if (this->type != other.type) {
 			return false;
