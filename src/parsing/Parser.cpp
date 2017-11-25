@@ -399,17 +399,16 @@ ASTNode * Parser::parse_statements() {
     }
 }
 
-Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LHS) {
+Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LHS) {    
     while (1) {
-        if (lexer->current_token() == (int)Token::RANGE) {
-            return nullptr;
-        }
         int token_priority = lexer->token_priority();
+
         if ( token_priority < expression_priority ) {
             return LHS;
         }
-
-        int binary_op = lexer->current_token();
+        
+        // TODO: Check that here is actually op_char
+        opchars binary_op = lexer->current_opchar();
         lexer->next();
 
         Expression *RHS = parse_unary();
@@ -425,6 +424,9 @@ Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LH
 }
 
 Expression * Parser::parse_unary() {
+    if (lexer->current_token() == (int)Token::RANGE) {
+        return nullptr;
+    }
     if ( !isascii(lexer->current_token())
          || lexer->current_token() == '('
          || lexer->current_token() == ')') {
@@ -444,7 +446,6 @@ Expression * Parser::parse_unary() {
 Expression * Parser::parse_expression() {
     Expression *LHS = parse_unary();
     if ( !LHS ) { return nullptr; }
-
     return parse_binary_op_rhs(0, LHS);
 }
 
@@ -546,6 +547,9 @@ ASTNode * Parser::parse_if() {
     if ( ! then ) { return nullptr; }
 
     if ( lexer->current_token() != (int)Token::ELSE ) {
+        if (lexer->current_token() != (int)Token::END){
+            return Error("expected 'end' at the end of if");
+        }
         lexer->next();
         return new If(condition, (Statements*) then);
     }
@@ -555,6 +559,11 @@ ASTNode * Parser::parse_if() {
     ASTNode *else_body = parse_statements();
     if ( ! else_body ) { return nullptr; }
 
+    if (lexer->current_token() != (int)Token::END){
+        return Error("expected 'end' at the end of if");
+    }
+    lexer->next();
+    
     return new If(condition, (Statements *) then, (Statements *) else_body);
 }
 
@@ -582,13 +591,12 @@ ASTNode * Parser::parse_for() {
 
     ASTNode *start = parse_expression();
     if ( !start ) { return nullptr; }
-    std::cout << "TEST";
     if ( lexer->current_token() != (int)Token::RANGE){
         return Error("Expected '..' after for start value");
     }
-
+    
     lexer->next();
-
+    
     ASTNode *end = parse_expression();
     if ( end == 0 ) { return 0; }
 
@@ -659,6 +667,9 @@ Program * Parser::parse() {
                 break;
             case (int)Token::WHILE:
                 program_decl.push_back(parse_while());
+                break;
+            case (int)Token::IF:
+                program_decl.push_back(parse_if());
                 break;
             default:
                 std::cout << "Can't handle top level " << (int) lexer->current_token() << "\n";
