@@ -145,7 +145,48 @@ void CodegenVisitor::visit(Binary& node)
         }
         break;
     case opchars::NOTEQ:
-        last_constant = Builder.CreateICmpNE(L, R, "cond");
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateICmpNE(L, R, "cond");
+        }// } else if (node.type->type == types::Real){
+        //    last_constant = Builder.CreateFCmpONE    (L, R, "cond");
+        // }
+        break;
+    case opchars::EQUAL:
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateICmpEQ(L, R, "cond");
+        }// else if (node.type->type == types::Real){
+    //        last_constant = Builder.CreateFCmpOEQ(L, R, "cond");
+    //     }
+        break;
+    case opchars::HIGH:
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateICmpSGT(L, R, "cond");
+        } //else if (node.type->type == types::Real){
+    //        last_constant = Builder.CreateFCmpOGT(L, R, "cond");
+    //     }
+        break;
+    case opchars::LESS:
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateICmpSLT(L, R, "cond");
+        }// else if (node.type->type == types::Real){
+    //        last_constant = Builder.CreateFCmpOLT(L, R, "cond");
+    //     }
+        break;
+    case opchars::HIGHEQ:
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateICmpSGE(L, R, "cond");
+        } // else if (node.type->type == types::Real){
+    //        last_constant = Builder.CreateFCmpOGE(L, R, "cond");
+    //     }
+        break;
+    case opchars::LESSEQ:
+        if (node.type->type == types::Integer) {
+            last_constant = Builder.CreateICmpSLE(L, R, "cond");
+        }// else if (node.type->type == types::Real){
+    //        last_constant = Builder.CreateFCmpOLE(L, R, "cond");
+    //     }
+        break;
+    // }
     }
 }
 
