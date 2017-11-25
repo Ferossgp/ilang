@@ -30,8 +30,8 @@ Expression * Parser::parse_integer() {
     return result;
 }
 
-Expression * Parser::parse_boolean() {
-    ASTNode *result = new Boolean(value);
+Expression * Parser::parse_boolean(bool value) {
+    Expression *result = new Boolean(value);
     lexer->next();
     return result;
 }
