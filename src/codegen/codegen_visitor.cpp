@@ -43,6 +43,7 @@ void CodegenVisitor::visit(Prototype& p)
 {
     std::cout << "Parsing Prototype\n";
     last_params.clear();
+
     // Generate types of arguments
     std::vector<llvm::Type*> arg_types{};
     for (int i =0; i < p.args.size(); i++) {
@@ -60,6 +61,7 @@ void CodegenVisitor::visit(Prototype& p)
         }
     }
 
+    // return type generation
     llvm::FunctionType *ft;
     switch (p.type->type) {
     case types::Integer:
@@ -77,6 +79,7 @@ void CodegenVisitor::visit(Prototype& p)
     }
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
 
+    // arguments generation
     unsigned Idx = 0;
     for (auto &Arg : last_function->args()) {
         std::string name = ((Argument *) p.args[Idx++])->arg_decl.first;
@@ -146,8 +149,15 @@ void CodegenVisitor::visit(Boolean& node)
 }
 void CodegenVisitor::visit(BooleanType& node) {}
 
-void CodegenVisitor::visit(For& node) {}
-void CodegenVisitor::visit(If& node) {}
+void CodegenVisitor::visit(For& node)
+{
+
+}
+
+void CodegenVisitor::visit(If& node)
+{
+
+}
 void CodegenVisitor::visit(Integer& node)
 {
     last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, node.value, true));
