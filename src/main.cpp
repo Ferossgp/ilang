@@ -86,6 +86,20 @@ public:
 
 int main(int argc, char *argv[]) 
 {
+    // Var var { std::pair<string, Type*> {"foo", new IntegerType() }, nullptr };
+
+    // Variable variable { &var };
+    // Assignment ass1 { &variable, new Integer(5)};
+    // Assignment ass2 { &variable, new Real(5.4)};
+
+    ArrayDecl ad1 { new Integer(1), new IntegerType() };
+    ArrayDecl ad2 { new Real(1.2), new RealType() };
+
+    TypeCheckingVisitor v;
+    ad1.accept(v);
+    ad2.accept(v);
+
+    PrintNameVisitor p;
 
     return 0;
 }

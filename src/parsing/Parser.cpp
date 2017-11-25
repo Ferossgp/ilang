@@ -324,7 +324,7 @@ ASTNode * Parser::parse_array() {
     }
     lexer->next();
 
-    ASTNode *expression = parse_expression();
+    Expression *expression = parse_expression();
     if (!expression) { return nullptr; }
 
     if (lexer->current_token() != ']'){

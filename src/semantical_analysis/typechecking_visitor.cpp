@@ -5,10 +5,17 @@ void TypeCheckingVisitor::visit(Prototype& node)
 {
     std::cout << "Visiting PrototypeNode: " << node.getName();
 }
-\
+
+/*
+    Check that array's size is an integer constant
+*/
 void TypeCheckingVisitor::visit(ArrayDecl& node) 
 {
-    std::cout << "Foo";
+    auto sizeExpression = node.expression;
+    if (sizeExpression->type->type != types::Integer)
+    {
+        reportError("Size of array is not compile-time integer constanst\n");
+    }
 }
 
 /*
@@ -22,25 +29,25 @@ void TypeCheckingVisitor::visit(Assignment& node)
     auto left_type = left->type->type;
     auto right = (Expression*) node.value;
     auto right_type = right->type->type;
-    
+
     if (left_type == types::Integer && right_type == types::Integer)
     {
         return;
     }
     else if (left_type == types::Integer && right_type == types::Real)
     {
-        Cast cast_node { right, new IntegerType() };
-        node.value = &cast_node;
+        auto cast_node = new Cast { right, new IntegerType() };
+        node.value = cast_node;
     }
     else if (left_type == types::Integer && right_type == types::Boolean)
     {
-        Cast cast_node { right, new BooleanType() };
-        node.value = &cast_node;
+        auto cast_node = new Cast { right, new BooleanType() };
+        node.value = cast_node;
     }
     else if (left_type == types::Real && right_type == types::Integer)
     {
-        Cast cast_node { right, new IntegerType() };
-        node.value = &cast_node;
+        auto cast_node = new Cast { right, new IntegerType() };
+        node.value = cast_node;
     }
     else if (left_type == types::Real && right_type == types::Real)
     {
@@ -48,13 +55,13 @@ void TypeCheckingVisitor::visit(Assignment& node)
     }
     else if (left_type == types::Real && right_type == types::Boolean)
     {
-        Cast cast_node { right, new RealType() };
-        node.value = &cast_node;
+        auto cast_node = new Cast { right, new RealType() };
+        node.value = cast_node;
     }
     else if (left_type == types::Boolean && right_type == types::Integer)
     {
-        Cast cast_node { right, new BooleanType() };
-        node.value = &cast_node;
+        auto cast_node = new Cast { right, new BooleanType() };
+        node.value = cast_node;
     }
     else if (left_type == types::Boolean && right_type == types::Boolean)
     {
@@ -81,6 +88,7 @@ void TypeCheckingVisitor::visit(Assignment& node)
         reportError("Trying to assign incompatible types");
     }
 }
+
 void TypeCheckingVisitor::visit(Binary& node) 
 {
     std::cout << "Foo";

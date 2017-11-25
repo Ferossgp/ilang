@@ -1,3 +1,6 @@
+#ifndef TYPE_CHECKING_VSTR
+#define TYPE_CHECKING_VSTR
+
 #include "../visitor.h"
 #include "error.h"
 
@@ -61,3 +64,5 @@ public:
     void visit(Statements& node);
     void visit(Void& node);
 };
+
+#endif

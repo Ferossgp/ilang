@@ -4,6 +4,7 @@
 #include <string>
 
 #include "expression.h"
+#include "var.h"
 
 using std::string;
 

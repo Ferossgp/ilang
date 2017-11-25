@@ -8,9 +8,9 @@
 using std::vector;
 
 class RecordDecl : public Type {
+public:
     vector<ASTNode*> refs;
 
-public:
     RecordDecl(const vector<ASTNode*> &refs);
     void accept(Visitor &v) { v.visit(*this); };
 };

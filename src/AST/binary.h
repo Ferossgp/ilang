@@ -4,10 +4,10 @@
 #include "expression.h"
 
 class Binary : public Expression {
+public:
     char opchar;
     ASTNode *lhs, *rhs;
 
-public:
     Binary(char opchar, ASTNode *lhs, ASTNode *rhs);
     void accept(Visitor &v) { v.visit(*this); };
 };
