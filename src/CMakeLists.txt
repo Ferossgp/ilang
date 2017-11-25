@@ -23,6 +23,7 @@ add_executable(voc
     parsing/Parser.cpp
     parsing/Errors.cpp
     semantical_analysis/printname_visitor.cpp
+    semantical_analysis/typechecking_visitor.cpp
     main.cpp
     AST/integer.cpp
     AST/real.cpp
@@ -42,6 +43,8 @@ add_executable(voc
     AST/typedecl.cpp
     AST/assignment.cpp
     AST/return.cpp
+    AST/cast.cpp
+    semantical_analysis/error.cpp
 )
 
 llvm_map_components_to_libnames(llvm_libs all)
