@@ -363,36 +363,40 @@ Expression * Parser::parse_primary() {
 
 ASTNode * Parser::parse_statements() {
     std::vector<ASTNode *> statements;
-    switch( lexer->current_token() ) {
-        case (int)Token::IDENTIFIER:
-            statements.push_back(parse_identifier_statement());
-            break;
-        case (int)Token::IF:
-            statements.push_back(parse_if());
-            break;
-        case (int)Token::FOR:
-            statements.push_back(parse_for());
-            break;
-        case (int)Token::WHILE:
-            statements.push_back(parse_while());
-            break;
-        case (int)Token::VAR:
-            statements.push_back(parse_var());
-            break;
-        case (int)Token::TYPE:
-            statements.push_back(parse_type());
-            break;
-        case (int)Token::RETURN:
-            statements.push_back(parse_return());
-            break;
-        case (int)Token::END:
-            lexer->next();
-            break;
-        default:
-            fprintf(stderr, "Unknown token '%c' when expecting an expression in statement \n", (char) lexer->current_token());
-            return 0;
+    while (1){
+        switch( lexer->current_token() ) {
+            case (int)Token::IDENTIFIER:
+                statements.push_back(parse_identifier_statement());
+                break;
+            case (int)Token::IF:
+                statements.push_back(parse_if());
+                break;
+            case (int)Token::FOR:
+                statements.push_back(parse_for());
+                break;
+            case (int)Token::WHILE:
+                statements.push_back(parse_while());
+                break;
+            case (int)Token::VAR:
+                statements.push_back(parse_var());
+                break;
+            case (int)Token::TYPE:
+                statements.push_back(parse_type());
+                break;
+            case (int)Token::RETURN:
+                statements.push_back(parse_return());
+                break;
+            case (int)Token::END:
+                return new Statements(statements);
+                break;
+            case (int)Token::ELSE:
+                return new Statements(statements);
+                break;
+            default:
+                fprintf(stderr, "Unknown token '%c' when expecting an expression in statement \n", (char) lexer->current_token());
+                return 0;
+        }
     }
-    return new Statements{statements};
 }
 
 Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LHS) {
