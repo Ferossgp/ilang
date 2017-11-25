@@ -39,6 +39,20 @@ void CodegenVisitor::generate()
     output.flush();
 }
 
+llvm::Type* CodegenVisitor::get_type(types type)
+{
+    switch (type) {
+    case types::Integer:
+        return llvm::Type::getInt32Ty(TheContext);
+    case types::Real:
+        return llvm::Type::getDoubleTy(TheContext);
+    case types::Boolean:
+        return llvm::Type::getInt1Ty(TheContext);
+    case types::Void:
+        return llvm::Type::getVoidTy(TheContext);
+    }
+}
+
 void CodegenVisitor::visit(Prototype& p)
 {
     std::cout << "Parsing Prototype\n";
@@ -48,39 +62,17 @@ void CodegenVisitor::visit(Prototype& p)
     std::vector<llvm::Type*> arg_types{};
     for (int i =0; i < p.args.size(); i++) {
         auto arg = (Var *) p.args[i];
-        switch (arg->var_decl.second->type) {
-        case types::Integer:
-            arg_types.push_back(llvm::Type::getInt32Ty(TheContext));
-            break;
-        case types::Real:
-            arg_types.push_back(llvm::Type::getDoubleTy(TheContext));
-            break;
-        case types::Boolean:
-            arg_types.push_back(llvm::Type::getInt1Ty(TheContext));
-            break;
-        }
+        arg_types.push_back(get_type(arg->var_decl.second->type));
     }
 
     // function type generation
-    llvm::FunctionType *ft;
-    switch (p.type->type) {
-    case types::Integer:
-        ft = llvm::FunctionType::get(llvm::Type::getInt32Ty(TheContext), arg_types, false);
-        break;
-    case types::Void:
-        ft = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), arg_types, false);
-        break;
-    case types::Real:
-        ft = llvm::FunctionType::get(llvm::Type::getDoubleTy(TheContext), arg_types, false);
-        break;
-    case types::Boolean:
-        ft = llvm::FunctionType::get(llvm::Type::getInt1Ty(TheContext), arg_types, false);
-        break;
-    }
+    auto ft = llvm::FunctionType::get(get_type(p.type->type), arg_types, false);
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
 
 
 }
+
+
 
 void CodegenVisitor::visit(ArrayDecl& node)
 {
@@ -249,22 +241,9 @@ void CodegenVisitor::visit(Routine& node)
     // arguments generation
     unsigned Idx = 0;
     for (auto &Arg : last_function->args()) {
-        std::string name = ((Var *) node.proto->args[Idx])->var_decl.first;
-        llvm::AllocaInst *v;
-        switch (((Var *) node.proto->args[Idx++])->var_decl.second->type) {
-        case types::Integer:
-            v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
-            break;
-        case types::Real:
-            v = Builder.CreateAlloca(llvm::Type::getDoubleTy(TheContext), 0, name);
-            break;
-        case types::Boolean:
-            v = Builder.CreateAlloca(llvm::Type::getInt1Ty(TheContext), 0, name);
-            break;
-        default:
-            std::cout << "Not type for declaration\n";
-            break;
-        }
+        auto var = ((Var *) node.proto->args[Idx++]);
+        std::string name = var->var_decl.first;//((Var *) node.proto->args[Idx])->var_decl.first;
+        auto v = Builder.CreateAlloca(get_type(var->var_decl.second->type), 0, name);
         Builder.CreateStore(&Arg, v);
         Arg.setName(name);
         last_params[name] = v;
@@ -318,21 +297,7 @@ void CodegenVisitor::visit(Var& node)
 {
     std::cout << "Creating Var declaration\n";
     auto name = node.var_decl.first;
-    llvm::AllocaInst *v;
-    switch (node.var_decl.second->type) {
-    case types::Integer:
-        v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
-        break;
-    case types::Real:
-        v = Builder.CreateAlloca(llvm::Type::getDoubleTy(TheContext), 0, name);
-        break;
-    case types::Boolean:
-        v = Builder.CreateAlloca(llvm::Type::getInt1Ty(TheContext), 0, name);
-        break;
-    default:
-        std::cout << "Not type for declaration\n";
-        break;
-    }
+    auto v = Builder.CreateAlloca(get_type(node.var_decl.second->type), 0, name);
 
     if (node.body) {
         node.body->accept(*this);
