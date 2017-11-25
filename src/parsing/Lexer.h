@@ -36,6 +36,7 @@ enum class Token {
     NOT = -25,
     TRUE_ = -26,
     FALSE_ = -27,
+    RANGE = -28,
 };
 
 // TODO: Implement enum also for operation chars

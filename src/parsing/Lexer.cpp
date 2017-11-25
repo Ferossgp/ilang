@@ -68,6 +68,10 @@ void Lexer::next() {
         string number_string;
         bool is_double = false;
         do {
+            if (last_char == '.' && inputStream->peek() == '.') {
+                inputStream->putback(last_char);
+                break;
+            }            
             if (last_char == '.') is_double = true;
             number_string += last_char;
             last_char = inputStream->get();
@@ -83,7 +87,10 @@ void Lexer::next() {
 
         return;
     }
-
+    if ( last_char == '.' && inputStream->peek() == '.'){
+        current_token_ = (int)Token::RANGE;
+        return;
+    }
     if ( last_char == '#' ) {
         do {
             last_char = inputStream->get();
