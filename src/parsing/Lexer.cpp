@@ -9,14 +9,36 @@ using std::string;
 using std::unordered_map;
 
 Lexer::Lexer(std::istream* inputStream) : inputStream(inputStream) {
-    op_priority_['='] = 2;
-    op_priority_['<'] = 10;
-    op_priority_['>'] = 10;
-    op_priority_['+'] = 20;
-    op_priority_['-'] = 20;
-    op_priority_['*'] = 240;
-    op_priority_['/'] = 240;
-    op_priority_['%'] = 240;
+    op_priority_[(int)Token::EQUAL] = 2;
+    op_priority_[(int)Token::LESS] = 10;
+    op_priority_[(int)Token::HIGH] = 10;
+    op_priority_[(int)Token::NOTEQ] = 10;
+    op_priority_[(int)Token::LESSEQ] = 10;
+    op_priority_[(int)Token::HIGHEQ] = 10;
+    op_priority_[(int)Token::PLUS] = 20;
+    op_priority_[(int)Token::MINUS] = 20;
+    op_priority_[(int)Token::MUL] = 240;
+    op_priority_[(int)Token::DIV] = 240;
+    op_priority_[(int)Token::MOD] = 240;
+    op_priority_[(int)Token::OR] = 240;
+    op_priority_[(int)Token::XOR] = 240;
+    op_priority_[(int)Token::AND] = 240;
+
+    opchar_map_[(int)Token::EQUAL] = opchars::EQUAL;
+    opchar_map_[(int)Token::LESS] = opchars::LESS;
+    opchar_map_[(int)Token::HIGH] = opchars::HIGH;
+    opchar_map_[(int)Token::PLUS] = opchars::PLUS;
+    opchar_map_[(int)Token::MINUS] = opchars::MINUS;
+    opchar_map_[(int)Token::MUL] = opchars::MUL;
+    opchar_map_[(int)Token::DIV] = opchars::DIV;
+    opchar_map_[(int)Token::NOTEQ] = opchars::NOTEQ;
+    opchar_map_[(int)Token::MOD] = opchars::MOD;
+    opchar_map_[(int)Token::HIGHEQ] = opchars::HIGHEQ;
+    opchar_map_[(int)Token::LESSEQ] = opchars::LESSEQ;
+    opchar_map_[(int)Token::OR] = opchars::OR;
+    opchar_map_[(int)Token::XOR] = opchars::XOR;
+    opchar_map_[(int)Token::AND] = opchars::AND;
+    
 
     keyword_map_["var"] = Token::VAR;
     keyword_map_["end"] = Token::END;
@@ -39,7 +61,22 @@ Lexer::Lexer(std::istream* inputStream) : inputStream(inputStream) {
     keyword_map_["real"] = Token::REAL_TYPE;
     keyword_map_["not"] = Token::NOT;
     keyword_map_["true"] = Token::TRUE_;
-    keyword_map_["false"] = Token::FALSE_;    
+    keyword_map_["false"] = Token::FALSE_; 
+    keyword_map_["and"] = Token::AND;    
+    keyword_map_["or"] = Token::OR;    
+    keyword_map_["xor"] = Token::XOR;           
+    keyword_map_["="] = Token::EQUAL;
+    keyword_map_["<"] = Token::LESS;
+    keyword_map_[">"] = Token::HIGH;
+    keyword_map_["+"] = Token::PLUS;
+    keyword_map_["-"] = Token::MINUS;
+    keyword_map_["*"] = Token::MUL;
+    keyword_map_["/"] = Token::DIV;
+    keyword_map_["%"] = Token::MOD;
+    keyword_map_["/="] = Token::NOTEQ;
+    keyword_map_["<="] = Token::LESSEQ;
+    keyword_map_[">="] = Token::HIGHEQ;
+
 }
 
 void Lexer::next() {
@@ -54,7 +91,6 @@ void Lexer::next() {
         while (isalnum((last_char = inputStream->get())) || last_char == '_') {
             identifier_ += last_char;
         }
-
         if (keyword_map_.count(identifier_) == 0 ) {
             current_token_ = (int)Token::IDENTIFIER;
             return;
@@ -88,7 +124,66 @@ void Lexer::next() {
         return;
     }
     if ( last_char == '.' && inputStream->peek() == '.'){
+        last_char = inputStream->get();
         current_token_ = (int)Token::RANGE;
+        return;
+    }
+
+    if ( last_char == '<') {
+        if ( inputStream->peek() == '='){
+            last_char = inputStream->get();
+            current_token_ = (int)Token::LESSEQ;
+            last_char = inputStream->get();                                        
+            return;
+        }
+        current_token_ = (int)Token::LESS;
+        last_char = inputStream->get();       
+        return;       
+    }
+    
+    if ( last_char == '>') {
+        if ( inputStream->peek() == '='){
+            last_char = inputStream->get();            
+            current_token_ = (int)Token::HIGHEQ;        
+            last_char = inputStream->get();                            
+            return;
+        }
+
+        current_token_ = (int)Token::HIGH;
+        last_char = inputStream->get();                    
+        return;       
+    }
+
+    if ( last_char == '/') {
+        if ( inputStream->peek() == '='){
+            last_char = inputStream->get();
+            current_token_ = (int)Token::NOTEQ;
+            last_char = inputStream->get();               
+            return;
+        }
+        current_token_ = (int)Token::DIV;
+        last_char = inputStream->get();                    
+        return;
+    }
+    
+    if (last_char == '*') {
+        current_token_ = (int)Token::MUL;
+        last_char = inputStream->get();                    
+        return;
+    }
+    if (last_char == '%') {
+        current_token_ = (int)Token::MOD;
+        last_char = inputStream->get();                    
+        return;
+    }
+    if (last_char == '+') {
+        current_token_ = (int)Token::PLUS;
+        last_char = inputStream->get();                    
+        return;
+    }
+    if (last_char == '-') {
+        current_token_ = (int)Token::MUL;
+        last_char = inputStream->get();                    
         return;
     }
     if ( last_char == '#' ) {
@@ -106,7 +201,7 @@ void Lexer::next() {
         current_token_ = (int)Token::EOF_;
         return;
     }
-
+    
     current_token_ = last_char;
     last_char = inputStream->get();
 }
@@ -116,6 +211,10 @@ int Lexer::current_token() const {
     return current_token_;
 }
 
+opchars Lexer::current_opchar() {
+    return opchar_map_[current_token_];
+}
+
 string Lexer::identifier() const { return identifier_; }
 
 int Lexer::integer_value() const { return integer_value_; }
@@ -123,11 +222,11 @@ int Lexer::integer_value() const { return integer_value_; }
 double Lexer::real_value() const { return real_value_; }
 
 int Lexer::token_priority() {
-    if (!isascii(current_token_) ) {
-        return -1;
+    if ( op_priority_.find(current_token_) == op_priority_.end() ){
+        return -1; // not in table
     }
-
     int priority = op_priority_[current_token_];
+    
     if ( priority <= 0 ) {
         return -1;
     }
@@ -135,10 +234,11 @@ int Lexer::token_priority() {
     return priority;
 }
 
+
 void Lexer::add_op_priority(const char op, const int priority) {
-    op_priority_[op] = priority;
+    op_priority_[(int)op] = priority;
 }
 
-const unordered_map<char, int> Lexer::op_priority() const {
+const unordered_map<int, int> Lexer::op_priority() const {
     return op_priority_;
 }
