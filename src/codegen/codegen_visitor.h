@@ -16,7 +16,6 @@
 
 #include "../visitor.h"
 #include "../AST/prototype.h"
-#include "../AST/argument.h"
 #include "../AST/integer.h"
 #include "../AST/real.h"
 #include "../AST/routine.h"
@@ -44,13 +43,12 @@ private:
     llvm::Value *last_constant;
     llvm::Function *last_function;
     std::unordered_map<std::string, llvm::Value*> last_params;
-    std::unordered_map<std::string, llvm::Value*> last_variables;
+    // std::unordered_map<std::string, llvm::Value*> last_variables;
 
 public:
     CodegenVisitor(const std::string& filename);
     CodegenVisitor() = delete;
     void visit(Prototype& node);
-    void visit(Argument& node);
     void visit(ArrayDecl& node);
     void visit(Assignment& node);
     void visit(Binary& node);

@@ -47,8 +47,8 @@ void CodegenVisitor::visit(Prototype& p)
     // Generate types of arguments
     std::vector<llvm::Type*> arg_types{};
     for (int i =0; i < p.args.size(); i++) {
-        auto arg = (Argument *) p.args[i];
-        switch (arg->arg_decl.second->type) {
+        auto arg = (Var *) p.args[i];
+        switch (arg->var_decl.second->type) {
         case types::Integer:
             arg_types.push_back(llvm::Type::getInt32Ty(TheContext));
             break;
@@ -82,15 +82,10 @@ void CodegenVisitor::visit(Prototype& p)
     // arguments generation
     unsigned Idx = 0;
     for (auto &Arg : last_function->args()) {
-        std::string name = ((Argument *) p.args[Idx++])->arg_decl.first;
+        std::string name = ((Var *) p.args[Idx++])->var_decl.first;
         Arg.setName(name);
         last_params[name] = &Arg;
     }
-}
-
-void CodegenVisitor::visit(Argument& node)
-{
-
 }
 
 void CodegenVisitor::visit(ArrayDecl& node) {}
@@ -205,7 +200,7 @@ void CodegenVisitor::visit(Routine& node)
 
 void CodegenVisitor::visit(RoutineCall& node)
 {
-    std::cout << "Parsing call " << node.callee << "\n";
+    std::cout << "Parsing call to" << node.callee << "\n";
     llvm::Function *f = TheModule->getFunction(node.callee->proto->name);
     if (!f) {
         std::cout << "no function\n";
@@ -228,7 +223,7 @@ void CodegenVisitor::visit(Var& node)
     std::cout << "Creating Var declaration\n";
     auto name = node.var_decl.first.c_str();
     auto v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
-    last_variables[name] = v;
+    last_params[name] = v;
     std::cout << "Created Var declaration\n";
 }
 
@@ -238,7 +233,7 @@ void CodegenVisitor::visit(Variable& node)
     if (!node.var ) {
         std::cout << "var is 0\n";
     }
-    std::string name = ((Argument*) node.var)->arg_decl.first;
+    std::string name = node.var->var_decl.first;
     last_constant = last_params[name];
 }
 
