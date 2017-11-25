@@ -404,14 +404,14 @@ ASTNode * Parser::parse_statements() {
     }
 }
 
-Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LHS) {    
+Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LHS) {
     while (1) {
         int token_priority = lexer->token_priority();
 
         if ( token_priority < expression_priority ) {
             return LHS;
         }
-        
+
         // TODO: Check that here is actually op_char
         opchars binary_op = lexer->current_opchar();
         lexer->next();
@@ -573,7 +573,7 @@ ASTNode * Parser::parse_if() {
         return Error("expected 'end' at the end of if");
     }
     lexer->next();
-    
+
     return new If(condition, (Statements *) then, (Statements *) else_body);
 }
 
@@ -604,9 +604,10 @@ ASTNode * Parser::parse_for() {
     if ( lexer->current_token() != (int)Token::RANGE){
         return Error("Expected '..' after for start value");
     }
-    
+
     lexer->next();
-    
+    lexer->next();
+    std::cout << "Current Token: " << lexer->current_token() << "\n";
     ASTNode *end = parse_expression();
     if ( end == 0 ) { return 0; }
 

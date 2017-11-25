@@ -194,6 +194,38 @@ void CodegenVisitor::visit(BooleanType& node)
 void CodegenVisitor::visit(For& node)
 {
     std::cout << "Generating For loop\n";
+    auto cond = llvm::BasicBlock::Create(TheContext, "loopcond");
+    auto loop = llvm::BasicBlock::Create(TheContext, "loop");
+    last_function->getBasicBlockList().push_back(cond);
+    auto end = llvm::BasicBlock::Create(TheContext, "loopend");
+
+    node.name->accept(*this);
+    auto iter = last_params[((Var *) node.name)->var_decl.first];
+    node.start->accept(*this);
+    Builder.CreateStore(last_constant, iter);
+    node.end->accept(*this);
+    auto endexpr = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0);
+    Builder.CreateStore(last_constant, endexpr);
+
+    Builder.CreateBr(cond);
+    Builder.SetInsertPoint(cond);
+    std::cout << "Generating For condition\n";
+    // insert condition
+    auto i = Builder.CreateLoad(iter, "i");
+    auto pred = Builder.CreateLoad(endexpr, "pred");
+    last_constant = Builder.CreateICmpSLT(i, pred, "comp");
+    Builder.CreateCondBr(last_constant, loop, end);
+    // //
+    std::cout << "Generating For body\n";
+    last_function->getBasicBlockList().push_back(loop);
+    Builder.SetInsertPoint(loop);
+    node.body->accept(*this);
+    i = Builder.CreateLoad(iter, "i");
+    auto incr = Builder.CreateAdd(i, llvm::ConstantInt::get(llvm::Type::getInt32Ty(TheContext), 1, true));
+    Builder.CreateStore(incr, iter);
+    Builder.CreateBr(cond);
+    last_function->getBasicBlockList().push_back(end);
+    Builder.SetInsertPoint(end);
 }
 
 void CodegenVisitor::visit(If& node)

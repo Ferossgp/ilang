@@ -41,6 +41,7 @@
 #include "../AST/unary.h"
 #include "../AST/assignment.h"
 #include "../AST/while.h"
+#include "../AST/for.h"
 
 // using namespace llvm;
 
