@@ -31,7 +31,7 @@ Expression * Parser::parse_integer() {
 }
 
 Expression * Parser::parse_boolean() {
-    Expression *result = new Boolean(lexer->boolean_value());
+    ASTNode *result = new Boolean(value);
     lexer->next();
     return result;
 }
@@ -64,8 +64,10 @@ ASTNode * Parser::parse_types() {
     
     if(lexer->current_token() == (int)Token::ARRAY){
         type = parse_array();
+        return type;
     } else if (lexer->current_token() == (int)Token::RECORD) {
         type = parse_record();
+        return type;        
     }
 
     if (lexer->current_token() == (int)Token::INTEGER_TYPE) {
@@ -82,8 +84,8 @@ ASTNode * Parser::parse_types() {
         lexer->next();
         return new BooleanType();
     }
-    // Check if current_token is in table
 
+    // Check if current_token is in table
     if(lexer->current_token() == (int)Token::IDENTIFIER) {
         ASTNode *type = findDecl(lexer->identifier());
         lexer->next();
@@ -116,6 +118,7 @@ RecordRef * Parser::parse_record_ref(ASTNode *assignee) {
 /// Returns Variable or RoutineCall
 ASTNode * Parser::parse_identifier_statement() {
     string identifier_name = lexer->identifier();
+    lexer->next();
     ASTNode *assignee = findDecl(identifier_name);
     if(!assignee){
         return Error("Undefined Identifier");
@@ -153,7 +156,6 @@ ASTNode * Parser::parse_identifier_statement() {
 
     // Variable Assign
     if ( lexer->current_token() != '('){
-        lexer->next();
         if ( lexer->current_token() == ':' ){
             lexer->next();
             if (lexer->current_token() == '=') {
@@ -238,6 +240,7 @@ ASTNode * Parser::parse_var() {
         return Error("Expected identifier after var");
     }
     string name = lexer->identifier();
+    
     lexer->next();
     Type *type;
 
@@ -261,7 +264,7 @@ ASTNode * Parser::parse_var() {
     }
 
     if (!type){
-        return Error("Expected 'is' or ':' keyword after 'var'");
+        return Error("Expected 'is' or ':' keyword after 'var'", name.c_str());
     }
 
     ASTNode *var = new Var(make_pair(name, type), nullptr);
@@ -277,7 +280,7 @@ ASTNode * Parser::parse_type() {
     if ( lexer->current_token() != (int)Token::IDENTIFIER ) {
         return Error("Expected identifier after 'type'");
     }
-    id_name = lexer->current_token();
+    id_name = lexer->identifier();
     lexer->next();
 
     if ( lexer->current_token() != (int)Token::IS ) {
@@ -344,6 +347,10 @@ Expression * Parser::parse_primary() {
             return parse_identifier_ref();
         case (int)Token::INTEGER:
             return parse_integer();
+        case (int)Token::FALSE_:
+            return parse_boolean(false);
+        case (int)Token::TRUE_:
+            return parse_boolean(true);
         case (int)Token::REAL:
             return parse_real();
         case '(':
@@ -382,7 +389,7 @@ ASTNode * Parser::parse_statements() {
             lexer->next();
             break;
         default:
-            fprintf(stderr, "Unknown token '%c' when expecting an expression", (char) lexer->current_token());
+            fprintf(stderr, "Unknown token '%c' when expecting an expression in statement \n", (char) lexer->current_token());
             return 0;
     }
     return new Statements{statements};
@@ -459,9 +466,7 @@ Prototype * Parser::parse_prototype() {
     if ( lexer->current_token() == (int)Token::IDENTIFIER ) {
         func_name = lexer->identifier();
         lexer->next();
-        std::cout << "cur " << lexer->identifier() << "\n";
     }
-
     if ( lexer->current_token() != '(' ) {
         return ErrorP("Expected '(' in prototype \n");
     }
@@ -480,7 +485,6 @@ Prototype * Parser::parse_prototype() {
     }
 
     if ( lexer->current_token() != ')' ) {
-        std::cout << func_name;
         return ErrorP("Expected ')' in prototype \n");
     }
 
@@ -553,20 +557,24 @@ ASTNode * Parser::parse_for() {
     if ( lexer->current_token() != (int)Token::IDENTIFIER ) {
         return Error("expected identifier after 'for'");
     }
-
-    string id_name = lexer->identifier();
+    openScope();
+    ASTNode *id_name = new Var(make_pair(lexer->identifier(), new IntegerType()), nullptr);
+    addDecl(make_pair(lexer->identifier(), id_name));
     lexer->next();
-
+ 
     if ( lexer->current_token() != (int)Token::IN) {
         return Error("expected 'in' after 'for'");
     }
     lexer->next();
 
     bool reverse = (lexer->current_token() == (int)Token::REVERSE);
-    lexer->next();
+    
+    if (reverse){
+        lexer->next();
+    }
 
     ASTNode *start = parse_expression();
-    if ( start == 0 ) { return 0; }
+    if ( !start ) { return nullptr; }
 
     if ( lexer->current_token() != '.'){
         return Error("Expected '..' after for start value");
@@ -596,7 +604,7 @@ ASTNode * Parser::parse_for() {
     }
 
     lexer->next();
-
+    closeScope();
     //TODO: Add reverse as a booolean
     if (reverse){
         return new For(id_name, end, start, (Statements*) body);
@@ -633,6 +641,7 @@ Program * Parser::parse() {
     lexer->next();
     openScope();
     while (lexer->current_token() != (int) Token::EOF_) {
+        std::cout << "Parsing: " << lexer->current_token() << "\n";
         switch (lexer->current_token()) {
             case (int)Token::VAR:
                 program_decl.push_back(parse_var());
@@ -642,6 +651,12 @@ Program * Parser::parse() {
                 break;
             case (int)Token::TYPE:
                 program_decl.push_back(parse_type());
+                break;
+            case (int)Token::FOR:
+                program_decl.push_back(parse_for());
+                break;
+            case (int)Token::WHILE:
+                program_decl.push_back(parse_while());
                 break;
             default:
                 std::cout << "Can't handle top level " << (int) lexer->current_token() << "\n";
@@ -661,13 +676,14 @@ ASTNode *Parser::findDecl(string name) {
     ASTNode *value;
     
     while (local_scope >= 0){
-        if(name_table[local_scope].find(name) != name_table[local_scope].end()) {
+        
+        if(name_table[local_scope].find(name) != name_table[local_scope].end()) {            
             return name_table[local_scope][name];    
         }
         local_scope--;
     }
 
-    return Error("Can't find declaration ");    
+    return Error("Can't find declaration ", name.c_str());    
 }
 
 void Parser::openScope(){

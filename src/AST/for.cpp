@@ -5,7 +5,7 @@
 
 using std::string;
 
-For::For(const string &name,
+For::For(ASTNode *name,
          ASTNode *start, ASTNode *end,
          Statements *body)
         : name(name), start(start), end(end), body(body) {}

@@ -34,6 +34,8 @@ enum class Token {
     INTEGER_TYPE = -23,
     BOOLEAN_TYPE = -24,
     NOT = -25,
+    TRUE_ = -26,
+    FALSE_ = -27,
 };
 
 // TODO: Implement enum also for operation chars
@@ -46,7 +48,6 @@ protected:
     string identifier_;
     int integer_value_;
     double real_value_;
-    bool  boolean_value_;
     unordered_map <char, int> op_priority_;
     unordered_map <string, Token> keyword_map_;
 
@@ -58,7 +59,6 @@ public:
     string identifier() const;
     int  integer_value() const;
     double  real_value() const;
-    bool boolean_value() const;
 
     void next();
 

@@ -38,6 +38,8 @@ Lexer::Lexer(std::istream* inputStream) : inputStream(inputStream) {
     keyword_map_["integer"] = Token::INTEGER_TYPE;
     keyword_map_["real"] = Token::REAL_TYPE;
     keyword_map_["not"] = Token::NOT;
+    keyword_map_["true"] = Token::TRUE_;
+    keyword_map_["false"] = Token::FALSE_;    
 }
 
 void Lexer::next() {
@@ -112,8 +114,6 @@ string Lexer::identifier() const { return identifier_; }
 int Lexer::integer_value() const { return integer_value_; }
 
 double Lexer::real_value() const { return real_value_; }
-
-bool Lexer::boolean_value() const { return boolean_value_; }
 
 int Lexer::token_priority() {
     if (!isascii(current_token_) ) {
