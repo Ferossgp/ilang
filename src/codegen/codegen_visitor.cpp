@@ -219,7 +219,9 @@ void CodegenVisitor::visit(Unary& node) {}
 
 void CodegenVisitor::visit(Var& node)
 {
-
+    auto name = node.var_decl.first.c_str();
+    auto v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
+    last_params[name] = v;
 }
 
 void CodegenVisitor::visit(Variable& node)
