@@ -27,6 +27,8 @@
 #include "../AST/program.h"
 #include "../AST/boolean.h"
 #include "../AST/if.h"
+#include "../AST/unary.h"
+#include "../AST/assignment.h"
 
 // using namespace llvm;
 

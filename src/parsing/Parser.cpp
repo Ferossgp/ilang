@@ -159,6 +159,7 @@ ASTNode * Parser::parse_identifier_statement() {
         if ( lexer->current_token() == ':' ){
             lexer->next();
             if (lexer->current_token() == '=') {
+                lexer->next();
                 Expression *value = parse_expression();
                 return new Assignment(assignee, value);
             }

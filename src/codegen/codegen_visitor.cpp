@@ -82,11 +82,23 @@ void CodegenVisitor::visit(Prototype& p)
 
 }
 
-void CodegenVisitor::visit(ArrayDecl& node) {}
+void CodegenVisitor::visit(ArrayDecl& node)
+{
+    std::cout << "Generating ArrayDecl\n";
+}
 
 void CodegenVisitor::visit(Assignment& node)
 {
-
+    std::cout << "Generating Assignment\n";
+    if (!node.value) {
+        std::cout << "No right side\n";
+    }
+    node.value->accept(*this);
+    auto name = ((Var *) node.variable)->var_decl.first;
+    // auto a = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, "tmp");
+    // last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, 3, true));
+    Builder.CreateStore(last_constant, last_params[name]);
+    std::cout << "Assignment generated\n";
 }
 
 void CodegenVisitor::visit(Binary& node)
@@ -141,31 +153,45 @@ void CodegenVisitor::visit(Boolean& node)
 {
     last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(1, node.value ? 1 : 0, false));
 }
-void CodegenVisitor::visit(BooleanType& node) {}
+void CodegenVisitor::visit(BooleanType& node)
+{
+    std::cout << "Generating BooleanType\n";
+}
 
 void CodegenVisitor::visit(For& node)
 {
-
+    std::cout << "Generating For loop\n";
 }
 
 void CodegenVisitor::visit(If& node)
 {
+    std::cout << "Generating If Statement\n";
 }
 
 void CodegenVisitor::visit(Integer& node)
 {
+    std::cout << "Generating Integer\n";
     last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, node.value, true));
 }
 
-void CodegenVisitor::visit(IntegerType& node) {}
+void CodegenVisitor::visit(IntegerType& node)
+{
+    std::cout << "Generating Integer Type\n";
+}
 
 void CodegenVisitor::visit(Real& node)
 {
     last_constant = llvm::ConstantFP::get(TheContext, llvm::APFloat(node.value));
 }
 
-void CodegenVisitor::visit(RealType& node) {}
-void CodegenVisitor::visit(RecordDecl& node) {}
+void CodegenVisitor::visit(RealType& node)
+{
+    std::cout << "Generating Real Type\n";
+}
+void CodegenVisitor::visit(RecordDecl& node)
+{
+    std::cout << "Generating Record Declaration\n";
+}
 
 void CodegenVisitor::visit(Routine& node)
 {
@@ -221,14 +247,22 @@ void CodegenVisitor::visit(RoutineCall& node)
     last_constant = Builder.CreateCall(f, ArgsV, "call");
 }
 
-void CodegenVisitor::visit(TypeDecl& node) {}
+void CodegenVisitor::visit(TypeDecl& node)
+{
+    std::cout << "Generating Type Decl\n";
+}
 
-void CodegenVisitor::visit(Unary& node) {}
+void CodegenVisitor::visit(Unary& node)
+{
+    std::cout << "Generating Unary ";
+    std::cout << node.opcode << "\n";
+
+}
 
 void CodegenVisitor::visit(Var& node)
 {
     std::cout << "Creating Var declaration\n";
-    auto name = node.var_decl.first.c_str();
+    auto name = node.var_decl.first;
     auto v = Builder.CreateAlloca(llvm::Type::getInt32Ty(TheContext), 0, name);
 
     last_params[name] = v;
@@ -253,18 +287,19 @@ void CodegenVisitor::visit(Return& node) {
 }
 
 void CodegenVisitor::visit(While& node) {
-
+    std::cout << "Generating While loop\n";
 }
 
 void CodegenVisitor::visit(RecordRef& node) {
-
+    std::cout << "Generating Record Reference\n";
 }
 
 void CodegenVisitor::visit(ArrayRef& node) {
-
+    std::cout << "Generating ArrayRef\n";
 }
 
 void CodegenVisitor::visit(Program& node) {
+    std::cout << "Generating Program\n";
     for (auto& n : node.program) {
         n->accept(*this);
     }
@@ -281,11 +316,14 @@ void CodegenVisitor::visit(Statements& node) {
 }
 
 void CodegenVisitor::visit(Void& node) {
-
+    std::cout << "Generating Void\n";
 }
 
 void CodegenVisitor::visit(Undefined& node) {
-
+    std::cout << "Generating Undefined\n";
 }
 
-void CodegenVisitor::visit(Cast& node) {}
+void CodegenVisitor::visit(Cast& node)
+{
+    std::cout << "Generating Cast\n";
+}
