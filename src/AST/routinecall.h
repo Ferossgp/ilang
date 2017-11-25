@@ -9,10 +9,10 @@ using std::vector;
 
 class RoutineCall : public Expression {
 public:
-    ASTNode *callee;
-    vector<ASTNode*> args;
+    Routine *callee;
+    vector<Expression*> args;
 
-    RoutineCall(ASTNode *callee, vector<ASTNode*> &args);
+    RoutineCall(Routine *callee, vector<Expression*> &args);
     void accept(Visitor &v) { v.visit(*this); };
 };
 
