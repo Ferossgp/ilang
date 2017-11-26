@@ -15,6 +15,7 @@
 #include "../AST/real.h"
 #include "../AST/realtype.h"
 #include "../AST/recorddecl.h"
+#include "../AST/recordref.h"
 #include "../AST/routine.h"
 #include "../AST/routinecall.h"
 #include "../AST/typedecl.h"
@@ -38,16 +39,21 @@ public:
     void visit(If& node);
     void visit(Integer& node);
     void visit(IntegerType& node);
+    void visit(Program& node);
     void visit(Real& node);
     void visit(RealType& node);
     void visit(RecordDecl& node);
+    void visit(RecordRef& node);
+    void visit(Return& node);
     void visit(Routine& node);
     void visit(RoutineCall& node);
+    void visit(Statements& node);
     void visit(TypeDecl& node);
     void visit(Unary& node);
     void visit(Undefined& node);
     void visit(Var& node);
     void visit(Variable& node);
+    void visit(Void& node);
     void visit(While& node);
 
     void unwrap(Expression *&value);
