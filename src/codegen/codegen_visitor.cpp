@@ -1,6 +1,9 @@
 #include "codegen_visitor.h"
 #include <iostream>
 
+// TODO: array types generation
+// TODO: relational operators
+// TODO: Type deduced generation?
 CodegenVisitor::CodegenVisitor(const std::string& filename): Builder{TheContext}, output{filename, EC, llvm::sys::fs::F_None}
 {
     TheModule = llvm::make_unique<llvm::Module>("my cool jit", TheContext);
@@ -307,6 +310,14 @@ void CodegenVisitor::visit(RealType& node)
 void CodegenVisitor::visit(RecordDecl& node)
 {
     std::cout << "Generating Record Declaration\n";
+    std::vector<llvm::Type*> members;
+    for (auto& var : node.refs) {
+        auto v = (Var *) var;
+        members.push_back(get_type(v->var_decl.second->type));
+    }
+    // llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
+    auto rec = llvm::StructType::create(TheContext, members, "struct1", false);
+    structs["struct1"] = rec;
 }
 
 void CodegenVisitor::visit(Routine& node)
@@ -329,6 +340,8 @@ void CodegenVisitor::visit(Routine& node)
         llvm::AllocaInst *v;
         if (var->var_decl.second->type == types::Array) {
             v = Builder.CreateAlloca(llvm::Type::getInt32PtrTy(TheContext));
+        // } else if {
+        //     v = Builder.CreateAlloca()
         } else {
             v = Builder.CreateAlloca(get_type(var->var_decl.second->type), 0, name);
         }
@@ -366,12 +379,14 @@ void CodegenVisitor::visit(RoutineCall& node)
         ArgsV.push_back(last_constant);
     }
 
-    last_constant = Builder.CreateCall(f, ArgsV, "call");
+    last_constant = Builder.CreateCall(f, ArgsV);
+    std::cout << "Call Generated\n";
 }
 
 void CodegenVisitor::visit(TypeDecl& node)
 {
     std::cout << "Generating Type Decl\n";
+    node.type->accept(*this);
 }
 
 void CodegenVisitor::visit(Unary& node)
