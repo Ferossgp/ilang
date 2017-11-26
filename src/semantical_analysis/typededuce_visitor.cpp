@@ -16,13 +16,11 @@ void TypeDeduceVisitor::visit(Binary& node) {
     if (!Type::isPrimitive(*node.lhs->type) || !Type::isPrimitive(*node.rhs->type)) {
         reportError("error: TypeDeduceVisitor: binary with non-primitive");
     }
-    bool isMath = strchr("+-/*", node.opchar);
-    // TODO: real `isLogic`
-    bool isLogic = false;
-    // TODO: real `isCmp`
-    bool isCmp = false;
-    // TODO: real `isEq`
-    bool isEq = false;
+    auto op = node.opchar;
+    bool isMath = op == opchars::DIV || op == opchars::MINUS || op == opchars::MOD || op == opchars::MUL || op == opchars::PLUS;
+    bool isLogic = op == opchars::AND || op == opchars::OR || op == opchars::XOR;
+    bool isCmp = op == opchars::HIGH || op == opchars::HIGHEQ || op == opchars::LESS || op == opchars::LESSEQ;
+    bool isEq = op == opchars::EQUAL || op == opchars::NOTEQ;
     if (isMath + isLogic + isCmp + isEq != 1) {
         reportError("bug: TypeDeduceVisitor: Binary node bad opcode");
     }
