@@ -4,7 +4,7 @@
 /*
     In routine's prototype we can do nothing
 */
-void TypeCheckingVisitor::visit(Prototype& node)
+void TypeCheckingVisitor::visit(Prototype& node) 
 {
     return;
 }
@@ -92,6 +92,7 @@ void TypeCheckingVisitor::visit(Assignment& node)
         }
         return;
     }
+
     // else
     // {
     //     reportError("Trying to assign incompatible types\n");
@@ -101,7 +102,7 @@ void TypeCheckingVisitor::visit(Assignment& node)
 /*
     Everything was checked during the previous pass
 */
-void TypeCheckingVisitor::visit(Binary& node)
+void TypeCheckingVisitor::visit(Binary& node) 
 {
     return;
 }
@@ -134,7 +135,7 @@ void TypeCheckingVisitor::visit(Cast& node)
     Check that expression in FOR is of integer type
     Go through statements in FOR
 */
-void TypeCheckingVisitor::visit(For& node)
+void TypeCheckingVisitor::visit(For& node) 
 {
     auto from = (Expression*) node.start;
     auto until = (Expression*) node.end;
@@ -148,7 +149,7 @@ void TypeCheckingVisitor::visit(For& node)
     Check that expression in IF is of boolean type
     Go through all statements in both branches
 */
-void TypeCheckingVisitor::visit(If& node)
+void TypeCheckingVisitor::visit(If& node) 
 {
     std::cout << "FOO\n";
     auto expr = (Expression*) node.condition;
@@ -164,7 +165,7 @@ void TypeCheckingVisitor::visit(If& node)
 /*
     Can do nothing
 */
-void TypeCheckingVisitor::visit(Integer& node)
+void TypeCheckingVisitor::visit(Integer& node) 
 {
     return;
 }
@@ -172,10 +173,12 @@ void TypeCheckingVisitor::visit(Integer& node)
 /*
     Can do nothing
 */
+
 void TypeCheckingVisitor::visit(IntegerType& node)
 {
     return;
 }
+
 
 void TypeCheckingVisitor::visit(Real& node)
 {
@@ -192,6 +195,7 @@ void TypeCheckingVisitor::visit(RealType& node)
 /*
     Go through all declarations in the record
 */
+
 void TypeCheckingVisitor::visit(RecordDecl& node)
 {
     for (int i = 0; i < node.refs.size(); i++)
@@ -286,7 +290,6 @@ void TypeCheckingVisitor::visit(While& node)
     auto expr = (Expression*) node.expression;
     if (expr->type->type != types::Boolean)
         reportError("Expression in WHILE is not of boolean type!\n");
-
     node.body->accept(*this);
 }
 
@@ -345,3 +348,4 @@ void TypeCheckingVisitor::visit(Void& node)
 {
     return;
 }
+
