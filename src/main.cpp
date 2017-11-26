@@ -71,8 +71,6 @@ int main(int argc, char *argv[]) {
     Parser parser(&lexer);
     auto program = parser.parse();
 
-    // PrintNameVisitor pnv;
-    // program->accept(pnv);
 
     TypeDeduceVisitor().visit(*program);
 
