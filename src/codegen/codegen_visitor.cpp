@@ -73,7 +73,12 @@ void CodegenVisitor::visit(Prototype& p)
     }
 
     // function type generation
-    auto ft = llvm::FunctionType::get(get_type(p.type->type), arg_types, false);
+    llvm::FunctionType *ft;
+    if (p.type->type == types::Array) {
+        ft = llvm::FunctionType::get(llvm::Type::getInt32PtrTy(TheContext), arg_types, false);
+    } else {
+        ft = llvm::FunctionType::get(get_type(p.type->type), arg_types, false);
+    }
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
 
 
@@ -380,12 +385,35 @@ void CodegenVisitor::visit(Var& node)
 {
     std::cout << "Creating Var declaration\n";
     auto name = node.var_decl.first;
-    auto v = Builder.CreateAlloca(get_type(node.var_decl.second->type), 0, name);
-
-    if (node.body) {
-        node.body->accept(*this);
+    llvm::AllocaInst *v;
+    if (node.var_decl.second->type == types::Array) {
+        std::cout << "Generating Array declaration\n";
+        v = Builder.CreateAlloca(llvm::Type::getInt32PtrTy(TheContext), 0, name);
+        llvm::Function *f = TheModule->getFunction("malloc");
+        std::vector<llvm::Value*> ArgsV;
+        auto array = (ArrayDecl *) node.var_decl.second;
+        array->expression->accept(*this);
+        last_constant = Builder.CreateMul(
+            llvm::ConstantInt::get(TheContext, llvm::APInt(32, 4, true)),
+            last_constant
+        );
+        last_constant = Builder.CreateZExt(last_constant, llvm::Type::getInt64Ty(TheContext));
+        ArgsV.push_back(last_constant);
+        auto ptr = Builder.CreateCall(f, ArgsV);
+        last_constant = Builder.CreateBitCast(ptr, llvm::Type::getInt32PtrTy(TheContext));
         Builder.CreateStore(last_constant, v);
+    } else {
+        std::cout << "Generating variable declaration\n";
+        v = Builder.CreateAlloca(get_type(node.var_decl.second->type), 0, name);
+        if (node.body) {
+            std::cout << "Generating initialization of variable\n";
+            node.body->accept(*this);
+            Builder.CreateStore(last_constant, v);
+        }
     }
+
+
+
     last_params[name] = v;
     std::cout << "Created Var declaration\n";
 }
@@ -451,9 +479,17 @@ void CodegenVisitor::visit(ArrayRef& node) {
 
 void CodegenVisitor::visit(Program& node) {
     std::cout << "Generating Program\n";
+
+    //built in functions
+    std::vector<llvm::Type*> arg_types;
+    arg_types.push_back(llvm::Type::getInt64Ty(TheContext));
+    auto ft = llvm::FunctionType::get(llvm::Type::getInt8PtrTy(TheContext), arg_types, false);
+    llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "malloc", TheModule.get());
+    //
     for (auto& n : node.program) {
         n->accept(*this);
     }
+
     std::cout << "Program Generated\n";
 }
 

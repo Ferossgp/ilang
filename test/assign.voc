@@ -1,0 +1,5 @@
+routine ass(a integer): integer is
+    var b : integer
+    b := a
+    return a
+end
