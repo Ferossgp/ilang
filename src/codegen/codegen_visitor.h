@@ -44,6 +44,9 @@
 #include "../AST/for.h"
 #include "../AST/arraydecl.h"
 #include "../AST/arrayref.h"
+#include "../AST/recorddecl.h"
+#include "../AST/recordref.h"
+#include "../AST/typedecl.h"
 
 // using namespace llvm;
 
@@ -60,6 +63,7 @@ private:
     llvm::Value *last_constant;
     llvm::Function *last_function;
     std::unordered_map<std::string, llvm::Value*> last_params;
+    std::unordered_map<std::string, llvm::StructType*> structs;
     bool is_lvalue{false};
     // std::unordered_map<std::string, llvm::Value*> last_variables;
 

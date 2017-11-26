@@ -1,0 +1,11 @@
+type Point is record
+    var x: integer
+    var y: integer
+end
+
+routine new_point(x integer, y integer): Point is
+    var p: Point
+    p.x := 3
+    p.y := 5
+    return p
+end
