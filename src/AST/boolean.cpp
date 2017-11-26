@@ -3,4 +3,5 @@
 
 Boolean::Boolean(bool value) : value(value) {
     type = new BooleanType();
+    isConst = true;
 }

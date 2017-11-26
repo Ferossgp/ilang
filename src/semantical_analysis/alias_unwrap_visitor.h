@@ -1,8 +1,4 @@
-#ifndef TYPE_CHECKING_VSTR
-#define TYPE_CHECKING_VSTR
-
 #include "../visitor.h"
-#include "error.h"
 
 #include "../AST/prototype.h"
 #include "../AST/arraydecl.h"
@@ -19,24 +15,20 @@
 #include "../AST/real.h"
 #include "../AST/realtype.h"
 #include "../AST/recorddecl.h"
-#include "../AST/recordref.h"
-#include "../AST/return.h"
 #include "../AST/routine.h"
 #include "../AST/routinecall.h"
-#include "../AST/program.h"
-#include "../AST/statements.h"
 #include "../AST/typedecl.h"
 #include "../AST/unary.h"
 #include "../AST/var.h"
 #include "../AST/variable.h"
-#include "../AST/void.h"
 #include "../AST/while.h"
 
-class TypeCheckingVisitor : public Visitor
+class AliasUnwrapVisitor : public Visitor
 {
 public:
     void visit(Prototype& node);
     void visit(ArrayDecl& node);
+    void visit(ArrayRef& node);
     void visit(Assignment& node);
     void visit(Binary& node);
     void visit(Boolean& node);
@@ -57,12 +49,5 @@ public:
     void visit(Var& node);
     void visit(Variable& node);
     void visit(While& node);
-    void visit(Return& node);
-    void visit(RecordRef& node);
-    void visit(ArrayRef& node);
-    void visit(Program& node);
-    void visit(Statements& node);
-    void visit(Void& node);
+    void unwrap(Type *&type);
 };
-
-#endif

@@ -5,8 +5,9 @@
 
 class ArrayRef : public Expression {
 public:
-    ASTNode *array, *pos;
-    ArrayRef(ASTNode *array, ASTNode *pos): array{array}, pos{pos} {};
+    ASTNode *array;
+    Expression *pos;
+    ArrayRef(ASTNode *array, Expression *pos): array{array}, pos{pos} {};
     void accept(Visitor &v) { v.visit(*this); };
 };
 

@@ -4,16 +4,15 @@
 #include <vector>
 
 #include "expression.h"
-#include "routine.h"
 
 using std::vector;
 
 class RoutineCall : public Expression {
 public:
     Routine *callee;
-    vector<ASTNode*> args;
+    vector<Expression*> args;
 
-    RoutineCall(Routine *callee, vector<ASTNode*> &args);
+    RoutineCall(Routine *callee, vector<Expression*> &args);
     void accept(Visitor &v) { v.visit(*this); };
 };
 
