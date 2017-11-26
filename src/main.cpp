@@ -65,9 +65,6 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-
-    // Prototype p{"hello", std::vector<ASTNode*>{}};
-    // v.visit(p);
     std::ifstream fs(args.input);
     Lexer lexer(&fs);
     Parser parser(&lexer);
