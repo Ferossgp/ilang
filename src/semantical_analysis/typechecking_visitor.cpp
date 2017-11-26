@@ -4,7 +4,7 @@
 /*
     In routine's prototype we can do nothing
 */
-void TypeCheckingVisitor::visit(Prototype& node) 
+void TypeCheckingVisitor::visit(Prototype& node)
 {
     return;
 }
@@ -12,7 +12,7 @@ void TypeCheckingVisitor::visit(Prototype& node)
 /*
     Check that array's size is an integer constant
 */
-void TypeCheckingVisitor::visit(ArrayDecl& node) 
+void TypeCheckingVisitor::visit(ArrayDecl& node)
 {
     auto sizeExpression = (Expression*) node.expression;
     if (sizeExpression->type->type != types::Integer)
@@ -25,7 +25,7 @@ void TypeCheckingVisitor::visit(ArrayDecl& node)
     Check that both sides of the assignment are of the same or
     compatible types. If second variant, cast it
 */
-void TypeCheckingVisitor::visit(Assignment& node) 
+void TypeCheckingVisitor::visit(Assignment& node)
 {
     // Variable, array or record reference
     auto left = (Expression*) node.variable;
@@ -92,16 +92,16 @@ void TypeCheckingVisitor::visit(Assignment& node)
         }
         return;
     }
-    else 
-    {
-        reportError("Trying to assign incompatible types\n");
-    }
+    // else
+    // {
+    //     reportError("Trying to assign incompatible types\n");
+    // }
 }
 
 /*
     Everything was checked during the previous pass
 */
-void TypeCheckingVisitor::visit(Binary& node) 
+void TypeCheckingVisitor::visit(Binary& node)
 {
     return;
 }
@@ -134,13 +134,13 @@ void TypeCheckingVisitor::visit(Cast& node)
     Check that expression in FOR is of integer type
     Go through statements in FOR
 */
-void TypeCheckingVisitor::visit(For& node) 
+void TypeCheckingVisitor::visit(For& node)
 {
     auto from = (Expression*) node.start;
     auto until = (Expression*) node.end;
     if (from->type->type != types::Integer || until->type->type != types::Integer)
         reportError("Variable in FOR loop is not of integer type!\n");
-    
+
     node.body->accept(*this);
 }
 
@@ -148,7 +148,7 @@ void TypeCheckingVisitor::visit(For& node)
     Check that expression in IF is of boolean type
     Go through all statements in both branches
 */
-void TypeCheckingVisitor::visit(If& node) 
+void TypeCheckingVisitor::visit(If& node)
 {
     std::cout << "FOO\n";
     auto expr = (Expression*) node.condition;
@@ -164,7 +164,7 @@ void TypeCheckingVisitor::visit(If& node)
 /*
     Can do nothing
 */
-void TypeCheckingVisitor::visit(Integer& node) 
+void TypeCheckingVisitor::visit(Integer& node)
 {
     return;
 }
@@ -172,19 +172,19 @@ void TypeCheckingVisitor::visit(Integer& node)
 /*
     Can do nothing
 */
-void TypeCheckingVisitor::visit(IntegerType& node) 
+void TypeCheckingVisitor::visit(IntegerType& node)
 {
     return;
 }
 
-void TypeCheckingVisitor::visit(Real& node) 
+void TypeCheckingVisitor::visit(Real& node)
 {
     return;
 }
 /*
     Can do nothing
 */
-void TypeCheckingVisitor::visit(RealType& node) 
+void TypeCheckingVisitor::visit(RealType& node)
 {
     return;
 }
@@ -192,7 +192,7 @@ void TypeCheckingVisitor::visit(RealType& node)
 /*
     Go through all declarations in the record
 */
-void TypeCheckingVisitor::visit(RecordDecl& node) 
+void TypeCheckingVisitor::visit(RecordDecl& node)
 {
     for (int i = 0; i < node.refs.size(); i++)
         node.refs[i]->accept(*this);
@@ -201,7 +201,7 @@ void TypeCheckingVisitor::visit(RecordDecl& node)
 /*
     Go through all routine's statements
 */
-void TypeCheckingVisitor::visit(Routine& node) 
+void TypeCheckingVisitor::visit(Routine& node)
 {
     // Go through all statements in body
     lastVisitedRoutine = &node;
@@ -211,7 +211,7 @@ void TypeCheckingVisitor::visit(Routine& node)
 /*
     Check that arguments are exactly as in the routine declaration
 */
-void TypeCheckingVisitor::visit(RoutineCall& node) 
+void TypeCheckingVisitor::visit(RoutineCall& node)
 {
     auto actualArguments = node.args;
     auto expectedArguments = node.callee->proto->args;
@@ -220,13 +220,13 @@ void TypeCheckingVisitor::visit(RoutineCall& node)
     // Check arguments
     auto argsLength = expectedArguments.size();
     if (actualArguments.size() != argsLength)
-        reportError("Arguments of function " + routineName + " are incorrect! Expected " + 
+        reportError("Arguments of function " + routineName + " are incorrect! Expected " +
             std::to_string(argsLength) + ", got " + std::to_string(actualArguments.size()) + "\n");
 
     for (int i = 0; i < argsLength; i++)
     {
         if (((Expression*) expectedArguments[i])->type->type != ((Expression*) actualArguments[i])->type->type)
-            reportError("Arguments of function " + routineName + 
+            reportError("Arguments of function " + routineName +
                 " are incorrect! Expected another type on " + std::to_string(i) + "\n");
     }
 }
@@ -234,7 +234,7 @@ void TypeCheckingVisitor::visit(RoutineCall& node)
 /*
     Can do nothing
 */
-void TypeCheckingVisitor::visit(TypeDecl& node) 
+void TypeCheckingVisitor::visit(TypeDecl& node)
 {
     return;
 }
@@ -242,7 +242,7 @@ void TypeCheckingVisitor::visit(TypeDecl& node)
 /*
     Can do nothing
 */
-void TypeCheckingVisitor::visit(Unary& node) 
+void TypeCheckingVisitor::visit(Unary& node)
 {
     return;
 }
@@ -250,7 +250,7 @@ void TypeCheckingVisitor::visit(Unary& node)
 /*
     We cannot reach the undefined in normal case
 */
-void TypeCheckingVisitor::visit(Undefined& node) 
+void TypeCheckingVisitor::visit(Undefined& node)
 {
     reportError("Undefined reached during the type checking!\n");
 }
@@ -272,7 +272,7 @@ void TypeCheckingVisitor::visit(Var& node)
 /*
     Can do nothing
 */
-void TypeCheckingVisitor::visit(Variable& node) 
+void TypeCheckingVisitor::visit(Variable& node)
 {
     return;
 }
@@ -281,19 +281,19 @@ void TypeCheckingVisitor::visit(Variable& node)
     Check expression in WHILE for boolean
     Go through statements in loop
 */
-void TypeCheckingVisitor::visit(While& node) 
+void TypeCheckingVisitor::visit(While& node)
 {
     auto expr = (Expression*) node.expression;
     if (expr->type->type != types::Boolean)
         reportError("Expression in WHILE is not of boolean type!\n");
-    
+
     node.body->accept(*this);
 }
 
 /*
     Check that routine's return value is the same as declared
 */
-void TypeCheckingVisitor::visit(Return& node) 
+void TypeCheckingVisitor::visit(Return& node)
 {
     if (*((Expression*)node.expression)->type != *lastVisitedRoutine->proto->type)
         reportError("Routine " + lastVisitedRoutine->proto->name + " has incorrect " +
@@ -303,7 +303,7 @@ void TypeCheckingVisitor::visit(Return& node)
 /*
     Can do nothing
 */
-void TypeCheckingVisitor::visit(RecordRef& node) 
+void TypeCheckingVisitor::visit(RecordRef& node)
 {
     return;
 }
@@ -311,7 +311,7 @@ void TypeCheckingVisitor::visit(RecordRef& node)
 /*
     Check that called position is integer
 */
-void TypeCheckingVisitor::visit(ArrayRef& node) 
+void TypeCheckingVisitor::visit(ArrayRef& node)
 {
     auto position = (Expression*) node.pos;
     if (position->type->type != types::Integer)
@@ -321,7 +321,7 @@ void TypeCheckingVisitor::visit(ArrayRef& node)
 /*
     Entry point
 */
-void TypeCheckingVisitor::visit(Program& node) 
+void TypeCheckingVisitor::visit(Program& node)
 {
     for (auto statement: node.program)
     {
@@ -332,7 +332,7 @@ void TypeCheckingVisitor::visit(Program& node)
 /*
     Visit every statement
 */
-void TypeCheckingVisitor::visit(Statements& node) 
+void TypeCheckingVisitor::visit(Statements& node)
 {
     for (auto statement : node.statements)
         statement->accept(*this);
@@ -341,7 +341,7 @@ void TypeCheckingVisitor::visit(Statements& node)
 /*
     Can do nothing
 */
-void TypeCheckingVisitor::visit(Void& node) 
+void TypeCheckingVisitor::visit(Void& node)
 {
     return;
 }
