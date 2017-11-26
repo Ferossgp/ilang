@@ -1,9 +1,10 @@
 #include <cstdio>
+#include <iostream>
 
 #include "Errors.h"
 
 ASTNode *Error(const char *message) {
-    fprintf(stderr, "Error, %s\n", message);
+    std::cout << "Error: " << message << "\n";
     return 0;
 }
 ASTNode *Error(const char *message, const char *name) {

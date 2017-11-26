@@ -140,8 +140,8 @@ ASTNode * Parser::parse_identifier_statement() {
         auto ref = parse_record_ref(assignee);
         if ( lexer->current_token() == ':' ){
             lexer->next();
-            if (lexer->current_token() == (int)Token::EQUAL) {  
-                lexer->next();              
+            if (lexer->current_token() == (int)Token::EQUAL) {
+                lexer->next();
                 Expression *value = parse_expression();
                 return new Assignment(ref, value, types::Record);
             }
@@ -351,7 +351,7 @@ Expression * Parser::parse_primary() {
         case '(':
             return parse_paren();
         default:
-            fprintf(stderr, "Unknown token '%c' when expecting an expression", (char) lexer->current_token());
+            std::cout << "Unknown token " << (int)lexer->current_token() << "\n";
             return 0;
     }
 }
@@ -388,7 +388,7 @@ ASTNode * Parser::parse_statements() {
                 return new Statements(statements);
                 break;
             default:
-                fprintf(stderr, "Unknown token '%c' when expecting an expression in statement \n", (char) lexer->current_token());
+                std::cout << "Unknown token " << (int)lexer->current_token() << "\n";
                 return 0;
         }
     }
@@ -397,7 +397,8 @@ ASTNode * Parser::parse_statements() {
 Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LHS) {
     while (1) {
         if (lexer->current_token() == (int)Token::RANGE) {
-            return nullptr;
+            std::cout << "Unexpected Range RHS\n";
+            return LHS;
         }
         int token_priority = lexer->token_priority();
 
@@ -424,6 +425,7 @@ Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LH
 
 Expression * Parser::parse_unary() {
     if (lexer->current_token() == (int)Token::RANGE) {
+        std::cout << "Unexpected Range\n";
         return nullptr;
     }
     if ( !isascii(lexer->current_token())
@@ -445,6 +447,7 @@ Expression * Parser::parse_unary() {
 Expression * Parser::parse_expression() {
     Expression *LHS = parse_unary();
     if ( !LHS ) { return nullptr; }
+    std::cout << "Parsing RHS\n";
     return parse_binary_op_rhs(0, LHS);
 }
 
@@ -573,7 +576,7 @@ ASTNode * Parser::parse_if() {
 
 ASTNode * Parser::parse_for() {
     lexer->next();
-
+    std::cout << "Parsing for\n";
     if ( lexer->current_token() != (int)Token::IDENTIFIER ) {
         return Error("expected identifier after 'for'");
     }
@@ -592,14 +595,19 @@ ASTNode * Parser::parse_for() {
     if (reverse){
         lexer->next();
     }
-
+    std::cout << "Parsing Start: "  << (int) lexer->current_token() << "\n";
     ASTNode *start = parse_expression();
-    if ( !start ) { return nullptr; }
+    std::cout << "Parsed Start: "  << (int) lexer->current_token() << "\n";
+    if ( !start ) {
+        std::cout << "Start is null\n";
+        return nullptr;
+    }
     if ( lexer->current_token() != (int)Token::RANGE){
         return Error("Expected '..' after for start value");
     }
 
     lexer->next();
+
     lexer->next();
     // lexer->next();
     std::cout << "Current Token: " << lexer->current_token() << "\n";
