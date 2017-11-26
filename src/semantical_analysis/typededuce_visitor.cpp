@@ -20,19 +20,15 @@ void TypeDeduceVisitor::visit(Binary& node) {
     if (!Type::isPrimitive(*node.lhs->type) || !Type::isPrimitive(*node.rhs->type)) {
         reportError("error: TypeDeduceVisitor: binary with non-primitive");
     }
-    auto op = node.opchar;
-    bool isMath = op == opchars::DIV || op == opchars::MINUS || op == opchars::MOD || op == opchars::MUL || op == opchars::PLUS;
-    bool isLogic = op == opchars::AND || op == opchars::OR || op == opchars::XOR;
-    bool isCmp = op == opchars::HIGH || op == opchars::HIGHEQ || op == opchars::LESS || op == opchars::LESSEQ;
-    bool isEq = op == opchars::EQUAL || op == opchars::NOTEQ;
-    if (isMath + isLogic + isCmp + isEq != 1) {
+    BinaryOpcode op{node.opchar};
+    if (op.isMath + op.isLogic + op.isCmp + op.isEq != 1) {
         reportError("bug: TypeDeduceVisitor: Binary node bad opcode");
     }
     auto ltype = node.lhs->type;
     auto rtype = node.rhs->type;
-    if (isMath || isCmp || isEq) {
+    if (op.isMath || op.isCmp || op.isEq) {
         if (*ltype == *rtype) {
-            if (!isEq && *ltype == types::Boolean) {
+            if (!op.isEq && *ltype == types::Boolean) {
                 node.lhs = new Cast(node.lhs, new IntegerType());
                 node.rhs = new Cast(node.rhs, new IntegerType());
             }
@@ -45,7 +41,7 @@ void TypeDeduceVisitor::visit(Binary& node) {
             }
         }
     }
-    if (isLogic) {
+    if (op.isLogic) {
         if (*ltype != types::Boolean) {
             node.lhs = new Cast(node.lhs, new BooleanType());
         }
@@ -56,7 +52,7 @@ void TypeDeduceVisitor::visit(Binary& node) {
     if (*node.lhs->type != *node.rhs->type) {
         reportError("bug: TypeDeduceVisitor: Binary node math cmp non-equal");
     }
-    node.type = isMath ? node.lhs->type : new BooleanType();
+    node.type = op.isMath ? node.lhs->type : new BooleanType();
 }
 void TypeDeduceVisitor::visit(Boolean& node) {
     reportError("bug: TypeDeduceVisitor: visit Boolean node");
