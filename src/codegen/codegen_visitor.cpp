@@ -74,9 +74,15 @@ void CodegenVisitor::visit(Prototype& p)
 
     // function type generation
     llvm::FunctionType *ft;
+
     if (p.type->type == types::Array) {
+        std::cout << "Generating Array return\n";
         ft = llvm::FunctionType::get(llvm::Type::getInt32PtrTy(TheContext), arg_types, false);
+    } else if (p.type->type == types::Record) {
+        std::cout << "Generating Record return\n";
+        ft = llvm::FunctionType::get(llvm::PointerType::getUnqual(structs["struct1"]), arg_types, false);
     } else {
+        std::cout << "Generating Built-in return " << (int)(p.type->type) << "\n";
         ft = llvm::FunctionType::get(get_type(p.type->type), arg_types, false);
     }
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
@@ -110,6 +116,13 @@ void CodegenVisitor::visit(Assignment& node)
         node.variable->accept(*this);
         is_lvalue = false;
         store_location = last_constant;
+        break;
+    case types::Record:
+        is_lvalue = true;
+        node.variable->accept(*this);
+        is_lvalue = false;
+        store_location = last_constant;
+        break;
     }
     Builder.CreateStore(expr, store_location);
 
@@ -306,7 +319,19 @@ void CodegenVisitor::visit(RealType& node)
 }
 void CodegenVisitor::visit(RecordDecl& node)
 {
+    if (structs.find("struct1") != structs.end()) {
+        std::cout << "Struct already generated\n";
+        return;
+    }
     std::cout << "Generating Record Declaration\n";
+    std::vector<llvm::Type*> members;
+    for (auto& var : node.refs) {
+        auto v = (Var *) var;
+        members.push_back(get_type(v->var_decl.second->type));
+    }
+    // llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
+    auto rec = llvm::StructType::create(TheContext, members, "struct1", false);
+    structs["struct1"] = rec;
 }
 
 void CodegenVisitor::visit(Routine& node)
@@ -329,6 +354,8 @@ void CodegenVisitor::visit(Routine& node)
         llvm::AllocaInst *v;
         if (var->var_decl.second->type == types::Array) {
             v = Builder.CreateAlloca(llvm::Type::getInt32PtrTy(TheContext));
+        // } else if {
+        //     v = Builder.CreateAlloca()
         } else {
             v = Builder.CreateAlloca(get_type(var->var_decl.second->type), 0, name);
         }
@@ -366,12 +393,14 @@ void CodegenVisitor::visit(RoutineCall& node)
         ArgsV.push_back(last_constant);
     }
 
-    last_constant = Builder.CreateCall(f, ArgsV, "call");
+    last_constant = Builder.CreateCall(f, ArgsV);
+    std::cout << "Call Generated\n";
 }
 
 void CodegenVisitor::visit(TypeDecl& node)
 {
     std::cout << "Generating Type Decl\n";
+    node.ref_type->accept(*this);
 }
 
 void CodegenVisitor::visit(Unary& node)
@@ -402,6 +431,23 @@ void CodegenVisitor::visit(Var& node)
         auto ptr = Builder.CreateCall(f, ArgsV);
         last_constant = Builder.CreateBitCast(ptr, llvm::Type::getInt32PtrTy(TheContext));
         Builder.CreateStore(last_constant, v);
+    } else if (node.var_decl.second->type == types::Record) {
+        std::cout << "Generating Record declaration\n";
+        v = Builder.CreateAlloca(llvm::PointerType::getUnqual(structs["struct1"]), 0, name);
+        llvm::Function *f = TheModule->getFunction("malloc");
+        std::vector<llvm::Value*> ArgsV;
+        // auto array = (ArrayDecl *) node.var_decl.second;
+        // array->expression->accept(*this);
+        last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, 8, true));
+        // Builder.CreateMul(
+        //     llvm::ConstantInt::get(TheContext, llvm::APInt(32, 4, true)),
+        //     last_constant
+        // );
+        last_constant = Builder.CreateZExt(last_constant, llvm::Type::getInt64Ty(TheContext));
+        ArgsV.push_back(last_constant);
+        auto ptr = Builder.CreateCall(f, ArgsV);
+        last_constant = Builder.CreateBitCast(ptr, llvm::PointerType::getUnqual(structs["struct1"]));
+        Builder.CreateStore(last_constant, v);
     } else {
         std::cout << "Generating variable declaration\n";
         v = Builder.CreateAlloca(get_type(node.var_decl.second->type), 0, name);
@@ -411,8 +457,6 @@ void CodegenVisitor::visit(Var& node)
             Builder.CreateStore(last_constant, v);
         }
     }
-
-
 
     last_params[name] = v;
     std::cout << "Created Var declaration\n";
@@ -458,6 +502,30 @@ void CodegenVisitor::visit(While& node) {
 
 void CodegenVisitor::visit(RecordRef& node) {
     std::cout << "Generating Record Reference\n";
+    auto rec_name = ((Var *) node.record)->var_decl.first;
+    auto struct_address = Builder.CreateLoad(last_params[rec_name], "rec");
+    std::cout << "Generated Record address\n";
+    auto decl = ((RecordDecl *)((TypeDecl *)((Var *) node.record)->var_decl.second)->ref_type);
+    int i = 0;
+    while (((Var*) decl->refs[i])->var_decl.first != node.ref && i < (decl->refs.size())) {
+        i++;
+    }
+    std::vector<llvm::Value *> indices{
+        llvm::ConstantInt::get(TheContext, llvm::APInt(32, 0, true)),
+        llvm::ConstantInt::get(TheContext, llvm::APInt(32, i, true))
+    };
+    auto elem_address = Builder.CreateGEP(
+        structs["struct1"],
+        struct_address,
+        indices
+    );
+    if (is_lvalue) {
+        last_constant = elem_address;
+        std::cout << "Recordref Address Generated\n";
+    } else {
+        last_constant = Builder.CreateLoad(elem_address);
+        std::cout << "Recordref Value Generated\n";
+    }
 }
 
 void CodegenVisitor::visit(ArrayRef& node) {

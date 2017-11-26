@@ -2,6 +2,7 @@
 #define ILANG_RETURN_H
 
 #include "node.h"
+#include "expression.h"
 
 class Return : public ASTNode {
 public:

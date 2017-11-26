@@ -126,10 +126,16 @@ void PrintNameVisitor::visit(ArrayRef& node)
 void PrintNameVisitor::visit(Program& node) 
 {
     std::cout << "Visiting Program\n";
+    for (auto statement: node.program)
+    {
+        statement->accept(*this);
+    }
 }
 void PrintNameVisitor::visit(Statements& node) 
 {
     std::cout << "Visiting Statements\n";
+    for (auto statement : node.statements)
+        statement->accept(*this);
 }
 void PrintNameVisitor::visit(Void& node) 
 {

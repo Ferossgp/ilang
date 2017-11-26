@@ -55,7 +55,6 @@ void TypeDeduceVisitor::visit(Binary& node) {
     node.type = op.isMath ? node.lhs->type : new BooleanType();
 }
 void TypeDeduceVisitor::visit(Boolean& node) {
-    reportError("bug: TypeDeduceVisitor: visit Boolean node");
 }
 void TypeDeduceVisitor::visit(BooleanType& node) {
     reportError("bug: TypeDeduceVisitor: visit BooleanType node");
@@ -76,18 +75,27 @@ void TypeDeduceVisitor::visit(If& node) {
     }
 }
 void TypeDeduceVisitor::visit(Integer& node) {
-    reportError("bug: TypeDeduceVisitor: visit Integer node");
 }
 void TypeDeduceVisitor::visit(IntegerType& node) {
     reportError("bug: TypeDeduceVisitor: visit IntegerType node");
 }
+void TypeDeduceVisitor::visit(Program& node) {
+    for (auto x : node.program) {
+        x->accept(*this);
+    }
+}
 void TypeDeduceVisitor::visit(Real& node) {
-    reportError("bug: TypeDeduceVisitor: visit Real node");
 }
 void TypeDeduceVisitor::visit(RealType& node) {
     reportError("bug: TypeDeduceVisitor: visit RealType node");
 }
 void TypeDeduceVisitor::visit(RecordDecl& node) {
+}
+void TypeDeduceVisitor::visit(RecordRef& node) {
+    node.record->accept(*this);
+}
+void TypeDeduceVisitor::visit(Return& node) {
+    node.expression->accept(*this);
 }
 void TypeDeduceVisitor::visit(Routine& node) {
     node.body->accept(*this);
@@ -97,6 +105,11 @@ void TypeDeduceVisitor::visit(RoutineCall& node) {
         x->accept(*this);
     }
     node.type = node.callee->proto->type;
+}
+void TypeDeduceVisitor::visit(Statements& node) {
+    for (auto x : node.statements) {
+        x->accept(*this);
+    }
 }
 void TypeDeduceVisitor::visit(TypeDecl& node) {
 }
@@ -117,13 +130,18 @@ void TypeDeduceVisitor::visit(Undefined& node) {
     reportError("bug: TypeDeduceVisitor: visit Undefined node");
 }
 void TypeDeduceVisitor::visit(Var& node) {
-    node.body->accept(*this);
+    if (node.body) {
+        node.body->accept(*this);
+    }
     if (*node.var_decl.second == types::Undefined) {
         node.var_decl.second = node.body->type;
     }
 }
 void TypeDeduceVisitor::visit(Variable& node) {
     node.type = node.var->var_decl.second;
+}
+void TypeDeduceVisitor::visit(Void& node) {
+    reportError("bug: TypeDeduceVisitor: visit Void node");
 }
 void TypeDeduceVisitor::visit(While& node) {
     node.expression->accept(*this);

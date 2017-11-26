@@ -24,6 +24,7 @@ add_executable(voc
     parsing/Errors.cpp
     semantical_analysis/printname_visitor.cpp
     semantical_analysis/typechecking_visitor.cpp
+    semantical_analysis/typededuce_visitor.cpp
     main.cpp
     AST/integer.cpp
     AST/real.cpp
@@ -37,7 +38,6 @@ add_executable(voc
     AST/if.cpp
     AST/for.cpp
     AST/while.cpp
-    AST/recorddecl.cpp
     AST/arraydecl.cpp
     AST/boolean.cpp
     AST/typedecl.cpp

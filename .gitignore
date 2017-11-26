@@ -9,3 +9,7 @@ build/
 
 # Executables
 *.vocout
+
+# Something
+test/typeCheckerTest.vo
+test/typeCheckerTest2

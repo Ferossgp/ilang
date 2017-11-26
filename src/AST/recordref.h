@@ -9,7 +9,7 @@ class RecordRef : public Expression {
 public:
     ASTNode *record;
     std::string ref;
-    RecordRef (ASTNode *record, std::string ref) {};
+    RecordRef (ASTNode *record, std::string ref): record{record}, ref{ref} {};
     void accept(Visitor &v) { v.visit(*this); };
 };
 

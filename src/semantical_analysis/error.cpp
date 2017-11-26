@@ -3,5 +3,5 @@
 
 void reportError(const std::string &text) {
 	std::cerr << text;
-	exit(-1);
+    exit(-1);
 }

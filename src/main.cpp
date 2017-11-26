@@ -70,6 +70,15 @@ int main(int argc, char *argv[]) {
     Lexer lexer(&fs);
     Parser parser(&lexer);
     auto program = parser.parse();
+
+
+    TypeDeduceVisitor().visit(*program);
+
+    TypeCheckingVisitor tcv;
+    program->accept(tcv);
+
+    std::cout << "Type checked!\n";
+
     CodegenVisitor v{args.output};
     v.visit(*program);
     v.generate();

@@ -29,12 +29,12 @@ void ConstEvalVisitor::visit(Cast& node) {
     node.isConst = node.value->isConst;
 }
 void ConstEvalVisitor::visit(For& node) {
-    node.start->accept(*this);
-    node.end->accept(*this);
+    unwrap(node.start);
+    unwrap(node.end);
     node.body->accept(*this);
 }
 void ConstEvalVisitor::visit(If& node) {
-    node.condition->accept(*this);
+    unwrap(node.condition);
     node.then->accept(*this);
     if (node.else_body) {
         node.else_body->accept(*this);
@@ -44,6 +44,11 @@ void ConstEvalVisitor::visit(Integer& node) {
 }
 void ConstEvalVisitor::visit(IntegerType& node) {
     reportError("bug: ConstEvalVisitor: visit IntegerType node");
+}
+void ConstEvalVisitor::visit(Program& node) {
+    for (auto x : node.program) {
+        x->accept(*this);
+    }
 }
 void ConstEvalVisitor::visit(Real& node) {
 }
@@ -55,11 +60,22 @@ void ConstEvalVisitor::visit(RecordDecl& node) {
         x->accept(*this);
     }
 }
+void ConstEvalVisitor::visit(RecordRef& node) {
+    node.record->accept(*this);
+}
+void ConstEvalVisitor::visit(Return& node) {
+    unwrap(node.expression);
+}
 void ConstEvalVisitor::visit(Routine& node) {
     node.body->accept(*this);
 }
 void ConstEvalVisitor::visit(RoutineCall& node) {
-    for (auto x : node.args) {
+    for (auto &x : node.args) {
+        unwrap(x);
+    }
+}
+void ConstEvalVisitor::visit(Statements& node) {
+    for (auto x : node.statements) {
         x->accept(*this);
     }
 }
@@ -79,9 +95,15 @@ void ConstEvalVisitor::visit(Var& node) {
 }
 void ConstEvalVisitor::visit(Variable& node) {
 }
+void ConstEvalVisitor::visit(Void& node) {
+    reportError("bug: ConstEvalVisitor: visit Void node");
+}
 void ConstEvalVisitor::visit(While& node) {
-    node.expression->accept(*this);
+    unwrap(node.expression);
     node.body->accept(*this);
+}
+void ConstEvalVisitor::unwrap(ASTNode *&value) {
+    unwrap((Expression*&)value);
 }
 void ConstEvalVisitor::unwrap(Expression *&value) {
     value->accept(*this);

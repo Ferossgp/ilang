@@ -35,6 +35,8 @@
 class TypeCheckingVisitor : public Visitor
 {
 public:
+    Routine* lastVisitedRoutine;
+
     void visit(Prototype& node);
     void visit(ArrayDecl& node);
     void visit(Assignment& node);

@@ -14,6 +14,7 @@ public:
     Expression() : type(new Undefined()), isConst(false) {};
     virtual Expression* eval() {
         reportError("bug: Expression.eval: virtual");
+        return nullptr;
     }
 };
 
