@@ -1,9 +1,9 @@
 #include "typechecking_visitor.h"
 #include <iostream>
 
-
-
-
+/*
+    In routine's prototype we can do nothing
+*/
 void TypeCheckingVisitor::visit(Prototype& node) 
 {
     return;
@@ -203,10 +203,6 @@ void TypeCheckingVisitor::visit(Routine& node)
     // Go through all statements in body
     lastVisitedRoutine = &node;
     node.body->accept(*this);
-    for (int i = 0; i < node.body->statements.size(); i++)
-    {
-        node.body->statements[i]->accept(*this);
-    }
 }
 
 /*
