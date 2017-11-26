@@ -71,8 +71,10 @@ int main(int argc, char *argv[]) {
     Parser parser(&lexer);
     auto program = parser.parse();
 
-    PrintNameVisitor pnv;
-    program->accept(pnv);
+    // PrintNameVisitor pnv;
+    // program->accept(pnv);
+
+    program->accept(TypeDeduceVisitor());
 
     TypeCheckingVisitor tcv;
     program->accept(tcv);
