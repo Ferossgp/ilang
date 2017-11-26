@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <string>
 #include "AST/ast.h"
 #include "codegen/codegen_visitor.h"
 #include "semantical_analysis/semantic_visitor.h"
@@ -19,15 +20,12 @@ public:
 
 public:
     CmdArgsParser(int argc, char *argv[]) {
-        cxxopts::Options options(argv[0]);
-        options
-            .positional_help("input")
-            .show_positional_help();
-        options.add_options()
-            ("h,help", "print help")
-            ("o,output", "output file", cxxopts::value<std::string>())
-            ("i,input", "input file", cxxopts::value<std::string>());
-        options.parse_positional("input");
+        ArgumentParser parser;
+        parser.useExceptions(true);
+        parser.appName(argv[0]);
+        parser.addArgument("-h", "--help");
+        parser.addArgument("-o", "--output", 1);
+        parser.addFinalArgument("input");
 
         this->helpText = parser.usage();
 
@@ -61,20 +59,6 @@ public:
 };
 
 int main(int argc, char *argv[]) {
-    // Var var { std::pair<string, Type*> {"foo", new IntegerType() }, nullptr };
-
-    // Variable variable { &var };
-    // Assignment ass1 { &variable, new Integer(5)};
-    // Assignment ass2 { &variable, new Real(5.4)};
-
-    ArrayDecl ad1 { new Integer(1), new IntegerType() };
-    ArrayDecl ad2 { new Real(1.2), new RealType() };
-
-    TypeCheckingVisitor v;
-    ad1.accept(v);
-    ad2.accept(v);
-
-    PrintNameVisitor p;
 
     CmdArgsParser args(argc, argv);
     if (args.error || args.printHelp) {

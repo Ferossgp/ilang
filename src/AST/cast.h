@@ -2,6 +2,9 @@
 #define ILANG_CAST_H
 
 #include "expression.h"
+#include "boolean.h"
+#include "integer.h"
+#include "real.h"
 #include "../semantical_analysis/error.h"
 
 class Cast : public Expression {

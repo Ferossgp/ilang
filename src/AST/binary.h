@@ -28,7 +28,7 @@ public:
     opchars opchar;
     Expression *lhs, *rhs;
 
-    Binary(opchars opchar, ASTNode *lhs, ASTNode *rhs);
+    Binary(opchars opchar, Expression *lhs, Expression *rhs);
     void accept(Visitor &v) { v.visit(*this); };
     Expression* eval() {
         BinaryOpcode op{opchar};

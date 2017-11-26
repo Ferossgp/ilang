@@ -97,7 +97,7 @@ ASTNode * Parser::parse_types() {
 
 ArrayRef * Parser::parse_array_ref(ASTNode *assignee) {
     lexer->next();
-    ASTNode *pos = parse_expression();
+    auto pos = parse_expression();
 
     if ( lexer->current_token() != ']' ) {
         // TODO: error handling
@@ -170,10 +170,10 @@ ASTNode * Parser::parse_identifier_statement() {
 
     lexer->next();
 
-    vector<ASTNode*> args;
+    vector<Expression*> args;
 
     while ( lexer->current_token() != ')' ) {
-        ASTNode *arg = parse_expression();
+        auto arg = parse_expression();
         if ( arg ) {
             args.push_back(arg);
         }
@@ -211,10 +211,10 @@ Expression * Parser::parse_identifier_ref(){
 
     lexer->next();
 
-    vector<ASTNode*> args;
+    vector<Expression*> args;
 
     while ( lexer->current_token() != ')' ) {
-        ASTNode *arg = parse_expression();
+        auto arg = parse_expression();
         if ( arg ) {
             args.push_back(arg);
         }
@@ -256,14 +256,8 @@ ASTNode * Parser::parse_var() {
 
     if ( lexer->current_token() == (int)Token::IS) {
         lexer->next();
-        ASTNode *expression = parse_expression();
-
-        if (type){
-            ASTNode *var = new Var(make_pair(name, type), expression);
-            addDecl(make_pair(name, var));
-            return var;
-        }
-        ASTNode *var = new Var(make_pair(name, nullptr), expression);
+        auto expression = parse_expression();
+        auto var = new Var(make_pair(name, type), expression);
         addDecl(make_pair(name, var));
         return var;
     }
@@ -444,7 +438,7 @@ Expression * Parser::parse_unary() {
     int unary_op = lexer->current_token();
     lexer->next();
 
-    if ( ASTNode *operand = parse_unary() ) {
+    if ( auto operand = parse_unary() ) {
         return new Unary(unary_op, operand);
     }
 

@@ -1,6 +1,6 @@
 #include "node.h"
 #include "binary.h"
 
-Binary::Binary(opchars opchar, ASTNode *lhs, ASTNode *rhs):
+Binary::Binary(opchars opchar, Expression *lhs, Expression *rhs):
         opchar(opchar), lhs(lhs), rhs(rhs) {}
         
