@@ -1,9 +1,9 @@
 #include "typechecking_visitor.h"
 #include <iostream>
 
-/*
-    Just a dummy method, exapmple of how it is used
-*/
+
+
+
 void TypeCheckingVisitor::visit(Prototype& node) 
 {
     std::cout << "Visiting PrototypeNode: " << node.getName();
@@ -138,11 +138,17 @@ void TypeCheckingVisitor::visit(RecordDecl& node)
 }
 
 /*
-    Check that function will return value of the expected type
+    Go through all routine's statements
 */
 void TypeCheckingVisitor::visit(Routine& node) 
 {
-    // Go through all statements in body, find and check all returns
+    // Go through all statements in body
+    lastVisitedRoutine = &node;
+
+    for (int i = 0; i < node.body->statements.size(); i++)
+    {
+        node.body->statements[i]->accept(*this);
+    }
 }
 
 /*
@@ -166,9 +172,6 @@ void TypeCheckingVisitor::visit(RoutineCall& node)
             reportError("Arguments of function " + routineName + 
                 " are incorrect! Expected another type on " + std::to_string(i));
     }
-
-    // Forward further
-    node.callee->accept(*this);
 }
 
 void TypeCheckingVisitor::visit(TypeDecl& node) 
@@ -196,10 +199,16 @@ void TypeCheckingVisitor::visit(While& node)
     std::cout << "Foo";
 }
 
+/*
+    Check that routine's return value is the same as declared
+*/
 void TypeCheckingVisitor::visit(Return& node) 
 {
-    std::cout << "Foo";
+    // if (node.expression->type != lastVisitedRoutine->proto->type)
+    //     reportError("Routine " + lastVisitedRoutine->proto->name + " has incorrect " +
+    //     "return value!");
 }
+
 void TypeCheckingVisitor::visit(RecordRef& node) 
 {
     std::cout << "Foo";
@@ -208,10 +217,18 @@ void TypeCheckingVisitor::visit(ArrayRef& node)
 {
     std::cout << "Foo";
 }
+
+/*
+    Entry point
+*/
 void TypeCheckingVisitor::visit(Program& node) 
 {
-    std::cout << "Foo";
+    for (ASTNode* statement: node.program)
+    {
+        statement->accept(*this);
+    }
 }
+
 void TypeCheckingVisitor::visit(Statements& node) 
 {
     std::cout << "Foo";
