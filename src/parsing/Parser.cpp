@@ -627,12 +627,7 @@ ASTNode * Parser::parse_for() {
 
     lexer->next();
     closeScope();
-    //TODO: Add reverse as a booolean
-    if (reverse){
-        return new For(id_name, end, start, (Statements*) body);
-    } else {
-        return new For(id_name, start, end, (Statements*) body);
-    }
+    return new For(id_name, end, start, (Statements*) body, reverse);
 }
 
 ASTNode * Parser::parse_while() {
