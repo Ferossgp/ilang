@@ -14,7 +14,7 @@ void TypeCheckingVisitor::visit(Prototype& node)
 */
 void TypeCheckingVisitor::visit(ArrayDecl& node) 
 {
-    auto sizeExpression = node.expression;
+    auto sizeExpression = (Expression*) node.expression;
     if (sizeExpression->type->type != types::Integer)
     {
         reportError("Size of array is not compile-time integer constanst\n");
@@ -77,7 +77,7 @@ void TypeCheckingVisitor::visit(Assignment& node)
     {
         if (*left->type != *right->type)
         {
-            reportError("Trying to assign arrays of different types");
+            reportError("Trying to assign arrays of different types\n");
         }
         return;
     }
@@ -85,13 +85,13 @@ void TypeCheckingVisitor::visit(Assignment& node)
     {
         if (*left->type != *right->type)
         {
-            reportError("Trying to assign records of different types");
+            reportError("Trying to assign records of different types\n");
         }
         return;
     }
     else 
     {
-        reportError("Trying to assign incompatible types");
+        reportError("Trying to assign incompatible types\n");
     }
 }
 
@@ -149,7 +149,7 @@ void TypeCheckingVisitor::visit(If& node)
 {
     auto expr = (Expression*) node.condition;
     if (expr->type->type != types::Boolean)
-        reportError("Type of expression in if is not boolean!");
+        reportError("Type of expression in if is not boolean!\n");
 
     node.then->accept(*this);
     if (!node.else_body)
@@ -216,13 +216,13 @@ void TypeCheckingVisitor::visit(RoutineCall& node)
     auto argsLength = expectedArguments.size();
     if (actualArguments.size() != argsLength)
         reportError("Arguments of function " + routineName + " are incorrect! Expected " + 
-            std::to_string(argsLength) + ", got " + std::to_string(actualArguments.size()));
+            std::to_string(argsLength) + ", got " + std::to_string(actualArguments.size()) + "\n");
 
     for (int i = 0; i < argsLength; i++)
     {
         if (((Expression*) expectedArguments[i])->type->type != ((Expression*) actualArguments[i])->type->type)
             reportError("Arguments of function " + routineName + 
-                " are incorrect! Expected another type on " + std::to_string(i));
+                " are incorrect! Expected another type on " + std::to_string(i) + "\n");
     }
 }
 
@@ -289,7 +289,7 @@ void TypeCheckingVisitor::visit(Return& node)
 {
     if (node.expression->type != lastVisitedRoutine->proto->type)
         reportError("Routine " + lastVisitedRoutine->proto->name + " has incorrect " +
-        "return value!");
+        "return value!\n");
 }
 
 /*
@@ -307,7 +307,7 @@ void TypeCheckingVisitor::visit(ArrayRef& node)
 {
     auto position = (Expression*) node.pos;
     if (position->type->type != types::Integer)
-        reportError("Trying to call array with not-integer type!");
+        reportError("Trying to call array with not-integer type!\n");
 }
 
 /*
@@ -315,7 +315,7 @@ void TypeCheckingVisitor::visit(ArrayRef& node)
 */
 void TypeCheckingVisitor::visit(Program& node) 
 {
-    for (ASTNode* statement: node.program)
+    for (auto statement: node.program)
     {
         statement->accept(*this);
     }
@@ -326,8 +326,8 @@ void TypeCheckingVisitor::visit(Program& node)
 */
 void TypeCheckingVisitor::visit(Statements& node) 
 {
-    for (int i = 0; i < node.statements.size(); i++)
-        node.statements[i]->accept(*this);
+    for (auto statement : node.statements)
+        statement->accept(*this);
 }
 
 /*

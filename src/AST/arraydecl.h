@@ -9,7 +9,7 @@
 class ArrayDecl : public Type {
 
 public:
-    Expression *expression;
+    ASTNode *expression;
     Type *array_type;
     ArrayDecl(Expression *expression, Type *array_type);
     void accept(Visitor &v) { v.visit(*this); };
