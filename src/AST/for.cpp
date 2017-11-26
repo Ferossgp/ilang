@@ -7,5 +7,6 @@ using std::string;
 
 For::For(ASTNode *name,
          ASTNode *start, ASTNode *end,
-         Statements *body)
-        : name(name), start(start), end(end), body(body) {}
+         Statements *body, bool reverse)
+        : name(name), start(start), end(end), body(body), reverse(reverse) {}
+        
