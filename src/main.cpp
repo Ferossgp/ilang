@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     // PrintNameVisitor pnv;
     // program->accept(pnv);
 
-    program->accept(TypeDeduceVisitor());
+    TypeDeduceVisitor().visit(*program);
 
     TypeCheckingVisitor tcv;
     program->accept(tcv);
