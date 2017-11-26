@@ -87,12 +87,27 @@ void CodegenVisitor::visit(ArrayDecl& node)
 void CodegenVisitor::visit(Assignment& node)
 {
     std::cout << "Generating Assignment\n";
+
     if (!node.value) {
         std::cout << "No right side\n";
     }
     node.value->accept(*this);
-    auto name = ((Var *) node.variable)->var_decl.first;
-    Builder.CreateStore(last_constant, last_params[name]);
+    auto expr = last_constant;
+    llvm::Value *store_location;
+    switch (node.lhs_type) {
+    case types::Undefined: {
+        auto name = ((Var *) node.variable)->var_decl.first;
+        store_location = last_params[name];
+    }
+        break;
+    case types::Array:
+        is_lvalue = true;
+        node.variable->accept(*this);
+        is_lvalue = false;
+        store_location = last_constant;
+    }
+    Builder.CreateStore(expr, store_location);
+
     std::cout << "Assignment generated\n";
 }
 
@@ -424,7 +439,14 @@ void CodegenVisitor::visit(ArrayRef& node) {
     node.pos->accept(*this);
     auto pos = Builder.CreateSub(last_constant, llvm::ConstantInt::get(llvm::Type::getInt32Ty(TheContext), 1));
     auto elem_address = Builder.CreateGEP(arr_address, pos);
-    last_constant = Builder.CreateLoad(elem_address);
+    if (is_lvalue) {
+        last_constant = elem_address;
+        std::cout << "ArrayRef Address Generated\n";
+    } else {
+        last_constant = Builder.CreateLoad(elem_address);
+        std::cout << "ArrayRef Value Generated\n";
+    }
+
 }
 
 void CodegenVisitor::visit(Program& node) {

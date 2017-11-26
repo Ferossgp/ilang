@@ -60,6 +60,7 @@ private:
     llvm::Value *last_constant;
     llvm::Function *last_function;
     std::unordered_map<std::string, llvm::Value*> last_params;
+    bool is_lvalue{false};
     // std::unordered_map<std::string, llvm::Value*> last_variables;
 
     llvm::Type* get_type(types type);

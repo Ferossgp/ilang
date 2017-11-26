@@ -132,7 +132,7 @@ ASTNode * Parser::parse_identifier_statement() {
             if (lexer->current_token() == '=') {
                 lexer->next();
                 Expression *value = parse_expression();
-                return new Assignment(ref, value);
+                return new Assignment(ref, value, types::Array);
             }
             return Error("Unknown ':' at this possition");
         }
@@ -147,7 +147,7 @@ ASTNode * Parser::parse_identifier_statement() {
             lexer->next();
             if (lexer->current_token() == '=') {
                 Expression *value = parse_expression();
-                return new Assignment(ref, value);
+                return new Assignment(ref, value, types::Record);
             }
             return Error("Unknown ':' at this possition");
         }
@@ -161,7 +161,7 @@ ASTNode * Parser::parse_identifier_statement() {
             if (lexer->current_token() == '=') {
                 lexer->next();
                 Expression *value = parse_expression();
-                return new Assignment(assignee, value);
+                return new Assignment(assignee, value, types::Undefined);
             }
             return Error("Unknown ':' at this possition");
         }
@@ -607,6 +607,7 @@ ASTNode * Parser::parse_for() {
 
     lexer->next();
     lexer->next();
+    // lexer->next();
     std::cout << "Current Token: " << lexer->current_token() << "\n";
     ASTNode *end = parse_expression();
     if ( end == 0 ) { return 0; }

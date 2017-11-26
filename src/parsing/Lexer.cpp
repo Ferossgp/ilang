@@ -182,7 +182,7 @@ void Lexer::next() {
         return;
     }
     if (last_char == '-') {
-        current_token_ = (int)Token::MUL;
+        current_token_ = (int)Token::MINUS;
         last_char = inputStream->get();
         return;
     }
