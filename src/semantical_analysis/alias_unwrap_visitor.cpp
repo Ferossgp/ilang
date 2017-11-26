@@ -42,6 +42,11 @@ void AliasUnwrapVisitor::visit(Integer& node) {
 void AliasUnwrapVisitor::visit(IntegerType& node) {
     reportError("bug: AliasUnwrapVisitor: visit IntegerType node");
 }
+void AliasUnwrapVisitor::visit(Program& node) {
+    for (auto x : node.refs) {
+        x->accept(*this);
+    }
+}
 void AliasUnwrapVisitor::visit(Real& node) {
     reportError("bug: AliasUnwrapVisitor: visit Real node");
 }
@@ -53,12 +58,22 @@ void AliasUnwrapVisitor::visit(RecordDecl& node) {
         x->accept(*this);
     }
 }
+void AliasUnwrapVisitor::visit(RecordRef& node) {
+    node.record->accept(*this);
+}
+void AliasUnwrapVisitor::visit(Return& node) {
+}
 void AliasUnwrapVisitor::visit(Routine& node) {
     node.proto->accept(*this);
     node.body->accept(*this);
 }
 void AliasUnwrapVisitor::visit(RoutineCall& node) {
     // bug if inside expression
+}
+void AliasUnwrapVisitor::visit(Statements& node) {
+    for (auto x : node.refs) {
+        x->accept(*this);
+    }
 }
 void AliasUnwrapVisitor::visit(TypeDecl& node) {
     unwrap(node.original);
@@ -74,6 +89,9 @@ void AliasUnwrapVisitor::visit(Var& node) {
 }
 void AliasUnwrapVisitor::visit(Variable& node) {
     reportError("bug: AliasUnwrapVisitor: visit Variable node");
+}
+void AliasUnwrapVisitor::visit(Void& node) {
+    reportError("bug: AliasUnwrapVisitor: visit Void node");
 }
 void AliasUnwrapVisitor::visit(While& node) {
     node.body->accept(*this);

@@ -81,6 +81,11 @@ void TypeDeduceVisitor::visit(Integer& node) {
 void TypeDeduceVisitor::visit(IntegerType& node) {
     reportError("bug: TypeDeduceVisitor: visit IntegerType node");
 }
+void TypeDeduceVisitor::visit(Program& node) {
+    for (auto x : node.refs) {
+        x->accept(*this);
+    }
+}
 void TypeDeduceVisitor::visit(Real& node) {
     reportError("bug: TypeDeduceVisitor: visit Real node");
 }
@@ -88,6 +93,12 @@ void TypeDeduceVisitor::visit(RealType& node) {
     reportError("bug: TypeDeduceVisitor: visit RealType node");
 }
 void TypeDeduceVisitor::visit(RecordDecl& node) {
+}
+void TypeDeduceVisitor::visit(RecordRef& node) {
+    node.record->accept(*this);
+}
+void TypeDeduceVisitor::visit(Return& node) {
+    node.expression->accept(*this);
 }
 void TypeDeduceVisitor::visit(Routine& node) {
     node.body->accept(*this);
@@ -97,6 +108,11 @@ void TypeDeduceVisitor::visit(RoutineCall& node) {
         x->accept(*this);
     }
     node.type = node.callee->proto->type;
+}
+void ConstEvalVisitor::visit(Statements& node) {
+    for (auto x : node.refs) {
+        x->accept(*this);
+    }
 }
 void TypeDeduceVisitor::visit(TypeDecl& node) {
 }
@@ -124,6 +140,9 @@ void TypeDeduceVisitor::visit(Var& node) {
 }
 void TypeDeduceVisitor::visit(Variable& node) {
     node.type = node.var->var_decl.second;
+}
+void TypeDeduceVisitor::visit(Void& node) {
+    reportError("bug: TypeDeduceVisitor: visit Void node");
 }
 void TypeDeduceVisitor::visit(While& node) {
     node.expression->accept(*this);
