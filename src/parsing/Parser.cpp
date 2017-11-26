@@ -13,9 +13,6 @@ using std::vector;
 using std::make_pair;
 using std::unique_ptr;
 
-//TODO: Create types (Builtin, Array, Record)
-//TODO: Print ast
-
 Parser::~Parser() {}
 
 Expression * Parser::parse_real() {
@@ -39,7 +36,6 @@ Expression * Parser::parse_boolean(bool value) {
 ASTNode * Parser::parse_return() {
     lexer->next();
     ASTNode *ret = parse_expression();
-
     return new Return(ret);
 }
 
@@ -59,7 +55,6 @@ Expression * Parser::parse_paren() {
 }
 
 ASTNode * Parser::parse_types() {
-    //TODO: Parse current_token record or array
     ASTNode *type;
 
     if(lexer->current_token() == (int)Token::ARRAY){
@@ -88,6 +83,7 @@ ASTNode * Parser::parse_types() {
     // Check if current_token is in table
     if(lexer->current_token() == (int)Token::IDENTIFIER) {
         ASTNode *type = findDecl(lexer->identifier());
+        std::cout << "Find record: " << lexer->identifier() << "\n";
         lexer->next();
         return type;
     }
@@ -129,7 +125,7 @@ ASTNode * Parser::parse_identifier_statement() {
 
         if ( lexer->current_token() == ':' ){
             lexer->next();
-            if (lexer->current_token() == '=') {
+            if (lexer->current_token() == (int)Token::EQUAL) {
                 lexer->next();
                 Expression *value = parse_expression();
                 return new Assignment(ref, value, types::Array);
@@ -142,10 +138,10 @@ ASTNode * Parser::parse_identifier_statement() {
         // Record Assign
     if ( lexer->current_token() == '.'){
         auto ref = parse_record_ref(assignee);
-
         if ( lexer->current_token() == ':' ){
             lexer->next();
-            if (lexer->current_token() == '=') {
+            if (lexer->current_token() == (int)Token::EQUAL) {  
+                lexer->next();              
                 Expression *value = parse_expression();
                 return new Assignment(ref, value, types::Record);
             }
@@ -158,7 +154,7 @@ ASTNode * Parser::parse_identifier_statement() {
     if ( lexer->current_token() != '('){
         if ( lexer->current_token() == ':' ){
             lexer->next();
-            if (lexer->current_token() == '=') {
+            if (lexer->current_token() == (int)Token::EQUAL) {
                 lexer->next();
                 Expression *value = parse_expression();
                 return new Assignment(assignee, value, types::Undefined);
@@ -418,6 +414,7 @@ Expression * Parser::parse_binary_op_rhs(int expression_priority, Expression *LH
 
         Expression *RHS = parse_unary();
         if ( !RHS ) { return nullptr; }
+        std::cout << "Opchar parsed: " << (int)binary_op << "\n";
 
         int next_priority = lexer->token_priority();
         if ( token_priority < next_priority ) {
