@@ -62,7 +62,14 @@ void CodegenVisitor::visit(Prototype& p)
     std::vector<llvm::Type*> arg_types{};
     for (int i =0; i < p.args.size(); i++) {
         auto arg = (Var *) p.args[i];
-        arg_types.push_back(get_type(arg->var_decl.second->type));
+        if (arg->var_decl.second->type == types::Array) {
+            auto type = (ArrayDecl *) arg->var_decl.second;
+            auto elem_type = get_type(type->array_type->type);
+            // TODO: add get_type
+            arg_types.push_back(llvm::Type::getInt32PtrTy(TheContext));
+        } else {
+            arg_types.push_back(get_type(arg->var_decl.second->type));
+        }
     }
 
     // function type generation
@@ -71,8 +78,6 @@ void CodegenVisitor::visit(Prototype& p)
 
 
 }
-
-
 
 void CodegenVisitor::visit(ArrayDecl& node)
 {
@@ -271,6 +276,7 @@ void CodegenVisitor::visit(IntegerType& node)
 
 void CodegenVisitor::visit(Real& node)
 {
+    std::cout << "Generating Real\n";
     last_constant = llvm::ConstantFP::get(TheContext, llvm::APFloat(node.value));
 }
 
@@ -300,7 +306,12 @@ void CodegenVisitor::visit(Routine& node)
     for (auto &Arg : last_function->args()) {
         auto var = ((Var *) node.proto->args[Idx++]);
         std::string name = var->var_decl.first;//((Var *) node.proto->args[Idx])->var_decl.first;
-        auto v = Builder.CreateAlloca(get_type(var->var_decl.second->type), 0, name);
+        llvm::AllocaInst *v;
+        if (var->var_decl.second->type == types::Array) {
+            v = Builder.CreateAlloca(llvm::Type::getInt32PtrTy(TheContext));
+        } else {
+            v = Builder.CreateAlloca(get_type(var->var_decl.second->type), 0, name);
+        }
         Builder.CreateStore(&Arg, v);
         Arg.setName(name);
         last_params[name] = v;
@@ -408,6 +419,12 @@ void CodegenVisitor::visit(RecordRef& node) {
 
 void CodegenVisitor::visit(ArrayRef& node) {
     std::cout << "Generating ArrayRef\n";
+    std::string decl_name = ((Var *) node.array)->var_decl.first;
+    auto arr_address = Builder.CreateLoad(last_params[decl_name], "arr");
+    node.pos->accept(*this);
+    auto pos = Builder.CreateSub(last_constant, llvm::ConstantInt::get(llvm::Type::getInt32Ty(TheContext), 1));
+    auto elem_address = Builder.CreateGEP(arr_address, pos);
+    last_constant = Builder.CreateLoad(elem_address);
 }
 
 void CodegenVisitor::visit(Program& node) {

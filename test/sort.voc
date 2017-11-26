@@ -1,0 +1,3 @@
+routine sort(a array[1] integer, s integer) is
+    return a[s]
+end

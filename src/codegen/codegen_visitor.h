@@ -42,6 +42,8 @@
 #include "../AST/assignment.h"
 #include "../AST/while.h"
 #include "../AST/for.h"
+#include "../AST/arraydecl.h"
+#include "../AST/arrayref.h"
 
 // using namespace llvm;
 
