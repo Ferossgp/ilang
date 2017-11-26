@@ -77,9 +77,15 @@ void CodegenVisitor::visit(Prototype& p)
 
     // function type generation
     llvm::FunctionType *ft;
+
     if (p.type->type == types::Array) {
+        std::cout << "Generating Array return\n";
         ft = llvm::FunctionType::get(llvm::Type::getInt32PtrTy(TheContext), arg_types, false);
+    } else if (p.type->type == types::Record) {
+        std::cout << "Generating Record return\n";
+        ft = llvm::FunctionType::get(structs["struct1"], arg_types, false);
     } else {
+        std::cout << "Generating Built-in return " << (int)(p.type->type) << "\n";
         ft = llvm::FunctionType::get(get_type(p.type->type), arg_types, false);
     }
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
@@ -386,7 +392,7 @@ void CodegenVisitor::visit(RoutineCall& node)
 void CodegenVisitor::visit(TypeDecl& node)
 {
     std::cout << "Generating Type Decl\n";
-    node.type->accept(*this);
+    node.ref_type->accept(*this);
 }
 
 void CodegenVisitor::visit(Unary& node)
@@ -417,6 +423,8 @@ void CodegenVisitor::visit(Var& node)
         auto ptr = Builder.CreateCall(f, ArgsV);
         last_constant = Builder.CreateBitCast(ptr, llvm::Type::getInt32PtrTy(TheContext));
         Builder.CreateStore(last_constant, v);
+    } else if (node.var_decl.second->type == types::Record) {
+         std::cout << "Generating Record declaration\n";
     } else {
         std::cout << "Generating variable declaration\n";
         v = Builder.CreateAlloca(get_type(node.var_decl.second->type), 0, name);
@@ -426,8 +434,6 @@ void CodegenVisitor::visit(Var& node)
             Builder.CreateStore(last_constant, v);
         }
     }
-
-
 
     last_params[name] = v;
     std::cout << "Created Var declaration\n";
