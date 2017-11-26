@@ -5,5 +5,7 @@ end
 
 routine new_point(x integer, y integer): Point is
     var p: Point
+    p.x := x
+    p.y := y
     return p
 end
