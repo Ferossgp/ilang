@@ -255,12 +255,15 @@ void TypeCheckingVisitor::visit(Undefined& node)
 /*
     Check that initial value is of declared type, if exists
 */
-void TypeCheckingVisitor::visit(Var& node) 
+void TypeCheckingVisitor::visit(Var& node)
 {
     auto declaredType = node.var_decl.second;
-    auto actualType = ((Expression*) node.body)->type;
-    if (*declaredType != *actualType)
-        reportError("Initial value of variable " + node.var_decl.first + " is not of the declared type!\n");
+    if (node.body) {
+        auto actualType = ((Expression*)node.body)->type;
+        if (*declaredType != *actualType) {
+            reportError("Initial value of variable " + node.var_decl.first + " is not of the declared type!\n");
+        }
+    }
 }
 
 /*

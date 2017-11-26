@@ -16,12 +16,16 @@
 #include "../AST/realtype.h"
 #include "../AST/recorddecl.h"
 #include "../AST/recordref.h"
+#include "../AST/return.h"
 #include "../AST/routine.h"
 #include "../AST/routinecall.h"
+#include "../AST/program.h"
+#include "../AST/statements.h"
 #include "../AST/typedecl.h"
 #include "../AST/unary.h"
 #include "../AST/var.h"
 #include "../AST/variable.h"
+#include "../AST/void.h"
 #include "../AST/while.h"
 
 class ConstEvalVisitor : public Visitor
@@ -56,5 +60,6 @@ public:
     void visit(Void& node);
     void visit(While& node);
 
+    void unwrap(ASTNode *&value);
     void unwrap(Expression *&value);
 };
