@@ -35,7 +35,7 @@ Expression * Parser::parse_boolean(bool value) {
 
 ASTNode * Parser::parse_return() {
     lexer->next();
-    Expression *ret = parse_expression();
+    ASTNode *ret = parse_expression();
     return new Return(ret);
 }
 
@@ -157,7 +157,7 @@ ASTNode * Parser::parse_identifier_statement() {
             if (lexer->current_token() == (int)Token::EQUAL) {
                 lexer->next();
                 Expression *value = parse_expression();
-                return new Assignment(new Variable((Var*)assignee), value, types::Undefined);
+                return new Assignment(assignee, value, types::Undefined);
             }
             return Error("Unknown ':' at this possition");
         }
