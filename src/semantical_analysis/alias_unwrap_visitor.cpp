@@ -7,9 +7,6 @@ void AliasUnwrapVisitor::visit(Prototype& node) {
         x->accept(*this);
     }
 }
-void AliasUnwrapVisitor::visit(Argument& node) {
-    unwrap(node.arg_decl.second);
-}
 void AliasUnwrapVisitor::visit(ArrayDecl& node) {
     unwrap(node.array_type);
 }
