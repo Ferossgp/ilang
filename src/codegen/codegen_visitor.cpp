@@ -1,9 +1,6 @@
 #include "codegen_visitor.h"
 #include <iostream>
 
-// TODO: array types generation
-// TODO: relational operators
-// TODO: Type deduced generation?
 CodegenVisitor::CodegenVisitor(const std::string& filename): Builder{TheContext}, output{filename, EC, llvm::sys::fs::F_None}
 {
     TheModule = llvm::make_unique<llvm::Module>("my cool jit", TheContext);
