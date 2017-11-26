@@ -1,10 +1,9 @@
 #include "typechecking_visitor.h"
 #include <iostream>
 
-/*
-    In routine's prototype we can do nothing
-    Just a dummy method, exapmple of how it is used
-*/
+
+
+
 void TypeCheckingVisitor::visit(Prototype& node) 
 {
     return;
@@ -198,13 +197,16 @@ void TypeCheckingVisitor::visit(RecordDecl& node)
 
 /*
     Go through all routine's statements
-    Check that function will return value of the expected type
 */
 void TypeCheckingVisitor::visit(Routine& node) 
 {
-    // Go through all statements in body, find and check all returns
+    // Go through all statements in body
     lastVisitedRoutine = &node;
     node.body->accept(*this);
+    for (int i = 0; i < node.body->statements.size(); i++)
+    {
+        node.body->statements[i]->accept(*this);
+    }
 }
 
 /*
@@ -228,9 +230,6 @@ void TypeCheckingVisitor::visit(RoutineCall& node)
             reportError("Arguments of function " + routineName + 
                 " are incorrect! Expected another type on " + std::to_string(i) + "\n");
     }
-
-    // Forward further
-    node.callee->accept(*this);
 }
 
 /*
