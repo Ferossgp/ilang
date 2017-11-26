@@ -77,6 +77,8 @@ int main(int argc, char *argv[]) {
     TypeCheckingVisitor tcv;
     program->accept(tcv);
 
+    std::cout << "Type checked!\n";
+
     CodegenVisitor v{args.output};
     v.visit(*program);
     v.generate();

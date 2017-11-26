@@ -29,8 +29,11 @@ void TypeCheckingVisitor::visit(Assignment& node)
 {
     // Variable, array or record reference
     auto left = (Expression*) node.variable;
+    std::cout << "Left side of ass\n";
     auto left_type = left->type->type;
+    std::cout << "Left side type of ass\n";
     auto right = (Expression*) node.value;
+    std::cout << "Right side of ass\n";
     auto right_type = right->type->type;
 
     left->accept(*this);
@@ -292,7 +295,7 @@ void TypeCheckingVisitor::visit(While& node)
 */
 void TypeCheckingVisitor::visit(Return& node) 
 {
-    if (*node.expression->type != *lastVisitedRoutine->proto->type)
+    if (*((Expression*)node.expression)->type != *lastVisitedRoutine->proto->type)
         reportError("Routine " + lastVisitedRoutine->proto->name + " has incorrect " +
         "return value!\n");
 }
