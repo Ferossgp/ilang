@@ -13,11 +13,11 @@ class Prototype : public ASTNode {
 public:
     string name;
     Type *type;
-    vector<Argument*> args;
+    vector<ASTNode*> args;
 
-    Prototype(const string &name, const vector<Argument*> &args, Type *type);
+    Prototype(const string &name, const vector<ASTNode*> &args, Type *type);
     const string &getName() const { return name; }
-    const vector<Argument*>& getArgs() { return args; };
+    const vector<ASTNode*>& getArgs() { return args; };
     void accept(Visitor &v) { v.visit(*this); };
 };
 #endif //ILANG_PROTOTYPE_H

@@ -10,15 +10,6 @@ void TypeDeduceVisitor::visit(ArrayDecl& node) {
 void TypeDeduceVisitor::visit(Assignment& node) {
     node.value->accept(*this);
 }
-void TypeDeduceVisitor::visit(Assignment& node) {
-    node.value->accept(*this);
-void TypeDeduceVisitor::visit(Binary& node) {
-    node.lhs->accept(*this);
-    node.rhs->accept(*this);
-    if (!Type::isPrimitive(*node.lhs->type) || !Type::isPrimitive(*node.rhs->type)) {
-        reportError("error: TypeDeduceVisitor: binary with non-primitive");
-    }
-// TODO: wait: "and", "or", "xor", "/=", "<=", ">=" binary operator decoding
 void TypeDeduceVisitor::visit(Binary& node) {
     node.lhs->accept(*this);
     node.rhs->accept(*this);
@@ -51,7 +42,6 @@ void TypeDeduceVisitor::visit(Binary& node) {
                 node.rhs = new Cast(node.rhs, ltype);
             }
         }
-    node.body->accept(*this);
     }
     if (isLogic) {
         if (*ltype != types::Boolean) {
