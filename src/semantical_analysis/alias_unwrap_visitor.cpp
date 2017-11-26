@@ -76,7 +76,7 @@ void AliasUnwrapVisitor::visit(Statements& node) {
     }
 }
 void AliasUnwrapVisitor::visit(TypeDecl& node) {
-    unwrap(node.original);
+    unwrap(node.ref_type);
 }
 void AliasUnwrapVisitor::visit(Unary& node) {
     reportError("bug: AliasUnwrapVisitor: visit Unary node");
@@ -98,6 +98,6 @@ void AliasUnwrapVisitor::visit(While& node) {
 }
 void AliasUnwrapVisitor::unwrap(Type *&type) {
     while (type->type == types::Alias) {
-        type = ((TypeDecl*)type)->original;
+        type = ((TypeDecl*)type)->ref_type;
     }
 }
