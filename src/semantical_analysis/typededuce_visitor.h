@@ -2,6 +2,7 @@
 
 #include "../AST/prototype.h"
 #include "../AST/arraydecl.h"
+#include "../AST/arrayref.h"
 #include "../AST/assignment.h"
 #include "../AST/binary.h"
 #include "../AST/boolean.h"
@@ -27,6 +28,7 @@ class TypeDeduceVisitor : public Visitor
 public:
     void visit(Prototype& node);
     void visit(ArrayDecl& node);
+    void visit(ArrayRef& node);
     void visit(Assignment& node);
     void visit(Binary& node);
     void visit(Boolean& node);

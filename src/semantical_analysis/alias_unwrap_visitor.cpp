@@ -10,6 +10,9 @@ void AliasUnwrapVisitor::visit(Prototype& node) {
 void AliasUnwrapVisitor::visit(ArrayDecl& node) {
     unwrap(node.array_type);
 }
+void AliasUnwrapVisitor::visit(ArrayRef& node) {
+    reportError("bug: AliasUnwrapVisitor: visit ArrayRef node");
+}
 void AliasUnwrapVisitor::visit(Assignment& node) {
 }
 void AliasUnwrapVisitor::visit(Binary& node) {

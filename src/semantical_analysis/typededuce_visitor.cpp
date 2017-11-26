@@ -7,6 +7,10 @@ void TypeDeduceVisitor::visit(Prototype& node) {
 void TypeDeduceVisitor::visit(ArrayDecl& node) {
     node.expression->accept(*this);
 }
+void TypeDeduceVisitor::visit(ArrayRef& node) {
+    node.type = ((ArrayDecl*)node.array)->array_type;
+    node.pos->accept(*this);
+}
 void TypeDeduceVisitor::visit(Assignment& node) {
     node.value->accept(*this);
 }
