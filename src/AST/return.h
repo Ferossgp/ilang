@@ -6,8 +6,8 @@
 
 class Return : public ASTNode {
 public:
-    ASTNode *expression;
-    Return(ASTNode *expression);
+    Expression *expression;
+    Return(Expression *expression);
     void accept(Visitor &v) { v.visit(*this); };
 };
 #endif //ILANG_RETURN_H
