@@ -147,7 +147,9 @@ void TypeCheckingVisitor::visit(For& node)
 */
 void TypeCheckingVisitor::visit(If& node) 
 {
+    std::cout << "FOO\n";
     auto expr = (Expression*) node.condition;
+    std::cout << (int) expr->type->type << "\n";
     if (expr->type->type != types::Boolean)
         reportError("Type of expression in if is not boolean!\n");
 
@@ -287,7 +289,7 @@ void TypeCheckingVisitor::visit(While& node)
 */
 void TypeCheckingVisitor::visit(Return& node) 
 {
-    if (node.expression->type != lastVisitedRoutine->proto->type)
+    if (*node.expression->type != *lastVisitedRoutine->proto->type)
         reportError("Routine " + lastVisitedRoutine->proto->name + " has incorrect " +
         "return value!\n");
 }

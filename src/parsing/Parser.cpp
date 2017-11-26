@@ -35,7 +35,7 @@ Expression * Parser::parse_boolean(bool value) {
 
 ASTNode * Parser::parse_return() {
     lexer->next();
-    ASTNode *ret = parse_expression();
+    Expression *ret = parse_expression();
     return new Return(ret);
 }
 
