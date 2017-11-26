@@ -11,7 +11,7 @@ class RecordDecl : public Type {
 public:
     vector<ASTNode*> refs;
 
-    RecordDecl(const vector<ASTNode*> &refs);
+    RecordDecl(const vector<ASTNode*> &refs): refs{refs} {type = types::Record;};
     void accept(Visitor &v) { v.visit(*this); };
 };
 

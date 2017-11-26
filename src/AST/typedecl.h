@@ -10,8 +10,8 @@ class TypeDecl : public Type {
 
 public:
     std::string identifier;
-    Type *original;
-    TypeDecl(const std::string &identifier, Type *original);
+    Type *ref_type;
+    TypeDecl(const std::string &identifier, Type *ref_type);
     void accept(Visitor &v) { v.visit(*this); };
 };
 
