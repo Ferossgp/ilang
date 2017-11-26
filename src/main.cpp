@@ -16,7 +16,7 @@
 #include "AST/ast.h"
 #include "codegen/codegen_visitor.h"
 #include "semantical_analysis/semantic_visitor.h"
-#include "lib/cxxopts.hpp"
+#include "lib/argparse.hpp"
 #include "parsing/Lexer.h"
 #include "parsing/Parser.h"
 
@@ -50,37 +50,41 @@ public:
 
 public:
     CmdArgsParser(int argc, char *argv[]) {
-        cxxopts::Options options(argv[0]);
-        options
-            .positional_help("input")
-            .show_positional_help();
-        options.add_options()
-            ("h,help", "print help")
-            ("o,output", "output file", cxxopts::value<std::string>())
-            ("i,input", "input file", cxxopts::value<std::string>());
-        options.parse_positional("input");
+        ArgumentParser parser;
+        parser.useExceptions(true);
+        parser.appName(argv[0]);
+        parser.addArgument("-h", "--help");
+        parser.addArgument("-o", "--output", 1);
+        parser.addFinalArgument("input");
 
-        auto result = options.parse(argc, argv);
+        this->helpText = parser.usage();
+
+        this->error = true;
+        try {
+            parser.parse(argc, (const char**)argv);
+        }
+        catch (std::exception &e) {
+            return;
+        }
 
         this->error = false;
 
-        this->printHelp = result.count("help");
-        this->helpText = options.help();
+        this->printHelp = parser.count("help");
         if (this->printHelp) {
             return;
         }
 
-        if (!result.count("input")) {
+        if (!parser.count("input")) {
             this->error = true;
             return;
         }
-        this->input = result["input"].as<std::string>();
+        this->input = parser.retrieve<std::string>("input");
 
-        if (!result.count("output")) {
+        if (!parser.count("output")) {
             this->error = true;
             return;
         }
-        this->output = result["output"].as<std::string>();
+        this->output = parser.retrieve<std::string>("output");
     }
 };
 
