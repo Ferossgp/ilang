@@ -2,4 +2,4 @@
 #include "return.h"
 
 
-Return::Return(Expression *expression) : expression(expression) {};
+Return::Return(ASTNode *expression) : expression(expression) {};
