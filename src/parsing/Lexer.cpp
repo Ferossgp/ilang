@@ -126,7 +126,6 @@ void Lexer::next() {
     if ( last_char == '.' && inputStream->peek() == '.'){
         last_char = inputStream->get();
         current_token_ = (int)Token::RANGE;
-        last_char = inputStream->get();                            
         return;
     }
 
@@ -184,6 +183,11 @@ void Lexer::next() {
     }
     if (last_char == '-') {
         current_token_ = (int)Token::MINUS;
+        last_char = inputStream->get();
+        return;
+    }
+    if (last_char == '=') {
+        current_token_ = (int)Token::EQUAL;
         last_char = inputStream->get();
         return;
     }
