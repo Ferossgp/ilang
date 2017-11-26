@@ -1,12 +1,12 @@
 #include "typechecking_visitor.h"
 #include <iostream>
 
-
-
-
+/*
+    In routine's prototype we can do nothing
+*/
 void TypeCheckingVisitor::visit(Prototype& node) 
 {
-    std::cout << "Visiting PrototypeNode: " << node.getName();
+    return;
 }
 
 /*
@@ -32,6 +32,9 @@ void TypeCheckingVisitor::visit(Assignment& node)
     auto left_type = left->type->type;
     auto right = (Expression*) node.value;
     auto right_type = right->type->type;
+
+    left->accept(*this);
+    right->accept(*this);
 
     if (left_type == types::Integer && right_type == types::Integer)
     {
@@ -92,49 +95,102 @@ void TypeCheckingVisitor::visit(Assignment& node)
     }
 }
 
+/*
+    Everything was checked during the previous pass
+*/
 void TypeCheckingVisitor::visit(Binary& node) 
 {
-    std::cout << "Foo";
+    return;
 }
+
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(Boolean& node)
 {
-    std::cout << "Foo";
+    return;
 }
+
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(BooleanType& node)
 {
-    std::cout << "Foo";
+    return;
 }
+
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(Cast& node)
 {
-    std::cout << "Foo";
+    return;
 }
+
+/*
+    Check that expression in FOR is of integer type
+    Go through statements in FOR
+*/
 void TypeCheckingVisitor::visit(For& node) 
 {
-    std::cout << "Foo";
+    auto from = (Expression*) node.start;
+    auto until = (Expression*) node.end;
+    if (from->type->type != types::Integer || until->type->type != types::Integer)
+        reportError("Variable in FOR loop is not of integer type!\n");
+    
+    node.body->accept(*this);
 }
+
+/*
+    Check that expression in IF is of boolean type
+    Go through all statements in both branches
+*/
 void TypeCheckingVisitor::visit(If& node) 
 {
-    std::cout << "Foo";
+    auto expr = (Expression*) node.condition;
+    if (expr->type->type != types::Boolean)
+        reportError("Type of expression in if is not boolean!");
+
+    node.then->accept(*this);
+    if (!node.else_body)
+        node.else_body->accept(*this);
 }
+
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(Integer& node) 
 {
-    std::cout << "Foo";
+    return;
 }
+
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(IntegerType& node) 
 {
-    std::cout << "Foo";
+    return;
 }
+
 void TypeCheckingVisitor::visit(Real& node) 
 {
-    std::cout << "Foo";
+    return;
 }
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(RealType& node) 
 {
-    std::cout << "Foo";
+    return;
 }
+
+/*
+    Go through all declarations in the record
+*/
 void TypeCheckingVisitor::visit(RecordDecl& node) 
 {
-    std::cout << "Foo";
+    for (int i = 0; i < node.refs.size(); i++)
+        node.refs[i]->accept(*this);
 }
 
 /*
@@ -144,11 +200,7 @@ void TypeCheckingVisitor::visit(Routine& node)
 {
     // Go through all statements in body
     lastVisitedRoutine = &node;
-
-    for (int i = 0; i < node.body->statements.size(); i++)
-    {
-        node.body->statements[i]->accept(*this);
-    }
+    node.body->accept(*this);
 }
 
 /*
@@ -174,29 +226,60 @@ void TypeCheckingVisitor::visit(RoutineCall& node)
     }
 }
 
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(TypeDecl& node) 
 {
-    std::cout << "Foo";
+    return;
 }
+
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(Unary& node) 
 {
-    std::cout << "Foo";
+    return;
 }
+
+/*
+    We cannot reach the undefined in normal case
+*/
 void TypeCheckingVisitor::visit(Undefined& node) 
 {
-    std::cout << "Foo";
+    reportError("Undefined reached during the type checking!\n");
 }
+
+/*
+    Check that initial value is of declared type, if exists
+*/
 void TypeCheckingVisitor::visit(Var& node) 
 {
-    std::cout << "Foo";
+    auto declaredType = node.var_decl.second;
+    auto actualType = ((Expression*) node.body)->type;
+    if (*declaredType != *actualType)
+        reportError("Initial value of variable " + node.var_decl.first + " is not of the declared type!\n");
 }
+
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(Variable& node) 
 {
-    std::cout << "Foo";
+    return;
 }
+
+/*
+    Check expression in WHILE for boolean
+    Go through statements in loop
+*/
 void TypeCheckingVisitor::visit(While& node) 
 {
-    std::cout << "Foo";
+    auto expr = (Expression*) node.expression;
+    if (expr->type->type != types::Boolean)
+        reportError("Expression in WHILE is not of boolean type!\n");
+    
+    node.body->accept(*this);
 }
 
 /*
@@ -204,18 +287,27 @@ void TypeCheckingVisitor::visit(While& node)
 */
 void TypeCheckingVisitor::visit(Return& node) 
 {
-    // if (node.expression->type != lastVisitedRoutine->proto->type)
-    //     reportError("Routine " + lastVisitedRoutine->proto->name + " has incorrect " +
-    //     "return value!");
+    if (node.expression->type != lastVisitedRoutine->proto->type)
+        reportError("Routine " + lastVisitedRoutine->proto->name + " has incorrect " +
+        "return value!");
 }
 
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(RecordRef& node) 
 {
-    std::cout << "Foo";
+    return;
 }
+
+/*
+    Check that called position is integer
+*/
 void TypeCheckingVisitor::visit(ArrayRef& node) 
 {
-    std::cout << "Foo";
+    auto position = (Expression*) node.pos;
+    if (position->type->type != types::Integer)
+        reportError("Trying to call array with not-integer type!");
 }
 
 /*
@@ -229,11 +321,19 @@ void TypeCheckingVisitor::visit(Program& node)
     }
 }
 
+/*
+    Visit every statement
+*/
 void TypeCheckingVisitor::visit(Statements& node) 
 {
-    std::cout << "Foo";
+    for (int i = 0; i < node.statements.size(); i++)
+        node.statements[i]->accept(*this);
 }
+
+/*
+    Can do nothing
+*/
 void TypeCheckingVisitor::visit(Void& node) 
 {
-    std::cout << "Foo";
+    return;
 }
