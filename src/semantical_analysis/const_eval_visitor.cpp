@@ -46,7 +46,7 @@ void ConstEvalVisitor::visit(IntegerType& node) {
     reportError("bug: ConstEvalVisitor: visit IntegerType node");
 }
 void ConstEvalVisitor::visit(Program& node) {
-    for (auto x : node.refs) {
+    for (auto x : node.program) {
         x->accept(*this);
     }
 }
@@ -75,7 +75,7 @@ void ConstEvalVisitor::visit(RoutineCall& node) {
     }
 }
 void ConstEvalVisitor::visit(Statements& node) {
-    for (auto x : node.refs) {
+    for (auto x : node.statements) {
         x->accept(*this);
     }
 }
@@ -101,6 +101,9 @@ void ConstEvalVisitor::visit(Void& node) {
 void ConstEvalVisitor::visit(While& node) {
     unwrap(node.expression);
     node.body->accept(*this);
+}
+void ConstEvalVisitor::unwrap(ASTNode *&value) {
+    unwrap((Expression*&)value);
 }
 void ConstEvalVisitor::unwrap(Expression *&value) {
     value->accept(*this);

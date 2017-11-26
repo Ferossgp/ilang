@@ -43,7 +43,7 @@ void AliasUnwrapVisitor::visit(IntegerType& node) {
     reportError("bug: AliasUnwrapVisitor: visit IntegerType node");
 }
 void AliasUnwrapVisitor::visit(Program& node) {
-    for (auto x : node.refs) {
+    for (auto x : node.program) {
         x->accept(*this);
     }
 }
@@ -71,7 +71,7 @@ void AliasUnwrapVisitor::visit(RoutineCall& node) {
     // bug if inside expression
 }
 void AliasUnwrapVisitor::visit(Statements& node) {
-    for (auto x : node.refs) {
+    for (auto x : node.statements) {
         x->accept(*this);
     }
 }
