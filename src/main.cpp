@@ -70,6 +70,13 @@ int main(int argc, char *argv[]) {
     Lexer lexer(&fs);
     Parser parser(&lexer);
     auto program = parser.parse();
+
+    PrintNameVisitor pnv;
+    program->accept(pnv);
+
+    TypeCheckingVisitor tcv;
+    program->accept(tcv);
+
     CodegenVisitor v{args.output};
     v.visit(*program);
     v.generate();
