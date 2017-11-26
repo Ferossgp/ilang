@@ -1,42 +1,11 @@
-#include <iostream>
 #include <fstream>
-#include <string>
-#include "llvm/IR/LLVMContext.h"
-#include "llvm/ADT/STLExtras.h"
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/Module.h"
-#include "llvm/IR/Verifier.h"
-#include "llvm/Support/TargetSelect.h"
-#include "llvm/Target/TargetOptions.h"
-#include "llvm/Target/TargetMachine.h"
-#include "llvm/Support/TargetRegistry.h"
-#include "llvm/Support/raw_ostream.h"
-#include "llvm/Support/FileSystem.h"
-#include "llvm/IR/LegacyPassManager.h"
+#include <iostream>
 #include "AST/ast.h"
 #include "codegen/codegen_visitor.h"
 #include "semantical_analysis/semantic_visitor.h"
 #include "lib/argparse.hpp"
 #include "parsing/Lexer.h"
 #include "parsing/Parser.h"
-
-llvm::LLVMContext TheContext;
-llvm::IRBuilder<> Builder(TheContext);
-std::unique_ptr<llvm::Module> TheModule;
-
-llvm::Function *codegen_example()
-{
-    using namespace llvm;
-    FunctionType *ft = FunctionType::get(llvm::Type::getVoidTy(TheContext), false);
-    auto name = "empty_function";
-    Function *f = Function::Create(ft, Function::ExternalLinkage, name, TheModule.get());
-    BasicBlock *BB = BasicBlock::Create(TheContext, "entry", f);
-    Builder.SetInsertPoint(BB);
-    Builder.CreateRetVoid();
-    verifyFunction(*f);
-
-    return f;
-}
 
 class CmdArgsParser {
 public:
@@ -88,8 +57,20 @@ public:
     }
 };
 
-int main(int argc, char *argv[]) 
-{
+int main(int argc, char *argv[]) {
 
+    CmdArgsParser args(argc, argv);
+    if (args.error || args.printHelp) {
+        std::cout << args.helpText << std::endl;
+        return 0;
+    }
+
+    std::ifstream fs(args.input);
+    Lexer lexer(&fs);
+    Parser parser(&lexer);
+    auto program = parser.parse();
+    CodegenVisitor v{args.output};
+    v.visit(*program);
+    v.generate();
     return 0;
 }

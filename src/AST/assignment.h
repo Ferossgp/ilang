@@ -9,8 +9,9 @@ public:
 
     ASTNode *variable;
     Expression *value;
-    
-    Assignment(ASTNode *variable, Expression *value);
+    types lhs_type;
+
+    Assignment(ASTNode *variable, Expression *value, types lhs_type);
     void accept(Visitor &v) { v.visit(*this); };
 };
 #endif //ILANG_ASSIGNMENT_H

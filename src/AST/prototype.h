@@ -10,11 +10,11 @@ using std::string;
 using std::vector;
 
 class Prototype : public ASTNode {
+public:
     string name;
     Type *type;
     vector<ASTNode*> args;
 
-public:
     Prototype(const string &name, const vector<ASTNode*> &args, Type *type);
     const string &getName() const { return name; }
     const vector<ASTNode*>& getArgs() { return args; };

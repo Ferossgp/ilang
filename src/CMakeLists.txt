@@ -41,7 +41,6 @@ add_executable(voc
     AST/boolean.cpp
     AST/typedecl.cpp
     AST/assignment.cpp
-    AST/argument.cpp
     AST/return.cpp
 )
 

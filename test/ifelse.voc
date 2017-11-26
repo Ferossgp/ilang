@@ -1,0 +1,9 @@
+routine ifs(b boolean): integer is
+    var a : integer is 0
+    if b then
+        a := 3
+    else
+        a := 5
+    end
+    return a
+end

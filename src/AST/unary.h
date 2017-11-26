@@ -4,10 +4,10 @@
 #include "expression.h"
 
 class Unary: public Expression {
+public:
     char opcode;
     ASTNode *operand;
 
-public:
     Unary(char opcode, ASTNode *operand);
     void accept(Visitor &v) { v.visit(*this); };
 };

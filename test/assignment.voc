@@ -1,0 +1,4 @@
+routine ass(a integer): integer is
+    var b : integer is 3
+    return b
+end

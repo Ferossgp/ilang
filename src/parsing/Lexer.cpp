@@ -38,7 +38,7 @@ Lexer::Lexer(std::istream* inputStream) : inputStream(inputStream) {
     opchar_map_[(int)Token::OR] = opchars::OR;
     opchar_map_[(int)Token::XOR] = opchars::XOR;
     opchar_map_[(int)Token::AND] = opchars::AND;
-    
+
 
     keyword_map_["var"] = Token::VAR;
     keyword_map_["end"] = Token::END;
@@ -61,10 +61,10 @@ Lexer::Lexer(std::istream* inputStream) : inputStream(inputStream) {
     keyword_map_["real"] = Token::REAL_TYPE;
     keyword_map_["not"] = Token::NOT;
     keyword_map_["true"] = Token::TRUE_;
-    keyword_map_["false"] = Token::FALSE_; 
-    keyword_map_["and"] = Token::AND;    
-    keyword_map_["or"] = Token::OR;    
-    keyword_map_["xor"] = Token::XOR;           
+    keyword_map_["false"] = Token::FALSE_;
+    keyword_map_["and"] = Token::AND;
+    keyword_map_["or"] = Token::OR;
+    keyword_map_["xor"] = Token::XOR;
     keyword_map_["="] = Token::EQUAL;
     keyword_map_["<"] = Token::LESS;
     keyword_map_[">"] = Token::HIGH;
@@ -107,7 +107,7 @@ void Lexer::next() {
             if (last_char == '.' && inputStream->peek() == '.') {
                 inputStream->putback(last_char);
                 break;
-            }            
+            }
             if (last_char == '.') is_double = true;
             number_string += last_char;
             last_char = inputStream->get();
@@ -133,57 +133,57 @@ void Lexer::next() {
         if ( inputStream->peek() == '='){
             last_char = inputStream->get();
             current_token_ = (int)Token::LESSEQ;
-            last_char = inputStream->get();                                        
+            last_char = inputStream->get();
             return;
         }
         current_token_ = (int)Token::LESS;
-        last_char = inputStream->get();       
-        return;       
+        last_char = inputStream->get();
+        return;
     }
-    
+
     if ( last_char == '>') {
         if ( inputStream->peek() == '='){
-            last_char = inputStream->get();            
-            current_token_ = (int)Token::HIGHEQ;        
-            last_char = inputStream->get();                            
+            last_char = inputStream->get();
+            current_token_ = (int)Token::HIGHEQ;
+            last_char = inputStream->get();
             return;
         }
 
         current_token_ = (int)Token::HIGH;
-        last_char = inputStream->get();                    
-        return;       
+        last_char = inputStream->get();
+        return;
     }
 
     if ( last_char == '/') {
         if ( inputStream->peek() == '='){
             last_char = inputStream->get();
             current_token_ = (int)Token::NOTEQ;
-            last_char = inputStream->get();               
+            last_char = inputStream->get();
             return;
         }
         current_token_ = (int)Token::DIV;
-        last_char = inputStream->get();                    
+        last_char = inputStream->get();
         return;
     }
-    
+
     if (last_char == '*') {
         current_token_ = (int)Token::MUL;
-        last_char = inputStream->get();                    
+        last_char = inputStream->get();
         return;
     }
     if (last_char == '%') {
         current_token_ = (int)Token::MOD;
-        last_char = inputStream->get();                    
+        last_char = inputStream->get();
         return;
     }
     if (last_char == '+') {
         current_token_ = (int)Token::PLUS;
-        last_char = inputStream->get();                    
+        last_char = inputStream->get();
         return;
     }
     if (last_char == '-') {
-        current_token_ = (int)Token::MUL;
-        last_char = inputStream->get();                    
+        current_token_ = (int)Token::MINUS;
+        last_char = inputStream->get();
         return;
     }
     if ( last_char == '#' ) {
@@ -201,7 +201,7 @@ void Lexer::next() {
         current_token_ = (int)Token::EOF_;
         return;
     }
-    
+
     current_token_ = last_char;
     last_char = inputStream->get();
 }
@@ -226,7 +226,7 @@ int Lexer::token_priority() {
         return -1; // not in table
     }
     int priority = op_priority_[current_token_];
-    
+
     if ( priority <= 0 ) {
         return -1;
     }
