@@ -10,6 +10,7 @@ public:
     Real();
     Real(double value);
     void accept(Visitor &v) { v.visit(*this); };
+    Expression* eval() { return this; }
 };
 
 #endif //ILANG_REAL_H

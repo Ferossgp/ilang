@@ -5,11 +5,16 @@
 #include "node.h"
 #include "type.h"
 #include "undefined.h"
+#include "../semantical_analysis/error.h"
 
 class Expression : public ASTNode {
 public:
     Type *type;
-    Expression() : type(new Undefined()) {};
+    bool isConst;
+    Expression() : type(new Undefined()), isConst(false) {};
+    virtual Expression* eval() {
+        reportError("bug: Expression.eval: virtual");
+    }
 };
 
 #endif //ILANG_EXPRESSION_H
