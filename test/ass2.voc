@@ -1,0 +1,9 @@
+routine give_int(): integer is
+    var a: integer is 2
+    return a
+end
+
+routine check_if(a integer, b boolean) is
+    var c: integer
+    c := 3
+end

@@ -1,5 +1,5 @@
 #include "../visitor.h"
-
+#include <string.h>
 #include "../AST/prototype.h"
 #include "../AST/arraydecl.h"
 #include "../AST/arrayref.h"
