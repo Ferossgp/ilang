@@ -108,6 +108,7 @@ RecordRef * Parser::parse_record_ref(ASTNode *assignee) {
     lexer->next();
     string ref = lexer->identifier();
     lexer->next();
+
     return new RecordRef(assignee, ref);
 }
 
@@ -143,6 +144,12 @@ ASTNode * Parser::parse_identifier_statement() {
             if (lexer->current_token() == (int)Token::EQUAL) {
                 lexer->next();
                 Expression *value = parse_expression();
+                Var *di4 = (Var*)ref->record;
+                std::cout << ((Var*) di4)->var_decl.first;
+                //TypeDecl *type = (TypeDecl*)di4->var_decl.second;
+                //Type *record = (Type*)type->type;
+                //std::cout <<" is Di4: " << (int)record->type << "\n";
+    
                 return new Assignment(ref, value, types::Record);
             }
             return Error("Unknown ':' at this possition");
@@ -607,10 +614,7 @@ ASTNode * Parser::parse_for() {
     }
 
     lexer->next();
-
-    lexer->next();
-    // lexer->next();
-    std::cout << "Current Token: " << lexer->current_token() << "\n";
+    std::cout << "Current Token in For: " << lexer->current_token() << "\n";
     ASTNode *end = parse_expression();
     if ( end == 0 ) { return 0; }
 
@@ -629,6 +633,7 @@ ASTNode * Parser::parse_for() {
 
     lexer->next();
     closeScope();
+
     return new For(id_name, end, start, (Statements*) body, reverse);
 }
 
@@ -690,6 +695,13 @@ Program * Parser::parse() {
 }
 
 void Parser::addDecl(pair<string, ASTNode*> decl) {
+    if (decl.first == "Point"){
+        TypeDecl *di4 = (TypeDecl*)decl.second;
+        Type *record = (Type*)di4->type;
+        std::cout << di4->identifier;
+        std::cout <<"On insrt:" << decl.first << " is Di4: " << (int)record->type << "\n";
+    }
+    
     name_table[scope][decl.first] = decl.second;
 }
 
