@@ -68,6 +68,7 @@ private:
     // std::unordered_map<std::string, llvm::Value*> last_variables;
 
     llvm::Type* get_type(types type);
+    llvm::ConstantInt* get_const_int(int value);
 
 public:
     CodegenVisitor(const std::string& filename);

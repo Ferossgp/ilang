@@ -53,6 +53,10 @@ llvm::Type* CodegenVisitor::get_type(types type)
     }
 }
 
+llvm::ConstantInt *CodegenVisitor::get_const_int(int value) {
+    return llvm::ConstantInt::get(TheContext, llvm::APInt(32, value, true));
+}
+
 void CodegenVisitor::visit(Prototype& p)
 {
     std::cout << "Parsing Prototype\n";
@@ -270,7 +274,7 @@ void CodegenVisitor::visit(For& node)
     Builder.SetInsertPoint(loop);
     node.body->accept(*this);
     i = Builder.CreateLoad(iter, "i");
-    auto incr = Builder.CreateAdd(i, llvm::ConstantInt::get(llvm::Type::getInt32Ty(TheContext), 1, true));
+    auto incr = Builder.CreateAdd(i, get_const_int(1));
     Builder.CreateStore(incr, iter);
     Builder.CreateBr(cond);
     last_function->getBasicBlockList().push_back(end);
@@ -311,7 +315,7 @@ void CodegenVisitor::visit(If& node)
 void CodegenVisitor::visit(Integer& node)
 {
     std::cout << "Generating Integer\n";
-    last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, node.value, true));
+    last_constant = get_const_int(node.value);
 }
 
 void CodegenVisitor::visit(IntegerType& node)
@@ -450,7 +454,7 @@ void CodegenVisitor::visit(Var& node)
         std::vector<llvm::Value*> ArgsV;
         // auto array = (ArrayDecl *) node.var_decl.second;
         // array->expression->accept(*this);
-        last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(32, 8, true));
+        last_constant = get_const_int(8);
         // Builder.CreateMul(
         //     llvm::ConstantInt::get(TheContext, llvm::APInt(32, 4, true)),
         //     last_constant
@@ -522,10 +526,7 @@ void CodegenVisitor::visit(RecordRef& node) {
     while (((Var*) decl->refs[i])->var_decl.first != node.ref && i < (decl->refs.size())) {
         i++;
     }
-    std::vector<llvm::Value *> indices{
-        llvm::ConstantInt::get(TheContext, llvm::APInt(32, 0, true)),
-        llvm::ConstantInt::get(TheContext, llvm::APInt(32, i, true))
-    };
+    std::vector<llvm::Value *> indices{get_const_int(0), get_const_int(i)};
     auto elem_address = Builder.CreateGEP(
         structs["struct1"],
         struct_address,
@@ -545,7 +546,7 @@ void CodegenVisitor::visit(ArrayRef& node) {
     std::string decl_name = ((Var *) node.array)->var_decl.first;
     auto arr_address = Builder.CreateLoad(last_params[decl_name], "arr");
     node.pos->accept(*this);
-    auto pos = Builder.CreateSub(last_constant, llvm::ConstantInt::get(llvm::Type::getInt32Ty(TheContext), 1));
+    auto pos = Builder.CreateSub(last_constant, get_const_int(1));
     auto elem_address = Builder.CreateGEP(arr_address, pos);
     if (is_lvalue) {
         last_constant = elem_address;
@@ -565,6 +566,11 @@ void CodegenVisitor::visit(Program& node) {
     arg_types.push_back(llvm::Type::getInt64Ty(TheContext));
     auto ft = llvm::FunctionType::get(llvm::Type::getInt8PtrTy(TheContext), arg_types, false);
     llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "malloc", TheModule.get());
+    //
+    std::vector<llvm::Type*> arg_types2;
+    arg_types.push_back(llvm::Type::getInt32Ty(TheContext));
+    auto ft2 = llvm::FunctionType::get(llvm::Type::getInt32Ty(TheContext), arg_types2, false);
+    llvm::Function::Create(ft2, llvm::Function::ExternalLinkage, "putchar", TheModule.get());
     //
     for (auto& n : node.program) {
         n->accept(*this);
