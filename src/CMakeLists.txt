@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 project(ilang VERSION 0.1 LANGUAGES CXX)
 
-set(CMAKE_CXX_FLAGS "-std=c++14 -Wextra -Wall -Wundef -Wpointer-arith -Wno-sign-compare")
+set(CMAKE_CXX_FLAGS "-std=c++14 -Wextra -Wall -Wundef -Wpointer-arith -Wno-sign-compare -fno-rtti")
 
 find_package(LLVM REQUIRED CONFIG)
 
