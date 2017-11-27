@@ -568,14 +568,13 @@ void CodegenVisitor::visit(Program& node) {
     llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "malloc", TheModule.get());
     //
     std::vector<llvm::Type*> arg_types2;
-    arg_types.push_back(llvm::Type::getInt32Ty(TheContext));
+    arg_types2.push_back(llvm::Type::getInt32Ty(TheContext));
     auto ft2 = llvm::FunctionType::get(llvm::Type::getInt32Ty(TheContext), arg_types2, false);
     llvm::Function::Create(ft2, llvm::Function::ExternalLinkage, "putchar", TheModule.get());
     //
     for (auto& n : node.program) {
         n->accept(*this);
     }
-
     std::cout << "Program Generated\n";
 }
 
