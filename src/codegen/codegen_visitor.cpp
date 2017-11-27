@@ -196,6 +196,7 @@ void CodegenVisitor::visit(Binary& node)
     //     }
         break;
     case opchars::LESS:
+        std::cout << "Generating LESS\n";
         if (node.type->type == types::Integer) {
             last_constant = Builder.CreateICmpSLT(L, R, "cond");
         }// else if (node.type->type == types::Real){
@@ -217,6 +218,16 @@ void CodegenVisitor::visit(Binary& node)
     //     }
         break;
     // }
+    case opchars::AND:
+        std::cout << "Generating AND\n";
+        last_constant = Builder.CreateAnd(L, R);
+        break;
+    case opchars::OR:
+        last_constant = Builder.CreateOr(L, R);
+        break;
+    case opchars::XOR:
+        last_constant = Builder.CreateXor(L, R);
+        break;
     }
 }
 
@@ -275,6 +286,7 @@ void CodegenVisitor::visit(If& node)
 
     // insert condition
     node.condition->accept(*this);
+    std::cout << "Condition Generated\n";
     if (node.else_body) {
         Builder.CreateCondBr(last_constant, then, elsecond);
     } else {

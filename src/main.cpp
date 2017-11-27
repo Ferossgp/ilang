@@ -72,10 +72,10 @@ int main(int argc, char *argv[]) {
     auto program = parser.parse();
 
 
-    TypeDeduceVisitor().visit(*program);
+    // TypeDeduceVisitor().visit(*program);
 
-    TypeCheckingVisitor tcv;
-    program->accept(tcv);
+    // TypeCheckingVisitor tcv;
+    // program->accept(tcv);
 
     std::cout << "Type checked!\n";
 
