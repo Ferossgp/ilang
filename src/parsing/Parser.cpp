@@ -115,7 +115,7 @@ Ref * Parser::parse_ref(Var *assignee){
             break;
         }
     }
-    return named;
+    return latest_ref;
 }
 
 /// Returns Variable or RoutineCall
@@ -504,7 +504,7 @@ Routine * Parser::parse_routine() {
 ASTNode * Parser::parse_if() {
     lexer->next();
 
-    ASTNode *condition = parse_expression();
+    auto condition = parse_expression();
     if ( ! condition ) { return nullptr; }
     if ( lexer->current_token() != (int)Token::THEN ) {
         return Error("expected 'then'");

@@ -21,7 +21,6 @@ class TypeDecl;
 class Unary;
 class Undefined;
 class Var;
-class Ref;
 class NamedRef;
 class While;
 class Return;
@@ -55,7 +54,6 @@ public:
     virtual void visit(Undefined& node) = 0;
     virtual void visit(Var& node) = 0;
     virtual void visit(NamedRef& node) = 0;
-    virtual void visit(Ref& node) = 0;    
     virtual void visit(While& node) = 0;
     virtual void visit(Return& node) = 0;
     virtual void visit(RecordRef& node) = 0;
