@@ -9,20 +9,20 @@ using std::string;
 using std::unordered_map;
 
 Lexer::Lexer(std::istream* inputStream) : inputStream(inputStream) {
-    op_priority_[(int)Token::EQUAL] = 2;
-    op_priority_[(int)Token::LESS] = 10;
-    op_priority_[(int)Token::HIGH] = 10;
-    op_priority_[(int)Token::NOTEQ] = 10;
-    op_priority_[(int)Token::LESSEQ] = 10;
-    op_priority_[(int)Token::HIGHEQ] = 10;
-    op_priority_[(int)Token::PLUS] = 20;
-    op_priority_[(int)Token::MINUS] = 20;
+    op_priority_[(int)Token::OR] = 2;
+    op_priority_[(int)Token::XOR] = 2;
+    op_priority_[(int)Token::AND] = 2;
+    op_priority_[(int)Token::EQUAL] = 10;    
+    op_priority_[(int)Token::LESS] = 20;
+    op_priority_[(int)Token::HIGH] = 20;
+    op_priority_[(int)Token::NOTEQ] = 20;
+    op_priority_[(int)Token::LESSEQ] = 20;
+    op_priority_[(int)Token::HIGHEQ] = 20;
+    op_priority_[(int)Token::PLUS] = 30;
+    op_priority_[(int)Token::MINUS] = 30;
     op_priority_[(int)Token::MUL] = 240;
     op_priority_[(int)Token::DIV] = 240;
     op_priority_[(int)Token::MOD] = 240;
-    op_priority_[(int)Token::OR] = 240;
-    op_priority_[(int)Token::XOR] = 240;
-    op_priority_[(int)Token::AND] = 240;
 
     opchar_map_[(int)Token::EQUAL] = opchars::EQUAL;
     opchar_map_[(int)Token::LESS] = opchars::LESS;
@@ -100,7 +100,8 @@ void Lexer::next() {
         }
     }
 
-    if (isdigit(last_char)) {
+    if (isdigit(last_char) ||
+        (last_char == '-' && isdigit(inputStream->peek()))) {
         string number_string;
         bool is_double = false;
         do {
@@ -126,6 +127,8 @@ void Lexer::next() {
     if ( last_char == '.' && inputStream->peek() == '.'){
         last_char = inputStream->get();
         current_token_ = (int)Token::RANGE;
+        last_char = inputStream->get();
+        
         return;
     }
 

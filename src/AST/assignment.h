@@ -3,15 +3,16 @@
 
 #include "node.h"
 #include "expression.h"
+#include "ref.h"
 
 class Assignment : public ASTNode {
 public:
 
-    ASTNode *variable;
+    Ref *ref;
     Expression *value;
     types lhs_type;
 
-    Assignment(ASTNode *variable, Expression *value, types lhs_type);
+    Assignment(Ref *ref, Expression *value, types lhs_type);
     void accept(Visitor &v) { v.visit(*this); };
 };
 #endif //ILANG_ASSIGNMENT_H
