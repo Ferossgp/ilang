@@ -116,27 +116,17 @@ void CodegenVisitor::visit(Assignment& node)
     }
     node.value->accept(*this);
     auto expr = last_constant;
-    llvm::Value *store_location;
-    switch (node.lhs_type) {
-    case types::Undefined: {
-        auto name = ((Var *) node.ref)->var_decl.first;
-        store_location = last_params[name];
-    }
-        break;
-    case types::Array:
-        is_lvalue = true;
-        node.ref->accept(*this);
-        is_lvalue = false;
-        store_location = last_constant;
-        break;
-    case types::Record:
-        is_lvalue = true;
-        node.ref->accept(*this);
-        is_lvalue = false;
-        store_location = last_constant;
-        break;
-    }
-    Builder.CreateStore(expr, store_location);
+    is_lvalue = true;
+    node.ref->accept(*this);
+    is_lvalue = false;
+    //     std::cout << "Name is " << name << "\n";
+    //     store_location = last_params[name];
+    // }
+    //     is_lvalue = true;
+    //     node.ref->accept(*this);
+    //     is_lvalue = false;
+    //     store_location = last_constant;
+    Builder.CreateStore(expr, last_constant);
 
     std::cout << "Assignment generated\n";
 }
@@ -434,6 +424,7 @@ void CodegenVisitor::visit(Var& node)
 {
     std::cout << "Creating Var declaration\n";
     auto name = node.var_decl.first;
+    std::cout << "Name " << name << " declared\n";
     auto v = Builder.CreateAlloca(get_type(node.var_decl.second), 0, name);
     if (node.var_decl.second->type == types::Array) {
         std::cout << "Generating Array declaration\n";
@@ -485,13 +476,17 @@ void CodegenVisitor::visit(Var& node)
 
 void CodegenVisitor::visit(NamedRef& node)
 {
-    std::cout << "Parsing NamedRef\n";
+    std::cout << "Generating NamedRef\n";
     if (!node.var ) {
         std::cout << "var is 0\n";
     }
     std::string name = node.var->var_decl.first;
     auto value = last_params[name];
-    last_constant = Builder.CreateLoad(value, name.c_str());
+    if (is_lvalue) {
+        last_constant = value;
+    } else {
+        last_constant = Builder.CreateLoad(value, name.c_str());
+    }
 }
 
 void CodegenVisitor::visit(Return& node) {
