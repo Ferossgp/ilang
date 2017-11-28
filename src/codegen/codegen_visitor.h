@@ -63,7 +63,7 @@ private:
     llvm::Value *last_constant;
     llvm::Function *last_function;
     std::unordered_map<std::string, llvm::Value*> last_params;
-    std::unordered_map<std::string, llvm::StructType*> structs;
+    std::unordered_map<RecordDecl*, llvm::StructType*> structs;
     bool is_lvalue{false};
     // std::unordered_map<std::string, llvm::Value*> last_variables;
 
