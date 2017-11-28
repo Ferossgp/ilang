@@ -10,10 +10,14 @@ end
 
 routine new_point(x integer, y integer): Point is
     var p: Point
-    var pf: Pointf
     p.x := x
     p.y := y
-    pf.x := 3.14
-    pf.y := 2.56
     return p
+end
+
+routine new_pointf(x real, y real): Pointf is
+    var pf: Pointf
+    pf.x := x
+    pf.y := y
+    return pf
 end

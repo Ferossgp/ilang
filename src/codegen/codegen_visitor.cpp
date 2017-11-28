@@ -482,6 +482,7 @@ void CodegenVisitor::visit(NamedRef& node)
     if (!node.var ) {
         std::cout << "var is 0\n";
     }
+    last_decl = node.var;
     std::string name = node.var->var_decl.first;
     auto value = last_params[name];
     if (is_lvalue) {
@@ -522,6 +523,30 @@ void CodegenVisitor::visit(While& node) {
 
 void CodegenVisitor::visit(RecordRef& node) {
     std::cout << "Generating Record Reference\n";
+    bool old_lvalue = is_lvalue;
+    is_lvalue = false;
+    node.prev->accept(*this);
+    is_lvalue = old_lvalue;
+    auto record_address = last_constant;
+    auto decl = (RecordDecl *)((TypeDecl *) last_decl->var_decl.second)->ref_type;
+    auto record = structs[decl];
+    int i = 0;
+    while (((Var*) decl->refs[i])->var_decl.first != node.ref && i < (decl->refs.size())) {
+        i++;
+    }
+    std::vector<llvm::Value *> indices{get_const_int(0), get_const_int(i)};
+    auto elem_address = Builder.CreateGEP(
+        structs[decl],
+        record_address,
+        indices
+    );
+    if (is_lvalue) {
+        last_constant = elem_address;
+        std::cout << "Recordref Address Generated\n";
+    } else {
+        last_constant = Builder.CreateLoad(elem_address);
+        std::cout << "Recordref Value Generated\n";
+    }
     // auto rec_name = ((Var *) node.record)->var_decl.first;
     // auto struct_address = Builder.CreateLoad(last_params[rec_name], "rec");
     // std::cout << "Generated Record address\n";
@@ -543,6 +568,31 @@ void CodegenVisitor::visit(RecordRef& node) {
     //     last_constant = Builder.CreateLoad(elem_address);
     //     std::cout << "Recordref Value Generated\n";
     // }
+
+    // std::cout << "Generating ArrayRef\n";
+    // bool old_lvalue = is_lvalue;
+    // is_lvalue = false;
+    // node.prev->accept(*this);
+    // is_lvalue = old_lvalue;
+    // auto arr_address = last_constant;
+
+    // std::cout << "Generating Array Index\n";
+    // old_lvalue = is_lvalue;
+    // is_lvalue = false;
+    // node.pos->accept(*this);
+    // is_lvalue = old_lvalue;
+    // auto pos = Builder.CreateSub(last_constant, get_const_int(1));
+    // pos = Builder.CreateSExt(pos, llvm::Type::getInt64Ty(TheContext));
+    // std::cout << "Array Index Generated\n";
+    // auto elem_address = Builder.CreateGEP(arr_address, pos);
+    // if (is_lvalue) {
+    //     last_constant = elem_address;
+    //     elem_address->getType()->print(llvm::errs());
+    //     std::cout << "ArrayRef Address Generated\n";
+    // } else {
+    //     last_constant = Builder.CreateLoad(elem_address);
+    //     std::cout << "ArrayRef Value Generated\n";
+    // }
 }
 
 void CodegenVisitor::visit(ArrayRef& node) {
@@ -553,8 +603,6 @@ void CodegenVisitor::visit(ArrayRef& node) {
     is_lvalue = old_lvalue;
     auto arr_address = last_constant;
 
-    // std::string decl_name = ((Var *) node.array)->var_decl.first;
-    // auto arr_address = Builder.CreateLoad(last_params[decl_name], "arr");
     std::cout << "Generating Array Index\n";
     old_lvalue = is_lvalue;
     is_lvalue = false;
@@ -572,7 +620,6 @@ void CodegenVisitor::visit(ArrayRef& node) {
         last_constant = Builder.CreateLoad(elem_address);
         std::cout << "ArrayRef Value Generated\n";
     }
-
 }
 
 void CodegenVisitor::visit(Program& node) {
