@@ -1,0 +1,16 @@
+
+type Point is record
+    var x: integer
+    var y: integer
+end
+
+type RealPoint is record
+    var x: real
+    var y: real
+end
+
+var a: array[6] integer
+
+var b: array[3] real
+
+var c: array[4] boolean

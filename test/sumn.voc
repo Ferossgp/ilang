@@ -1,4 +1,5 @@
 routine sumn(n integer): integer is
+    var arr : array[6] array[5] integer
     var result : integer is 0
     for i in 1 .. n + 1 loop
         result := result

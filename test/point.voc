@@ -3,9 +3,17 @@ type Point is record
     var y: integer
 end
 
+type Pointf is record
+    var x: real
+    var y: real
+end
+
 routine new_point(x integer, y integer): Point is
     var p: Point
+    var pf: Pointf
     p.x := x
     p.y := y
+    pf.x := 3.14
+    pf.y := 2.56
     return p
 end

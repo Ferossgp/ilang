@@ -1,0 +1,7 @@
+routine logic(a integer, b integer): integer is
+    if (a < b) and (a /= 0) then
+        return a
+    else
+        return b
+    end
+end

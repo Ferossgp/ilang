@@ -4,7 +4,7 @@
 #include "AST/ast.h"
 #include "codegen/codegen_visitor.h"
 #include "semantical_analysis/semantic_visitor.h"
-#include "lib/argparse.hpp"
+#include "lib/argparse-nortti.hpp"
 #include "parsing/Lexer.h"
 #include "parsing/Parser.h"
 
@@ -74,8 +74,8 @@ int main(int argc, char *argv[]) {
 
     TypeDeduceVisitor().visit(*program);
 
-    TypeCheckingVisitor tcv;
-    program->accept(tcv);
+    // TypeCheckingVisitor tcv;
+    // program->accept(tcv);
 
     std::cout << "Type checked!\n";
 

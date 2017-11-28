@@ -33,7 +33,7 @@
 #include "../AST/binary.h"
 #include "../AST/routinecall.h"
 #include "../AST/return.h"
-#include "../AST/variable.h"
+#include "../AST/namedref.h"
 #include "../AST/var.h"
 #include "../AST/program.h"
 #include "../AST/boolean.h"
@@ -63,11 +63,12 @@ private:
     llvm::Value *last_constant;
     llvm::Function *last_function;
     std::unordered_map<std::string, llvm::Value*> last_params;
-    std::unordered_map<std::string, llvm::StructType*> structs;
+    std::unordered_map<RecordDecl*, llvm::StructType*> structs;
     bool is_lvalue{false};
     // std::unordered_map<std::string, llvm::Value*> last_variables;
 
-    llvm::Type* get_type(types type);
+    llvm::Type* get_type(Type *type);
+    llvm::ConstantInt* get_const_int(int value);
 
 public:
     CodegenVisitor(const std::string& filename);
@@ -91,7 +92,7 @@ public:
     void visit(Unary& node);
     void visit(Undefined& node);
     void visit(Var& node);
-    void visit(Variable& node);
+    void visit(NamedRef& node);
     void visit(While& node);
     void visit(Return& node);
     void visit(RecordRef& node);
