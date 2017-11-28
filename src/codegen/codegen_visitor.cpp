@@ -343,6 +343,7 @@ void CodegenVisitor::visit(RealType& node)
 }
 void CodegenVisitor::visit(RecordDecl& node)
 {
+    static int structN;
     if (structs.find(&node) != structs.end()) {
         std::cout << "Struct already generated\n";
         return;
@@ -354,7 +355,9 @@ void CodegenVisitor::visit(RecordDecl& node)
         members.push_back(get_type(v->var_decl.second));
     }
     // llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
-    auto rec = llvm::StructType::create(TheContext, members, "struct1", false);
+    auto name = "struct" + std::to_string(structN);
+    structN++;
+    auto rec = llvm::StructType::create(TheContext, members, name, false);
     structs[&node] = rec;
     std::cout << "structs address: " << &node << "\n";
 }
