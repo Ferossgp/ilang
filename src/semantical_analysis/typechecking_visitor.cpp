@@ -28,7 +28,7 @@ void TypeCheckingVisitor::visit(ArrayDecl& node)
 void TypeCheckingVisitor::visit(Assignment& node)
 {
     // Variable, array or record reference
-    auto left = (Expression*) node.variable;
+    auto left = (Expression*) node.ref;
     std::cout << "Left side of ass\n";
     auto left_type = left->type->type;
     std::cout << "Left side type of ass\n";
@@ -158,8 +158,9 @@ void TypeCheckingVisitor::visit(If& node)
         reportError("Type of expression in if is not boolean!\n");
 
     node.then->accept(*this);
-    if (!node.else_body)
+    if (node.else_body) {
         node.else_body->accept(*this);
+    }
 }
 
 /*
@@ -177,6 +178,9 @@ void TypeCheckingVisitor::visit(Integer& node)
 void TypeCheckingVisitor::visit(IntegerType& node)
 {
     return;
+}
+void TypeCheckingVisitor::visit(NamedRef& node) {
+    // TODO: x
 }
 
 
@@ -271,14 +275,6 @@ void TypeCheckingVisitor::visit(Var& node)
             reportError("Initial value of variable " + node.var_decl.first + " is not of the declared type!\n");
         }
     }
-}
-
-/*
-    Can do nothing
-*/
-void TypeCheckingVisitor::visit(Variable& node)
-{
-    return;
 }
 
 /*
