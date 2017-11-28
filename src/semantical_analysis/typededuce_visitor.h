@@ -12,6 +12,7 @@
 #include "../AST/if.h"
 #include "../AST/integer.h"
 #include "../AST/integertype.h"
+#include "../AST/namedref.h"
 #include "../AST/real.h"
 #include "../AST/realtype.h"
 #include "../AST/recorddecl.h"
@@ -24,7 +25,6 @@
 #include "../AST/typedecl.h"
 #include "../AST/unary.h"
 #include "../AST/var.h"
-#include "../AST/variable.h"
 #include "../AST/void.h"
 #include "../AST/while.h"
 
@@ -43,6 +43,7 @@ public:
     void visit(If& node);
     void visit(Integer& node);
     void visit(IntegerType& node);
+    void visit(NamedRef& node);
     void visit(Program& node);
     void visit(Real& node);
     void visit(RealType& node);
@@ -56,7 +57,6 @@ public:
     void visit(Unary& node);
     void visit(Undefined& node);
     void visit(Var& node);
-    void visit(Variable& node);
     void visit(Void& node);
     void visit(While& node);
 };

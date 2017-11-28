@@ -8,10 +8,12 @@ void TypeDeduceVisitor::visit(ArrayDecl& node) {
     node.expression->accept(*this);
 }
 void TypeDeduceVisitor::visit(ArrayRef& node) {
-    node.type = ((ArrayDecl*)node.array)->array_type;
+    node.prev->accept(*this);
+    node.type = ((ArrayDecl*)node.prev->type)->array_type;
     node.pos->accept(*this);
 }
 void TypeDeduceVisitor::visit(Assignment& node) {
+    node.ref->accept(*this);
     node.value->accept(*this);
 }
 void TypeDeduceVisitor::visit(Binary& node) {
@@ -79,6 +81,9 @@ void TypeDeduceVisitor::visit(Integer& node) {
 void TypeDeduceVisitor::visit(IntegerType& node) {
     reportError("bug: TypeDeduceVisitor: visit IntegerType node");
 }
+void TypeDeduceVisitor::visit(NamedRef& node) {
+    node.type = node.var->var_decl.second;
+}
 void TypeDeduceVisitor::visit(Program& node) {
     for (auto x : node.program) {
         x->accept(*this);
@@ -92,7 +97,15 @@ void TypeDeduceVisitor::visit(RealType& node) {
 void TypeDeduceVisitor::visit(RecordDecl& node) {
 }
 void TypeDeduceVisitor::visit(RecordRef& node) {
-    node.record->accept(*this);
+    node.prev->accept(*this);
+    for (auto x2 : ((RecordDecl*)node.prev->type)->refs) {
+        auto x = (Var*)x2;
+        if (x->var_decl.first == node.ref) {
+            node.type = x->var_decl.second;
+            return;
+        }
+    }
+    reportError("error: TypeDeduceVisitor: RecordRef bad ref `" + node.ref + "`");
 }
 void TypeDeduceVisitor::visit(Return& node) {
     node.expression->accept(*this);
@@ -136,9 +149,6 @@ void TypeDeduceVisitor::visit(Var& node) {
     if (*node.var_decl.second == types::Undefined) {
         node.var_decl.second = node.body->type;
     }
-}
-void TypeDeduceVisitor::visit(Variable& node) {
-    node.type = node.var->var_decl.second;
 }
 void TypeDeduceVisitor::visit(Void& node) {
     reportError("bug: TypeDeduceVisitor: visit Void node");
