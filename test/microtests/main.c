@@ -143,15 +143,15 @@ void run_tests()
         printf("Give false: failed\n");
 
 
-    if (neg_int() == neg_int_res)
-        printf("Int negation: passed\n");
-    else
-        printf("Int negation: failed\n");
+    // if (neg_int() == neg_int_res)
+    //     printf("Int negation: passed\n");
+    // else
+    //     printf("Int negation: failed\n");
 
-    if (neg_real() == neg_real_res)
-        printf("Real negation: passed\n");
-    else
-        printf("Real negation: failed\n");
+    // if (neg_real() == neg_real_res)
+    //     printf("Real negation: passed\n");
+    // else
+    //     printf("Real negation: failed\n");
 
     
     if (true_branch() == true_branch_res)

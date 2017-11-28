@@ -13,3 +13,5 @@ build/
 # Something
 test/typeCheckerTest.vo
 test/typeCheckerTest2
+test/microtests/main.out
+test/microtests/test_out.o
