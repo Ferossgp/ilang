@@ -2,12 +2,14 @@
 #define ILANG_ARRAYASSIGN_H
 
 #include "expression.h"
+#include "ref.h"
 
-class ArrayRef : public Expression {
+class ArrayRef : public Ref {
 public:
-    ASTNode *array;
     Expression *pos;
-    ArrayRef(ASTNode *array, Expression *pos): array{array}, pos{pos} {};
+    ArrayRef(Expression *pos, Ref *prev): pos{pos} {
+        prev = prev;
+    };
     void accept(Visitor &v) { v.visit(*this); };
 };
 

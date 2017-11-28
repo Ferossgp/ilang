@@ -43,8 +43,7 @@ class Parser {
     ASTNode *parse_types();
     ASTNode *parse_return();
     ASTNode *parse_statements();
-    ArrayRef *parse_array_ref(ASTNode *a);
-    RecordRef *parse_record_ref(ASTNode *a);
+    Ref *parse_ref(Var *a);
     ASTNode *parse_assignment(string identifier_name);
     Expression *parse_binary_op_rhs(int priority, Expression *lhs);
     Prototype *parse_prototype();

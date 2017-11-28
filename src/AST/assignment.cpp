@@ -1,3 +1,3 @@
 #include "assignment.h"
 
-Assignment::Assignment(ASTNode *variable, Expression *value, types lhs_type) : variable(variable), value(value), lhs_type{lhs_type} {}
+Assignment::Assignment(Ref *ref, Expression *value, types lhs_type) : ref(ref), value(value), lhs_type{lhs_type} {}

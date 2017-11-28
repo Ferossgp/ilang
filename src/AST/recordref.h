@@ -2,14 +2,16 @@
 #define ILANG_RECORDREF_H
 
 #include <string>
+#include "ref.h"
 #include "expression.h"
 
-class RecordRef : public Expression {
+class RecordRef : public Ref {
 
 public:
-    ASTNode *record;
     std::string ref;
-    RecordRef (ASTNode *record, std::string ref): record{record}, ref{ref} {};
+    RecordRef (std::string ref, Ref *prev): ref{ref} {
+        prev = prev;
+    };
     void accept(Visitor &v) { v.visit(*this); };
 };
 
