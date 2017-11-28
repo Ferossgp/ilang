@@ -90,7 +90,7 @@ void CodegenVisitor::visit(Prototype& p)
     for (int i =0; i < p.args.size(); i++) {
         auto arg = (Var *) p.args[i];
         arg_types.push_back(get_type(arg->var_decl.second));
-        //TODO: Record Type
+        std::cout << "Argument Type: " << (int)arg->var_decl.second->type <<"\n";
     }
 
     // function type generation
@@ -367,8 +367,8 @@ void CodegenVisitor::visit(Routine& node)
     for (auto &Arg : last_function->args()) {
         auto var = ((Var *) node.proto->args[Idx++]);
         std::string name = var->var_decl.first;//((Var *) node.proto->args[Idx])->var_decl.first;
-        llvm::AllocaInst *v;
-        v = Builder.CreateAlloca(get_type(var->var_decl.second), 0, name);
+        llvm::AllocaInst *v = Builder.CreateAlloca(get_type(var->var_decl.second), 0, name);
+        std::cout << "Argument Allocated: " << (int)var->var_decl.second->type <<"\n";
         Builder.CreateStore(&Arg, v);
         Arg.setName(name);
         last_params[name] = v;
@@ -426,6 +426,7 @@ void CodegenVisitor::visit(Var& node)
     auto name = node.var_decl.first;
     std::cout << "Name " << name << " declared\n";
     auto v = Builder.CreateAlloca(get_type(node.var_decl.second), 0, name);
+    std::cout << "Generated Allocation for " << (int)node.var_decl.second->type << "\n";
     if (node.var_decl.second->type == types::Array) {
         std::cout << "Generating Array declaration\n";
         llvm::Function *f = TheModule->getFunction("malloc");
@@ -466,6 +467,7 @@ void CodegenVisitor::visit(Var& node)
         if (node.body) {
             std::cout << "Generating initialization of variable\n";
             node.body->accept(*this);
+            std::cout << "Generated initialization of variable\n";
             Builder.CreateStore(last_constant, v);
         }
     }
@@ -476,7 +478,7 @@ void CodegenVisitor::visit(Var& node)
 
 void CodegenVisitor::visit(NamedRef& node)
 {
-    std::cout << "Generating NamedRef\n";
+    std::cout << "Generating NamedRef " << (int)node.type->type << "\n";
     if (!node.var ) {
         std::cout << "var is 0\n";
     }
@@ -484,8 +486,10 @@ void CodegenVisitor::visit(NamedRef& node)
     auto value = last_params[name];
     if (is_lvalue) {
         last_constant = value;
+        std::cout << "Generated NamedRef address\n";
     } else {
         last_constant = Builder.CreateLoad(value, name.c_str());
+        std::cout << "Generated NamedRef value\n";
     }
 }
 
@@ -543,18 +547,31 @@ void CodegenVisitor::visit(RecordRef& node) {
 
 void CodegenVisitor::visit(ArrayRef& node) {
     std::cout << "Generating ArrayRef\n";
+    bool old_lvalue = is_lvalue;
+    is_lvalue = false;
+    node.prev->accept(*this);
+    is_lvalue = old_lvalue;
+    auto arr_address = last_constant;
+
     // std::string decl_name = ((Var *) node.array)->var_decl.first;
     // auto arr_address = Builder.CreateLoad(last_params[decl_name], "arr");
-    // node.pos->accept(*this);
-    // auto pos = Builder.CreateSub(last_constant, get_const_int(1));
-    // auto elem_address = Builder.CreateGEP(arr_address, pos);
-    // if (is_lvalue) {
-    //     last_constant = elem_address;
-    //     std::cout << "ArrayRef Address Generated\n";
-    // } else {
-    //     last_constant = Builder.CreateLoad(elem_address);
-    //     std::cout << "ArrayRef Value Generated\n";
-    // }
+    std::cout << "Generating Array Index\n";
+    old_lvalue = is_lvalue;
+    is_lvalue = false;
+    node.pos->accept(*this);
+    is_lvalue = old_lvalue;
+    auto pos = Builder.CreateSub(last_constant, get_const_int(1));
+    pos = Builder.CreateSExt(pos, llvm::Type::getInt64Ty(TheContext));
+    std::cout << "Array Index Generated\n";
+    auto elem_address = Builder.CreateGEP(arr_address, pos);
+    if (is_lvalue) {
+        last_constant = elem_address;
+        elem_address->getType()->print(llvm::errs());
+        std::cout << "ArrayRef Address Generated\n";
+    } else {
+        last_constant = Builder.CreateLoad(elem_address);
+        std::cout << "ArrayRef Value Generated\n";
+    }
 
 }
 
