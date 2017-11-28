@@ -20,6 +20,7 @@
 #include "../AST/real.h"
 #include "../AST/realtype.h"
 #include "../AST/recorddecl.h"
+#include "../AST/ref.h"
 #include "../AST/recordref.h"
 #include "../AST/return.h"
 #include "../AST/routine.h"
@@ -35,7 +36,8 @@
 class TypeCheckingVisitor : public Visitor
 {
 public:
-    Routine* lastVisitedRoutine;
+    Routine* currentRoutine;
+    bool currentRoutineReturnsSmth;
 
     void visit(Prototype& node);
     void visit(ArrayDecl& node);
@@ -52,6 +54,7 @@ public:
     void visit(Real& node);
     void visit(RealType& node);
     void visit(RecordDecl& node);
+    void visit(Ref& node);
     void visit(Routine& node);
     void visit(RoutineCall& node);
     void visit(TypeDecl& node);

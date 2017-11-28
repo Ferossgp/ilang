@@ -214,7 +214,7 @@ ASTNode * Parser::parse_var() {
     string name = lexer->identifier();
 
     lexer->next();
-    Type *type;
+    Type *type = nullptr;
 
     if ( lexer->current_token() == ':') {
         lexer->next();
@@ -224,7 +224,7 @@ ASTNode * Parser::parse_var() {
     if ( lexer->current_token() == (int)Token::IS) {
         lexer->next();
         auto expression = parse_expression();
-        auto var = new Var(make_pair(name, type), expression);
+        auto var = new Var(make_pair(name, type ? type : new Undefined()), expression);
         addDecl(make_pair(name, var));
         return var;
     }
