@@ -459,13 +459,18 @@ void CodegenVisitor::visit(Var& node)
         std::cout << "Generating Record declaration\n";
         llvm::Function *f = TheModule->getFunction("malloc");
         std::vector<llvm::Value*> ArgsV;
-        // auto array = (ArrayDecl *) node.var_decl.second;
-        // array->expression->accept(*this);
-        last_constant = get_const_int(8);
-        // Builder.CreateMul(
-        //     llvm::ConstantInt::get(TheContext, llvm::APInt(32, 4, true)),
-        //     last_constant
-        // );
+        auto rec = (RecordDecl*) ((TypeDecl *) node.var_decl.second)->ref_type;
+        int i = 0;
+        for (auto& member : rec->refs) {
+            std::cout << "calculating record member size\n";
+            auto var = (Var *) member;
+            auto ll_type = get_type(var->var_decl.second);
+            i += TheModule->getDataLayout().getTypeAllocSize(ll_type);
+        }
+        last_constant = get_const_int(i);
+        // auto elem_type = array->array_type;
+        // auto ll_type = get_type(elem_type);
+        // auto size = TheModule->getDataLayout().getTypeAllocSize(ll_type);
         last_constant = Builder.CreateZExt(last_constant, llvm::Type::getInt64Ty(TheContext));
         ArgsV.push_back(last_constant);
         auto ptr = Builder.CreateCall(f, ArgsV);
