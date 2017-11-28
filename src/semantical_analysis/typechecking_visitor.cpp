@@ -27,16 +27,11 @@ void TypeCheckingVisitor::visit(ArrayDecl& node)
 */
 void TypeCheckingVisitor::visit(Assignment& node)
 {
-    // Variable, array or record reference
-    auto left = (Expression*) node.ref;
-    std::cout << "Left side of ass\n";
-    auto left_type = left->type->type;
-    std::cout << "Left side type of ass\n";
+    auto left_type = node.lhs_type;
     auto right = (Expression*) node.value;
-    std::cout << "Right side of ass\n";
     auto right_type = right->type->type;
 
-    left->accept(*this);
+    node.ref->accept(*this);
     right->accept(*this);
 
     if (left_type == types::Integer && right_type == types::Integer)
@@ -78,7 +73,7 @@ void TypeCheckingVisitor::visit(Assignment& node)
     }
     else if (left_type == types::Array && right_type == types::Array)
     {
-        if (*left->type != *right->type)
+        if (*node.ref->type != *right->type)
         {
             reportError("Trying to assign arrays of different types\n");
         }
@@ -86,17 +81,17 @@ void TypeCheckingVisitor::visit(Assignment& node)
     }
     else if (left_type == types::Record && right_type == types::Record)
     {
-        if (*left->type != *right->type)
+        if (*node.ref->type != *right->type)
         {
             reportError("Trying to assign records of different types\n");
         }
         return;
     }
-
-    // else
-    // {
-    //     reportError("Trying to assign incompatible types\n");
-    // }
+    else
+    {
+        reportError("Trying to assign incompatible types, " + std::to_string((int) node.lhs_type) + " and " +
+            std::to_string((int) right_type) + "\n");
+    }
 }
 
 /*
@@ -158,7 +153,8 @@ void TypeCheckingVisitor::visit(If& node)
         reportError("Type of expression in if is not boolean!\n");
 
     node.then->accept(*this);
-    if (node.else_body) {
+    if (node.else_body)
+    {
         node.else_body->accept(*this);
     }
 }
@@ -174,7 +170,6 @@ void TypeCheckingVisitor::visit(Integer& node)
 /*
     Can do nothing
 */
-
 void TypeCheckingVisitor::visit(IntegerType& node)
 {
     return;
@@ -183,6 +178,13 @@ void TypeCheckingVisitor::visit(NamedRef& node) {
     // TODO: x
 }
 
+/*
+    Visit var in the ref
+*/
+void TypeCheckingVisitor::visit(NamedRef& node)
+{
+    node.var->accept(*this);
+}
 
 void TypeCheckingVisitor::visit(Real& node)
 {
@@ -199,11 +201,21 @@ void TypeCheckingVisitor::visit(RealType& node)
 /*
     Go through all declarations in the record
 */
-
 void TypeCheckingVisitor::visit(RecordDecl& node)
 {
     for (int i = 0; i < node.refs.size(); i++)
         node.refs[i]->accept(*this);
+}
+
+/*
+    Visit all chained references
+*/
+void TypeCheckingVisitor::visit(Ref& node)
+{
+    if (node.next)
+        node.next->accept(*this);
+    if (node.prev)
+        node.prev->accept(*this);
 }
 
 /*
@@ -212,8 +224,14 @@ void TypeCheckingVisitor::visit(RecordDecl& node)
 void TypeCheckingVisitor::visit(Routine& node)
 {
     // Go through all statements in body
-    lastVisitedRoutine = &node;
+    currentRoutine = &node;
     node.body->accept(*this);
+
+    // Check, if function returns smth in all cases
+    if (!currentRoutineReturnsSmth)
+        reportError("Routine " + currentRoutine->proto->name + " does not return " +
+            "a value in all branches!\n");
+    currentRoutineReturnsSmth = false;
 }
 
 /*
@@ -221,10 +239,11 @@ void TypeCheckingVisitor::visit(Routine& node)
 */
 void TypeCheckingVisitor::visit(RoutineCall& node)
 {
+    std::cout << "Here";
     auto actualArguments = node.args;
     auto expectedArguments = node.callee->proto->args;
     auto routineName = node.callee->proto->name;
-
+    
     // Check arguments
     auto argsLength = expectedArguments.size();
     if (actualArguments.size() != argsLength)
@@ -269,6 +288,7 @@ void TypeCheckingVisitor::visit(Undefined& node)
 void TypeCheckingVisitor::visit(Var& node)
 {
     auto declaredType = node.var_decl.second;
+    declaredType->accept(*this);
     if (node.body) {
         auto actualType = ((Expression*)node.body)->type;
         if (*declaredType != *actualType) {
@@ -294,27 +314,33 @@ void TypeCheckingVisitor::visit(While& node)
 */
 void TypeCheckingVisitor::visit(Return& node)
 {
-    if (*((Expression*)node.expression)->type != *lastVisitedRoutine->proto->type)
-        reportError("Routine " + lastVisitedRoutine->proto->name + " has incorrect " +
+    if (*((Expression*)node.expression)->type != *currentRoutine->proto->type)
+        reportError("Routine " + currentRoutine->proto->name + " has incorrect " +
         "return value!\n");
+    
+    currentRoutineReturnsSmth = true;
 }
 
 /*
-    Can do nothing
+    Visit the previous reference
 */
 void TypeCheckingVisitor::visit(RecordRef& node)
 {
-    return;
+    if (node.prev)
+        node.prev->accept(*this);
 }
 
 /*
     Check that called position is integer
+    Visit the previous reference
 */
 void TypeCheckingVisitor::visit(ArrayRef& node)
 {
     auto position = (Expression*) node.pos;
     if (position->type->type != types::Integer)
         reportError("Trying to call array with not-integer type!\n");
+    if (node.prev)
+        node.prev->accept(*this);
 }
 
 /*

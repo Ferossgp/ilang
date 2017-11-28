@@ -71,16 +71,13 @@ int main(int argc, char *argv[]) {
     Parser parser(&lexer);
     auto program = parser.parse();
 
-
-    TypeDeduceVisitor().visit(*program);
+    // TypeDeduceVisitor().visit(*program);
 
     // TypeCheckingVisitor tcv;
     // program->accept(tcv);
 
-    std::cout << "Type checked!\n";
-
-    CodegenVisitor v{args.output};
-    v.visit(*program);
-    v.generate();
+    // CodegenVisitor v{args.output};
+    // v.visit(*program);
+    // v.generate();
     return 0;
 }
