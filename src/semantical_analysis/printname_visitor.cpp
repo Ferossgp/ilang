@@ -14,7 +14,7 @@ void PrintNameVisitor::visit(ArrayDecl& node)
 void PrintNameVisitor::visit(Assignment& node) 
 {
     std::cout << "Visiting Assignment\n";
-    node.variable->accept(*this);
+    node.ref->accept(*this);
     node.value->accept(*this);
 }
 void PrintNameVisitor::visit(Binary& node) 
@@ -54,6 +54,11 @@ void PrintNameVisitor::visit(Integer& node)
 void PrintNameVisitor::visit(IntegerType& node) 
 {
     std::cout << "Visiting IntegerType\n";
+}
+void PrintNameVisitor::visit(NamedRef& node) 
+{
+    std::cout << "Visiting NamedRef\n";
+    node.var->accept(*this);
 }
 void PrintNameVisitor::visit(Real& node) 
 {
@@ -96,11 +101,6 @@ void PrintNameVisitor::visit(Var& node)
     if (node.body != nullptr)
         node.body->accept(*this);
 }
-void PrintNameVisitor::visit(Variable& node) 
-{
-    std::cout << "Visiting Variable\n";
-    node.var->accept(*this);
-}
 void PrintNameVisitor::visit(While& node) 
 {
     std::cout << "Visiting While\n";
@@ -115,12 +115,12 @@ void PrintNameVisitor::visit(Return& node)
 void PrintNameVisitor::visit(RecordRef& node) 
 {
     std::cout << "Visiting RecordRef\n";
-    node.record->accept(*this);
+    node.prev->accept(*this);
 }
 void PrintNameVisitor::visit(ArrayRef& node) 
 {
     std::cout << "Visiting ArrayRef\n";
-    node.array->accept(*this);
+    node.prev->accept(*this);
     node.pos->accept(*this);
 }
 void PrintNameVisitor::visit(Program& node) 
