@@ -100,7 +100,8 @@ void Lexer::next() {
         }
     }
 
-    if (isdigit(last_char)) {
+    if (isdigit(last_char) ||
+        (last_char == '-' && isdigit(inputStream->peek()))) {
         string number_string;
         bool is_double = false;
         do {
