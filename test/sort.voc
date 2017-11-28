@@ -1,22 +1,11 @@
-routine sort(a array[1] integer, s integer) is
+routine sort(a array[1] real, s integer) is
     for i in 1 .. s loop
         for j in 1 .. s+1-i loop
             if a[j] > a[j+1] then
-                var temp: integer is a[j]
+                var temp: real is a[j]
                 a[j] := a[j+1]
                 a[j+1] := temp
             end
         end
     end
-end
-
-routine max(a array[1] integer, s integer):integer is
-    var max: integer is a[1]
-    for i in 2 .. s+1 loop
-        if a[i] > max then
-            max := a[i]
-        end
-    end
-
-    return max
 end

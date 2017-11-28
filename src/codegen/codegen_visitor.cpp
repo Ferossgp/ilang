@@ -39,9 +39,9 @@ void CodegenVisitor::generate()
     output.flush();
 }
 
-llvm::Type* CodegenVisitor::get_type(types type)
+llvm::Type* CodegenVisitor::get_type(Type *type)
 {
-    switch (type) {
+    switch (type->type) {
     case types::Integer:
         return llvm::Type::getInt32Ty(TheContext);
     case types::Real:
@@ -50,6 +50,18 @@ llvm::Type* CodegenVisitor::get_type(types type)
         return llvm::Type::getInt1Ty(TheContext);
     case types::Void:
         return llvm::Type::getVoidTy(TheContext);
+    case types::Array: {
+        auto elem_type = ((ArrayDecl *)type)->array_type;
+        switch (elem_type->type) {
+        case types::Integer:
+            return llvm::Type::getInt32PtrTy(TheContext);
+        case types::Real:
+            std::cout << "Generating pointer to double\n";
+            return llvm::Type::getDoublePtrTy(TheContext);
+        case types::Boolean:
+            return llvm::Type::getInt1PtrTy(TheContext);
+        }
+    }
     }
 }
 
@@ -66,28 +78,19 @@ void CodegenVisitor::visit(Prototype& p)
     std::vector<llvm::Type*> arg_types{};
     for (int i =0; i < p.args.size(); i++) {
         auto arg = (Var *) p.args[i];
-        if (arg->var_decl.second->type == types::Array) {
-            auto type = (ArrayDecl *) arg->var_decl.second;
-            auto elem_type = get_type(type->array_type->type);
-            // TODO: add get_type
-            arg_types.push_back(llvm::Type::getInt32PtrTy(TheContext));
-        } else {
-            arg_types.push_back(get_type(arg->var_decl.second->type));
-        }
+        arg_types.push_back(get_type(arg->var_decl.second));
+        //TODO: Record Type
     }
 
     // function type generation
     llvm::FunctionType *ft;
 
-    if (p.type->type == types::Array) {
-        std::cout << "Generating Array return\n";
-        ft = llvm::FunctionType::get(llvm::Type::getInt32PtrTy(TheContext), arg_types, false);
-    } else if (p.type->type == types::Record) {
+    if (p.type->type == types::Record) {
         std::cout << "Generating Record return\n";
         ft = llvm::FunctionType::get(llvm::PointerType::getUnqual(structs["struct1"]), arg_types, false);
-    } else {
-        std::cout << "Generating Built-in return " << (int)(p.type->type) << "\n";
-        ft = llvm::FunctionType::get(get_type(p.type->type), arg_types, false);
+    } else if {
+        std::cout << "Generating Array or built-in return\n";
+        ft = llvm::FunctionType::get(get_type(p.type), arg_types, false);
     }
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
 
@@ -136,7 +139,7 @@ void CodegenVisitor::visit(Assignment& node)
 void CodegenVisitor::visit(Binary& node)
 {
     std::cout << "Parsing Binary\n";
-    node.type->type = types::Integer;
+    // node.type->type = types::Integer;
     node.lhs->accept(*this);
     auto L = last_constant;
     node.rhs->accept(*this);
@@ -179,49 +182,48 @@ void CodegenVisitor::visit(Binary& node)
         }
         break;
     case opchars::NOTEQ:
-        if (node.type->type == types::Integer) {
+        if (node.lhs->type->type == types::Integer) {
             last_constant = Builder.CreateICmpNE(L, R, "cond");
-        }// } else if (node.type->type == types::Real){
-        //    last_constant = Builder.CreateFCmpONE    (L, R, "cond");
-        // }
+        } else if (node.lhs->type->type == types::Real){
+           last_constant = Builder.CreateFCmpONE(L, R, "cond");
+        }
         break;
     case opchars::EQUAL:
-        if (node.type->type == types::Integer) {
+        if (node.lhs->type->type == types::Integer) {
             last_constant = Builder.CreateICmpEQ(L, R, "cond");
-        }// else if (node.type->type == types::Real){
-    //        last_constant = Builder.CreateFCmpOEQ(L, R, "cond");
-    //     }
+        } else if (node.lhs->type->type == types::Real){
+           last_constant = Builder.CreateFCmpOEQ(L, R, "cond");
+        }
         break;
     case opchars::HIGH:
-        if (node.type->type == types::Integer) {
+        if (node.lhs->type->type == types::Integer) {
             last_constant = Builder.CreateICmpSGT(L, R, "cond");
-        } //else if (node.type->type == types::Real){
-    //        last_constant = Builder.CreateFCmpOGT(L, R, "cond");
-    //     }
+        } else if (node.lhs->type->type == types::Real){
+           last_constant = Builder.CreateFCmpOGT(L, R, "cond");
+        }
         break;
     case opchars::LESS:
         std::cout << "Generating LESS\n";
-        if (node.type->type == types::Integer) {
+        if (node.lhs->type->type == types::Integer) {
             last_constant = Builder.CreateICmpSLT(L, R, "cond");
-        }// else if (node.type->type == types::Real){
-    //        last_constant = Builder.CreateFCmpOLT(L, R, "cond");
-    //     }
+        } else if (node.lhs->type->type == types::Real){
+           last_constant = Builder.CreateFCmpOLT(L, R, "cond");
+        }
         break;
     case opchars::HIGHEQ:
-        if (node.type->type == types::Integer) {
+        if (node.lhs->type->type == types::Integer) {
             last_constant = Builder.CreateICmpSGE(L, R, "cond");
-        } // else if (node.type->type == types::Real){
-    //        last_constant = Builder.CreateFCmpOGE(L, R, "cond");
-    //     }
+        } else if (node.lhs->type->type == types::Real){
+           last_constant = Builder.CreateFCmpOGE(L, R, "cond");
+        }
         break;
     case opchars::LESSEQ:
-        if (node.type->type == types::Integer) {
+        if (node.lhs->type->type == types::Integer) {
             last_constant = Builder.CreateICmpSLE(L, R, "cond");
-        }// else if (node.type->type == types::Real){
-    //        last_constant = Builder.CreateFCmpOLE(L, R, "cond");
-    //     }
+        } else if (node.lhs->type->type == types::Real){
+           last_constant = Builder.CreateFCmpOLE(L, R, "cond");
+        }
         break;
-    // }
     case opchars::AND:
         std::cout << "Generating AND\n";
         last_constant = Builder.CreateAnd(L, R);
@@ -343,7 +345,7 @@ void CodegenVisitor::visit(RecordDecl& node)
     std::vector<llvm::Type*> members;
     for (auto& var : node.refs) {
         auto v = (Var *) var;
-        members.push_back(get_type(v->var_decl.second->type));
+        members.push_back(get_type(v->var_decl.second));
     }
     // llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
     auto rec = llvm::StructType::create(TheContext, members, "struct1", false);
@@ -369,11 +371,7 @@ void CodegenVisitor::visit(Routine& node)
         std::string name = var->var_decl.first;//((Var *) node.proto->args[Idx])->var_decl.first;
         llvm::AllocaInst *v;
         if (var->var_decl.second->type == types::Array) {
-            v = Builder.CreateAlloca(llvm::Type::getInt32PtrTy(TheContext));
-        // } else if {
-        //     v = Builder.CreateAlloca()
-        } else {
-            v = Builder.CreateAlloca(get_type(var->var_decl.second->type), 0, name);
+            v = Builder.CreateAlloca(get_type(var->var_decl.second), 0, name);
         }
         Builder.CreateStore(&Arg, v);
         Arg.setName(name);
@@ -433,7 +431,7 @@ void CodegenVisitor::visit(Var& node)
     llvm::AllocaInst *v;
     if (node.var_decl.second->type == types::Array) {
         std::cout << "Generating Array declaration\n";
-        v = Builder.CreateAlloca(llvm::Type::getInt32PtrTy(TheContext), 0, name);
+        v = Builder.CreateAlloca(get_type(node.var_decl.second), 0, name);
         llvm::Function *f = TheModule->getFunction("malloc");
         std::vector<llvm::Value*> ArgsV;
         auto array = (ArrayDecl *) node.var_decl.second;
@@ -466,7 +464,7 @@ void CodegenVisitor::visit(Var& node)
         Builder.CreateStore(last_constant, v);
     } else {
         std::cout << "Generating variable declaration\n";
-        v = Builder.CreateAlloca(get_type(node.var_decl.second->type), 0, name);
+        v = Builder.CreateAlloca(get_type(node.var_decl.second), 0, name);
         if (node.body) {
             std::cout << "Generating initialization of variable\n";
             node.body->accept(*this);

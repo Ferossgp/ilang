@@ -67,7 +67,7 @@ private:
     bool is_lvalue{false};
     // std::unordered_map<std::string, llvm::Value*> last_variables;
 
-    llvm::Type* get_type(types type);
+    llvm::Type* get_type(Type *type);
     llvm::ConstantInt* get_const_int(int value);
 
 public:
