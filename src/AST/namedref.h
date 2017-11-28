@@ -10,9 +10,8 @@ public:
 
     NamedRef(Var *var) : var(var) {
         type = var->var_decl.second;
-    };
-    
-    void accept(Visitor &v) { v.visit(*this); };
+    }
+    void accept(Visitor &v) { v.visit(*this); }
 };
 
 #endif //ILANG_VARIABLE_H

@@ -6,13 +6,13 @@
 #include "expression.h"
 
 class RecordRef : public Ref {
-
 public:
     std::string ref;
+
     RecordRef (std::string ref, Ref *prev): ref{ref} {
-        prev = prev;
-    };
-    void accept(Visitor &v) { v.visit(*this); };
+        this->prev = prev;
+    }
+    void accept(Visitor &v) { v.visit(*this); }
 };
 
 #endif //ILANG_RECORDREF_H

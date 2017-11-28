@@ -7,10 +7,11 @@
 class ArrayRef : public Ref {
 public:
     Expression *pos;
+
     ArrayRef(Expression *pos, Ref *prev): pos{pos} {
-        prev = prev;
-    };
-    void accept(Visitor &v) { v.visit(*this); };
+        this->prev = prev;
+    }
+    void accept(Visitor &v) { v.visit(*this); }
 };
 
 #endif //ILANG_ARRAYASSIGN_H
