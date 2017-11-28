@@ -1,7 +1,13 @@
-routine dims(): array[1] array[1] integer is
-    var a: array[3] array[3] integer
-    a[1][1] := 1
-    a[2][2] := 2
-    a[3][3] := 3
+type Point is record
+    var x: integer
+    var y: integer
+end
+
+routine dims(): array[1] Point is
+    var a: array[3] Point
+    var p: Point
+    p.x := 7
+    p.y := 8
+    a[1] := p
     return a
 end
