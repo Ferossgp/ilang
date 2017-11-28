@@ -4,7 +4,7 @@
 /*
     Integer math
 */
-int sum_two_ints() {return 5;}
+int sum_two_ints();
 int sum_two_ints_res = 10;
 
 int sub_two_ints();
@@ -29,7 +29,7 @@ float mul_two_reals();
 float mul_two_reals_res = 8.478; // 3.14 * 2.7
 
 float div_two_reals();
-float div_two_reals_res = 1.16; // 3.14 / 2.7
+float div_two_reals_res = 1.16; // 2.5 / 1.6
 
 /*
     Booleans
@@ -43,11 +43,11 @@ bool give_false_res = false;
 /*
     Unaries
 */
-int neg_int();
-int neg_int_res = -3;
+// int neg_int();
+// int neg_int_res = -3;
 
-float neg_real();
-float neg_real_res = -3.14;
+// float neg_real();
+// float neg_real_res = -3.14;
 
 /*
     Conditions and branches
@@ -77,7 +77,7 @@ float float_array();
 float float_array_res = 4.5;
 
 bool boolean_array();
-float boolean_array_res = true;
+bool boolean_array_res = true;
 
 /*
     Records
@@ -195,7 +195,7 @@ void run_tests()
     if (give_int_field() == give_int_field_res)
         printf("Field from record: passed\n");
     else
-        printf("Field from record: failed\n");
+        printf("Field from record: failed\n~");
 
 
     printf("\nTests are completed!\n\n");
