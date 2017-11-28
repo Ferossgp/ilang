@@ -68,7 +68,6 @@ llvm::Type* CodegenVisitor::get_type(Type *type)
     case types::Record: {
         std::cout << "Record type\n";
         auto rec = (RecordDecl*) ((TypeDecl *) type)->ref_type;
-        std::cout << "structs address: " << rec << "\n";
         return llvm::PointerType::getUnqual(structs[rec]);
     }
     default:
@@ -359,7 +358,6 @@ void CodegenVisitor::visit(RecordDecl& node)
     structN++;
     auto rec = llvm::StructType::create(TheContext, members, name, false);
     structs[&node] = rec;
-    std::cout << "structs address: " << &node << "\n";
 }
 
 void CodegenVisitor::visit(Routine& node)
@@ -462,15 +460,11 @@ void CodegenVisitor::visit(Var& node)
         auto rec = (RecordDecl*) ((TypeDecl *) node.var_decl.second)->ref_type;
         int i = 0;
         for (auto& member : rec->refs) {
-            std::cout << "calculating record member size\n";
             auto var = (Var *) member;
             auto ll_type = get_type(var->var_decl.second);
             i += TheModule->getDataLayout().getTypeAllocSize(ll_type);
         }
         last_constant = get_const_int(i);
-        // auto elem_type = array->array_type;
-        // auto ll_type = get_type(elem_type);
-        // auto size = TheModule->getDataLayout().getTypeAllocSize(ll_type);
         last_constant = Builder.CreateZExt(last_constant, llvm::Type::getInt64Ty(TheContext));
         ArgsV.push_back(last_constant);
         auto ptr = Builder.CreateCall(f, ArgsV);
