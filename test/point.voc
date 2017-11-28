@@ -13,5 +13,7 @@ routine new_point(x integer, y integer): Point is
     var pf: Pointf
     p.x := x
     p.y := y
+    pf.x := 3.14
+    pf.y := 2.56
     return p
 end

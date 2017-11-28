@@ -443,8 +443,11 @@ void CodegenVisitor::visit(Var& node)
         std::vector<llvm::Value*> ArgsV;
         auto array = (ArrayDecl *) node.var_decl.second;
         array->expression->accept(*this);
+        auto elem_type = array->array_type;
+        auto ll_type = get_type(elem_type);
+        auto size = TheModule->getDataLayout().getTypeAllocSize(ll_type);
         last_constant = Builder.CreateMul(
-            llvm::ConstantInt::get(TheContext, llvm::APInt(32, 4, true)),
+            get_const_int(size),
             last_constant
         );
         last_constant = Builder.CreateZExt(last_constant, llvm::Type::getInt64Ty(TheContext));
