@@ -1,5 +1,6 @@
 #include "codegen_visitor.h"
 #include <iostream>
+#include <iterator>
 
 CodegenVisitor::CodegenVisitor(const std::string& filename): Builder{TheContext}, output{filename, EC, llvm::sys::fs::F_None}
 {
@@ -119,13 +120,6 @@ void CodegenVisitor::visit(Assignment& node)
     is_lvalue = true;
     node.ref->accept(*this);
     is_lvalue = false;
-    //     std::cout << "Name is " << name << "\n";
-    //     store_location = last_params[name];
-    // }
-    //     is_lvalue = true;
-    //     node.ref->accept(*this);
-    //     is_lvalue = false;
-    //     store_location = last_constant;
     Builder.CreateStore(expr, last_constant);
 
     std::cout << "Assignment generated\n";
@@ -547,52 +541,6 @@ void CodegenVisitor::visit(RecordRef& node) {
         last_constant = Builder.CreateLoad(elem_address);
         std::cout << "Recordref Value Generated\n";
     }
-    // auto rec_name = ((Var *) node.record)->var_decl.first;
-    // auto struct_address = Builder.CreateLoad(last_params[rec_name], "rec");
-    // std::cout << "Generated Record address\n";
-    // auto decl = ((RecordDecl *)((TypeDecl *)((Var *) node.record)->var_decl.second)->ref_type);
-    // int i = 0;
-    // while (((Var*) decl->refs[i])->var_decl.first != node.ref && i < (decl->refs.size())) {
-    //     i++;
-    // }
-    // std::vector<llvm::Value *> indices{get_const_int(0), get_const_int(i)};
-    // auto elem_address = Builder.CreateGEP(
-    //     structs[decl],
-    //     struct_address,
-    //     indices
-    // );
-    // if (is_lvalue) {
-    //     last_constant = elem_address;
-    //     std::cout << "Recordref Address Generated\n";
-    // } else {
-    //     last_constant = Builder.CreateLoad(elem_address);
-    //     std::cout << "Recordref Value Generated\n";
-    // }
-
-    // std::cout << "Generating ArrayRef\n";
-    // bool old_lvalue = is_lvalue;
-    // is_lvalue = false;
-    // node.prev->accept(*this);
-    // is_lvalue = old_lvalue;
-    // auto arr_address = last_constant;
-
-    // std::cout << "Generating Array Index\n";
-    // old_lvalue = is_lvalue;
-    // is_lvalue = false;
-    // node.pos->accept(*this);
-    // is_lvalue = old_lvalue;
-    // auto pos = Builder.CreateSub(last_constant, get_const_int(1));
-    // pos = Builder.CreateSExt(pos, llvm::Type::getInt64Ty(TheContext));
-    // std::cout << "Array Index Generated\n";
-    // auto elem_address = Builder.CreateGEP(arr_address, pos);
-    // if (is_lvalue) {
-    //     last_constant = elem_address;
-    //     elem_address->getType()->print(llvm::errs());
-    //     std::cout << "ArrayRef Address Generated\n";
-    // } else {
-    //     last_constant = Builder.CreateLoad(elem_address);
-    //     std::cout << "ArrayRef Value Generated\n";
-    // }
 }
 
 void CodegenVisitor::visit(ArrayRef& node) {
