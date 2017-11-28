@@ -7,11 +7,11 @@ void ConstEvalVisitor::visit(ArrayDecl& node) {
     unwrap(node.expression);
 }
 void ConstEvalVisitor::visit(ArrayRef& node) {
-    node.array->accept(*this);
+    node.prev->accept(*this);
     unwrap(node.pos);
 }
 void ConstEvalVisitor::visit(Assignment& node) {
-    node.variable->accept(*this);
+    node.ref->accept(*this);
     unwrap(node.value);
 }
 void ConstEvalVisitor::visit(Binary& node) {
@@ -45,6 +45,8 @@ void ConstEvalVisitor::visit(Integer& node) {
 void ConstEvalVisitor::visit(IntegerType& node) {
     reportError("bug: ConstEvalVisitor: visit IntegerType node");
 }
+void ConstEvalVisitor::visit(NamedRef& node) {
+}
 void ConstEvalVisitor::visit(Program& node) {
     for (auto x : node.program) {
         x->accept(*this);
@@ -61,7 +63,7 @@ void ConstEvalVisitor::visit(RecordDecl& node) {
     }
 }
 void ConstEvalVisitor::visit(RecordRef& node) {
-    node.record->accept(*this);
+    node.prev->accept(*this);
 }
 void ConstEvalVisitor::visit(Return& node) {
     unwrap(node.expression);
@@ -92,8 +94,6 @@ void ConstEvalVisitor::visit(Undefined& node) {
 }
 void ConstEvalVisitor::visit(Var& node) {
     node.body->accept(*this);
-}
-void ConstEvalVisitor::visit(Variable& node) {
 }
 void ConstEvalVisitor::visit(Void& node) {
     reportError("bug: ConstEvalVisitor: visit Void node");
