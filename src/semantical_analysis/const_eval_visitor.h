@@ -60,6 +60,6 @@ public:
     void visit(Void& node);
     void visit(While& node);
 
-//     void unwrap(ASTNode *&value);
-//     void unwrap(Expression *&value);
-// };
+    void unwrap(ASTNode *&value);
+    void unwrap(Expression *&value);
+};

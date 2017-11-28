@@ -60,5 +60,5 @@ public:
     void visit(Void& node);
     void visit(While& node);
 
-//     void unwrap(Type *&type);
-// };
+    void unwrap(Type *&type);
+};

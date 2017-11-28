@@ -174,9 +174,6 @@ void TypeCheckingVisitor::visit(IntegerType& node)
 {
     return;
 }
-void TypeCheckingVisitor::visit(NamedRef& node) {
-    // TODO: x
-}
 
 /*
     Visit var in the ref

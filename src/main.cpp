@@ -7,6 +7,7 @@
 #include "lib/argparse-nortti.hpp"
 #include "parsing/Lexer.h"
 #include "parsing/Parser.h"
+#include "lib/cxxopts.hpp"
 
 class CmdArgsParser {
 public:
@@ -71,13 +72,14 @@ int main(int argc, char *argv[]) {
     Parser parser(&lexer);
     auto program = parser.parse();
 
-    // TypeDeduceVisitor().visit(*program);
+
+    TypeDeduceVisitor().visit(*program);
 
     // TypeCheckingVisitor tcv;
     // program->accept(tcv);
 
-    // CodegenVisitor v{args.output};
-    // v.visit(*program);
-    // v.generate();
+    CodegenVisitor v{args.output};
+    v.visit(*program);
+    v.generate();
     return 0;
 }
