@@ -106,6 +106,33 @@ void CodegenVisitor::visit(Prototype& p)
 void CodegenVisitor::visit(ArrayDecl& node)
 {
     std::cout << "Generating ArrayDecl\n";
+    llvm::Function *f = TheModule->getFunction("malloc");
+    std::vector<llvm::Value*> ArgsV;
+    node.expression->accept(*this);
+    auto elem_type = node.array_type;
+    auto num_of_elems = last_constant;
+    auto ll_type = get_type(elem_type);
+    auto size = TheModule->getDataLayout().getTypeAllocSize(ll_type);
+    last_constant = Builder.CreateMul(
+        get_const_int(size),
+        last_constant
+    );
+    last_constant = Builder.CreateZExt(last_constant, llvm::Type::getInt64Ty(TheContext));
+    ArgsV.push_back(last_constant);
+    auto ptr = Builder.CreateCall(f, ArgsV);
+    auto arr_ptr = Builder.CreateBitCast(ptr, get_type(&node));
+    if (elem_type->type == types::Array || elem_type->type == types::Record) {
+        // initialize every sub element
+        auto elem_count = ((llvm::ConstantInt *) num_of_elems)->getSExtValue();
+        for (int i = 0; i < elem_count; i++) {
+            node.array_type->accept(*this);
+            auto elem_address = Builder.CreateGEP(arr_ptr, get_const_int(i));
+            last_constant->getType()->print(llvm::errs());
+            elem_address->getType()->print(llvm::errs());
+            Builder.CreateStore(last_constant, elem_address);
+        }
+    }
+    last_constant = Builder.CreateBitCast(arr_ptr, get_type(&node));
 }
 
 void CodegenVisitor::visit(Assignment& node)
@@ -418,26 +445,26 @@ void CodegenVisitor::visit(Var& node)
 {
     std::cout << "Creating Var declaration\n";
     auto name = node.var_decl.first;
-    std::cout << "Name " << name << " declared\n";
     auto v = Builder.CreateAlloca(get_type(node.var_decl.second), 0, name);
-    std::cout << "Generated Allocation for " << (int)node.var_decl.second->type << "\n";
+
     if (node.var_decl.second->type == types::Array) {
-        std::cout << "Generating Array declaration\n";
-        llvm::Function *f = TheModule->getFunction("malloc");
-        std::vector<llvm::Value*> ArgsV;
-        auto array = (ArrayDecl *) node.var_decl.second;
-        array->expression->accept(*this);
-        auto elem_type = array->array_type;
-        auto ll_type = get_type(elem_type);
-        auto size = TheModule->getDataLayout().getTypeAllocSize(ll_type);
-        last_constant = Builder.CreateMul(
-            get_const_int(size),
-            last_constant
-        );
-        last_constant = Builder.CreateZExt(last_constant, llvm::Type::getInt64Ty(TheContext));
-        ArgsV.push_back(last_constant);
-        auto ptr = Builder.CreateCall(f, ArgsV);
-        last_constant = Builder.CreateBitCast(ptr, get_type(node.var_decl.second));
+        // std::cout << "Generating Array declaration\n";
+        node.var_decl.second->accept(*this);
+        // llvm::Function *f = TheModule->getFunction("malloc");
+        // std::vector<llvm::Value*> ArgsV;
+        // auto array = (ArrayDecl *) node.var_decl.second;
+        // array->expression->accept(*this);
+        // auto elem_type = array->array_type;
+        // auto ll_type = get_type(elem_type);
+        // auto size = TheModule->getDataLayout().getTypeAllocSize(ll_type);
+        // last_constant = Builder.CreateMul(
+        //     get_const_int(size),
+        //     last_constant
+        // );
+        // last_constant = Builder.CreateZExt(last_constant, llvm::Type::getInt64Ty(TheContext));
+        // ArgsV.push_back(last_constant);
+        // auto ptr = Builder.CreateCall(f, ArgsV);
+        // last_constant = Builder.CreateBitCast(ptr, get_type(node.var_decl.second));
         Builder.CreateStore(last_constant, v);
     } else if (node.var_decl.second->type == types::Record) {
         std::cout << "Generating Record declaration\n";

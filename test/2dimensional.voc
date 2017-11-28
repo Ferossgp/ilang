@@ -1,0 +1,7 @@
+routine dims(): array[1] array[1] integer is
+    var a: array[3] array[3] integer
+    a[1][1] := 1
+    a[2][2] := 2
+    a[3][3] := 3
+    return a
+end
