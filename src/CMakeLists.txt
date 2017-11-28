@@ -30,12 +30,10 @@ add_executable(voc
     AST/real.cpp
     AST/unary.cpp
     AST/binary.cpp
-    AST/variable.cpp
     AST/var.cpp
     AST/routinecall.cpp
     AST/prototype.cpp
     AST/routine.cpp
-    AST/if.cpp
     AST/for.cpp
     AST/while.cpp
     AST/arraydecl.cpp

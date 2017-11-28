@@ -33,7 +33,7 @@
 #include "../AST/binary.h"
 #include "../AST/routinecall.h"
 #include "../AST/return.h"
-#include "../AST/variable.h"
+#include "../AST/namedref.h"
 #include "../AST/var.h"
 #include "../AST/program.h"
 #include "../AST/boolean.h"
@@ -92,7 +92,7 @@ public:
     void visit(Unary& node);
     void visit(Undefined& node);
     void visit(Var& node);
-    void visit(Variable& node);
+    void visit(NamedRef& node);
     void visit(While& node);
     void visit(Return& node);
     void visit(RecordRef& node);

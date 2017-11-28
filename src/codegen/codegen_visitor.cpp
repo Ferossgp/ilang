@@ -119,19 +119,19 @@ void CodegenVisitor::visit(Assignment& node)
     llvm::Value *store_location;
     switch (node.lhs_type) {
     case types::Undefined: {
-        auto name = ((Var *) node.variable)->var_decl.first;
+        auto name = ((Var *) node.ref)->var_decl.first;
         store_location = last_params[name];
     }
         break;
     case types::Array:
         is_lvalue = true;
-        node.variable->accept(*this);
+        node.ref->accept(*this);
         is_lvalue = false;
         store_location = last_constant;
         break;
     case types::Record:
         is_lvalue = true;
-        node.variable->accept(*this);
+        node.ref->accept(*this);
         is_lvalue = false;
         store_location = last_constant;
         break;
@@ -483,9 +483,9 @@ void CodegenVisitor::visit(Var& node)
     std::cout << "Created Var declaration\n";
 }
 
-void CodegenVisitor::visit(Variable& node)
+void CodegenVisitor::visit(NamedRef& node)
 {
-    std::cout << "Parsing Variable\n";
+    std::cout << "Parsing NamedRef\n";
     if (!node.var ) {
         std::cout << "var is 0\n";
     }
@@ -523,43 +523,43 @@ void CodegenVisitor::visit(While& node) {
 
 void CodegenVisitor::visit(RecordRef& node) {
     std::cout << "Generating Record Reference\n";
-    auto rec_name = ((Var *) node.record)->var_decl.first;
-    auto struct_address = Builder.CreateLoad(last_params[rec_name], "rec");
-    std::cout << "Generated Record address\n";
-    auto decl = ((RecordDecl *)((TypeDecl *)((Var *) node.record)->var_decl.second)->ref_type);
-    int i = 0;
-    while (((Var*) decl->refs[i])->var_decl.first != node.ref && i < (decl->refs.size())) {
-        i++;
-    }
-    std::vector<llvm::Value *> indices{get_const_int(0), get_const_int(i)};
-    auto elem_address = Builder.CreateGEP(
-        structs[decl],
-        struct_address,
-        indices
-    );
-    if (is_lvalue) {
-        last_constant = elem_address;
-        std::cout << "Recordref Address Generated\n";
-    } else {
-        last_constant = Builder.CreateLoad(elem_address);
-        std::cout << "Recordref Value Generated\n";
-    }
+    // auto rec_name = ((Var *) node.record)->var_decl.first;
+    // auto struct_address = Builder.CreateLoad(last_params[rec_name], "rec");
+    // std::cout << "Generated Record address\n";
+    // auto decl = ((RecordDecl *)((TypeDecl *)((Var *) node.record)->var_decl.second)->ref_type);
+    // int i = 0;
+    // while (((Var*) decl->refs[i])->var_decl.first != node.ref && i < (decl->refs.size())) {
+    //     i++;
+    // }
+    // std::vector<llvm::Value *> indices{get_const_int(0), get_const_int(i)};
+    // auto elem_address = Builder.CreateGEP(
+    //     structs[decl],
+    //     struct_address,
+    //     indices
+    // );
+    // if (is_lvalue) {
+    //     last_constant = elem_address;
+    //     std::cout << "Recordref Address Generated\n";
+    // } else {
+    //     last_constant = Builder.CreateLoad(elem_address);
+    //     std::cout << "Recordref Value Generated\n";
+    // }
 }
 
 void CodegenVisitor::visit(ArrayRef& node) {
     std::cout << "Generating ArrayRef\n";
-    std::string decl_name = ((Var *) node.array)->var_decl.first;
-    auto arr_address = Builder.CreateLoad(last_params[decl_name], "arr");
-    node.pos->accept(*this);
-    auto pos = Builder.CreateSub(last_constant, get_const_int(1));
-    auto elem_address = Builder.CreateGEP(arr_address, pos);
-    if (is_lvalue) {
-        last_constant = elem_address;
-        std::cout << "ArrayRef Address Generated\n";
-    } else {
-        last_constant = Builder.CreateLoad(elem_address);
-        std::cout << "ArrayRef Value Generated\n";
-    }
+    // std::string decl_name = ((Var *) node.array)->var_decl.first;
+    // auto arr_address = Builder.CreateLoad(last_params[decl_name], "arr");
+    // node.pos->accept(*this);
+    // auto pos = Builder.CreateSub(last_constant, get_const_int(1));
+    // auto elem_address = Builder.CreateGEP(arr_address, pos);
+    // if (is_lvalue) {
+    //     last_constant = elem_address;
+    //     std::cout << "ArrayRef Address Generated\n";
+    // } else {
+    //     last_constant = Builder.CreateLoad(elem_address);
+    //     std::cout << "ArrayRef Value Generated\n";
+    // }
 
 }
 
