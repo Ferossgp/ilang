@@ -73,7 +73,7 @@ end
 routine for_loop(): integer is
     var a: integer is 0
     var i: integer is 0
-    for i in 0..5 loop
+    for i in 0 .. 5 loop
         a := a + 1
     end
     return a
@@ -101,7 +101,7 @@ routine int_array(): integer is
 end
 
 routine float_array(): real is
-    var a: array[3] real
+    var a: array [3] real
     a[0] := 1.5
     a[1] := 3.25
     a[2] := 4.5
@@ -109,18 +109,19 @@ routine float_array(): real is
 end
 
 routine boolean_array(): boolean is
-    var a: array[2] boolean
+    var a: array [2] boolean
     a[0] := false
     a[1] := true
     return a[1]
 end
 
 
+type rec is record
+    var a: integer
+    var b: real
+end
+
 routine give_int_field(): integer is
-    type rec is record
-        var a: integer
-        var b: real
-    end
     var a: rec
     a.a := 7
     a.b := 3.5

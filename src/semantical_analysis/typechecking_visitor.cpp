@@ -6,6 +6,7 @@
 */
 void TypeCheckingVisitor::visit(Prototype& node) 
 {
+    std::cout << "Type checking Prototype\n";
     return;
 }
 
@@ -14,6 +15,8 @@ void TypeCheckingVisitor::visit(Prototype& node)
 */
 void TypeCheckingVisitor::visit(ArrayDecl& node)
 {
+    std::cout << "Type checking ArrayDecl\n";
+
     auto sizeExpression = (Expression*) node.expression;
     if (sizeExpression->type->type != types::Integer)
     {
@@ -27,7 +30,9 @@ void TypeCheckingVisitor::visit(ArrayDecl& node)
 */
 void TypeCheckingVisitor::visit(Assignment& node)
 {
-    auto left_type = node.lhs_type;
+    std::cout << "Type checking Assignment\n";
+
+    auto left_type = node.ref->type->type;
     auto right = (Expression*) node.value;
     auto right_type = right->type->type;
 
@@ -99,6 +104,8 @@ void TypeCheckingVisitor::visit(Assignment& node)
 */
 void TypeCheckingVisitor::visit(Binary& node) 
 {
+    std::cout << "Type checking Binary\n";
+
     return;
 }
 
@@ -107,6 +114,8 @@ void TypeCheckingVisitor::visit(Binary& node)
 */
 void TypeCheckingVisitor::visit(Boolean& node)
 {
+    std::cout << "Type checking Boolean\n";
+
     return;
 }
 
@@ -115,6 +124,8 @@ void TypeCheckingVisitor::visit(Boolean& node)
 */
 void TypeCheckingVisitor::visit(BooleanType& node)
 {
+    std::cout << "Type checking BooleanType\n";
+
     return;
 }
 
@@ -123,6 +134,8 @@ void TypeCheckingVisitor::visit(BooleanType& node)
 */
 void TypeCheckingVisitor::visit(Cast& node)
 {
+    std::cout << "Type checking Cast\n";
+
     return;
 }
 
@@ -132,6 +145,8 @@ void TypeCheckingVisitor::visit(Cast& node)
 */
 void TypeCheckingVisitor::visit(For& node) 
 {
+    std::cout << "Type checking For\n";
+
     auto from = (Expression*) node.start;
     auto until = (Expression*) node.end;
     if (from->type->type != types::Integer || until->type->type != types::Integer)
@@ -146,9 +161,9 @@ void TypeCheckingVisitor::visit(For& node)
 */
 void TypeCheckingVisitor::visit(If& node) 
 {
-    std::cout << "FOO\n";
+    std::cout << "Type checking If\n";
+
     auto expr = (Expression*) node.condition;
-    std::cout << (int) expr->type->type << "\n";
     if (expr->type->type != types::Boolean)
         reportError("Type of expression in if is not boolean!\n");
 
@@ -164,6 +179,8 @@ void TypeCheckingVisitor::visit(If& node)
 */
 void TypeCheckingVisitor::visit(Integer& node) 
 {
+    std::cout << "Type checking Integer\n";
+
     return;
 }
 
@@ -172,6 +189,8 @@ void TypeCheckingVisitor::visit(Integer& node)
 */
 void TypeCheckingVisitor::visit(IntegerType& node)
 {
+    std::cout << "Type checking IntegerType\n";
+
     return;
 }
 
@@ -180,11 +199,15 @@ void TypeCheckingVisitor::visit(IntegerType& node)
 */
 void TypeCheckingVisitor::visit(NamedRef& node)
 {
+    std::cout << "Type checking NamedRef\n";
+
     node.var->accept(*this);
 }
 
 void TypeCheckingVisitor::visit(Real& node)
 {
+    std::cout << "Type checking Real\n";
+
     return;
 }
 /*
@@ -192,6 +215,8 @@ void TypeCheckingVisitor::visit(Real& node)
 */
 void TypeCheckingVisitor::visit(RealType& node)
 {
+    std::cout << "Type checking RealType\n";
+
     return;
 }
 
@@ -200,6 +225,8 @@ void TypeCheckingVisitor::visit(RealType& node)
 */
 void TypeCheckingVisitor::visit(RecordDecl& node)
 {
+    std::cout << "Type checking RecordDecl\n";
+
     for (int i = 0; i < node.refs.size(); i++)
         node.refs[i]->accept(*this);
 }
@@ -209,6 +236,8 @@ void TypeCheckingVisitor::visit(RecordDecl& node)
 */
 void TypeCheckingVisitor::visit(Ref& node)
 {
+    std::cout << "Type checking Ref\n";
+
     if (node.next)
         node.next->accept(*this);
     if (node.prev)
@@ -220,12 +249,14 @@ void TypeCheckingVisitor::visit(Ref& node)
 */
 void TypeCheckingVisitor::visit(Routine& node)
 {
+    std::cout << "Type checking Routine\n";
+
     // Go through all statements in body
     currentRoutine = &node;
     node.body->accept(*this);
 
     // Check, if function returns smth in all cases
-    if (!currentRoutineReturnsSmth)
+    if (!currentRoutineReturnsSmth && node.proto->type->type != types::Void)
         reportError("Routine " + currentRoutine->proto->name + " does not return " +
             "a value in all branches!\n");
     currentRoutineReturnsSmth = false;
@@ -236,7 +267,8 @@ void TypeCheckingVisitor::visit(Routine& node)
 */
 void TypeCheckingVisitor::visit(RoutineCall& node)
 {
-    std::cout << "Here";
+    std::cout << "Type checking RoutineCall\n";
+
     auto actualArguments = node.args;
     auto expectedArguments = node.callee->proto->args;
     auto routineName = node.callee->proto->name;
@@ -249,8 +281,8 @@ void TypeCheckingVisitor::visit(RoutineCall& node)
 
     for (int i = 0; i < argsLength; i++)
     {
-        if (((Expression*) expectedArguments[i])->type->type != ((Expression*) actualArguments[i])->type->type)
-            reportError("Arguments of function " + routineName +
+        if (*actualArguments[i]->type != *(((Var*)expectedArguments[i])->var_decl.second))
+            reportError("Provided arguments for function " + routineName +
                 " are incorrect! Expected another type on " + std::to_string(i) + "\n");
     }
 }
@@ -260,6 +292,8 @@ void TypeCheckingVisitor::visit(RoutineCall& node)
 */
 void TypeCheckingVisitor::visit(TypeDecl& node)
 {
+    std::cout << "Type checking TypeDecl\n";
+
     return;
 }
 
@@ -268,6 +302,8 @@ void TypeCheckingVisitor::visit(TypeDecl& node)
 */
 void TypeCheckingVisitor::visit(Unary& node)
 {
+    std::cout << "Type checking Unary\n";
+
     return;
 }
 
@@ -276,6 +312,8 @@ void TypeCheckingVisitor::visit(Unary& node)
 */
 void TypeCheckingVisitor::visit(Undefined& node)
 {
+    std::cout << "Type checking Undefined\n";
+
     reportError("Undefined reached during the type checking!\n");
 }
 
@@ -284,10 +322,14 @@ void TypeCheckingVisitor::visit(Undefined& node)
 */
 void TypeCheckingVisitor::visit(Var& node)
 {
+    std::cout << "Type checking Var\n";
+
     auto declaredType = node.var_decl.second;
     declaredType->accept(*this);
-    if (node.body) {
-        auto actualType = ((Expression*)node.body)->type;
+    if (node.body) 
+    {
+        node.body->accept(*this);
+        auto actualType = node.body->type;
         if (*declaredType != *actualType) {
             reportError("Initial value of variable " + node.var_decl.first + " is not of the declared type!\n");
         }
@@ -300,6 +342,8 @@ void TypeCheckingVisitor::visit(Var& node)
 */
 void TypeCheckingVisitor::visit(While& node)
 {
+    std::cout << "Type checking While\n";
+
     auto expr = (Expression*) node.expression;
     if (expr->type->type != types::Boolean)
         reportError("Expression in WHILE is not of boolean type!\n");
@@ -311,6 +355,8 @@ void TypeCheckingVisitor::visit(While& node)
 */
 void TypeCheckingVisitor::visit(Return& node)
 {
+    std::cout << "Type checking Return\n";
+
     if (*((Expression*)node.expression)->type != *currentRoutine->proto->type)
         reportError("Routine " + currentRoutine->proto->name + " has incorrect " +
         "return value!\n");
@@ -323,6 +369,8 @@ void TypeCheckingVisitor::visit(Return& node)
 */
 void TypeCheckingVisitor::visit(RecordRef& node)
 {
+    std::cout << "Type checking RecordRef\n";
+
     if (node.prev)
         node.prev->accept(*this);
 }
@@ -333,6 +381,8 @@ void TypeCheckingVisitor::visit(RecordRef& node)
 */
 void TypeCheckingVisitor::visit(ArrayRef& node)
 {
+    std::cout << "Type checking ArrayRef\n";
+
     auto position = (Expression*) node.pos;
     if (position->type->type != types::Integer)
         reportError("Trying to call array with not-integer type!\n");
@@ -345,6 +395,8 @@ void TypeCheckingVisitor::visit(ArrayRef& node)
 */
 void TypeCheckingVisitor::visit(Program& node)
 {
+    std::cout << "Type checking Program\n";
+
     for (auto statement: node.program)
     {
         statement->accept(*this);
@@ -356,6 +408,8 @@ void TypeCheckingVisitor::visit(Program& node)
 */
 void TypeCheckingVisitor::visit(Statements& node)
 {
+    std::cout << "Type checking Statements\n";
+
     for (auto statement : node.statements)
         statement->accept(*this);
 }
@@ -365,6 +419,8 @@ void TypeCheckingVisitor::visit(Statements& node)
 */
 void TypeCheckingVisitor::visit(Void& node)
 {
+    std::cout << "Type checking Void\n";
+
     return;
 }
 
