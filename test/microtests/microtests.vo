@@ -58,6 +58,7 @@ routine true_branch(): boolean is
     else
         return false
     end
+    return true
 end
 
 routine false_branch(): boolean is
@@ -67,6 +68,7 @@ routine false_branch(): boolean is
     else
         return false
     end
+    return true
 end
 
 
