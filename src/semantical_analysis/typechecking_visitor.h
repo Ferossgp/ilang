@@ -1,6 +1,7 @@
 #ifndef TYPE_CHECKING_VSTR
 #define TYPE_CHECKING_VSTR
 
+#include <list>
 #include "../visitor.h"
 #include "error.h"
 
@@ -35,9 +36,25 @@
 
 class TypeCheckingVisitor : public Visitor
 {
+private:
+    // Used to evaluate, if routines return values properly
+    struct ConditionGraphNode
+    {
+        std::vector<ConditionGraphNode*> nexts;
+        ConditionGraphNode* previous;
+        bool hasReturnStatement;
+    };
+    ConditionGraphNode* currentGraphNode;
+    bool allNextsHaveReturns(ConditionGraphNode& node)
+    {
+        bool hasReturn = true;
+        for (ConditionGraphNode* curNode : node.nexts)
+            hasReturn = hasReturn && curNode->hasReturnStatement;
+        return hasReturn;
+    }
+
 public:
     Routine* currentRoutine;
-    bool currentRoutineReturnsSmth;
 
     void visit(Prototype& node);
     void visit(ArrayDecl& node);
