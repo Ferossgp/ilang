@@ -13,23 +13,23 @@ int sub_two_ints_res = 5;
 int mul_two_ints();
 int mul_two_ints_res = 20;
 
-float div_two_ints();
-float div_two_ints_res = 6;
+double div_two_ints();
+double div_two_ints_res = 6;
 
 /*
     Real math
 */
-float sum_two_reals();
-float sum_two_reals_res = 1.2;
+double sum_two_reals();
+double sum_two_reals_res = 1.2;
 
-float sub_two_reals();
-float sub_two_reals_res = 11.4;
+double sub_two_reals();
+double sub_two_reals_res = 11.4;
 
-float mul_two_reals();
-float mul_two_reals_res = 8.478; // 3.14 * 2.7
+double mul_two_reals();
+double mul_two_reals_res = 8.478; // 3.14 * 2.7
 
-float div_two_reals();
-float div_two_reals_res = 1.16; // 2.5 / 1.6
+double div_two_reals();
+double div_two_reals_res = 1.16; // 2.5 / 1.6
 
 /*
     Booleans
@@ -46,8 +46,8 @@ bool give_false_res = false;
 // int neg_int();
 // int neg_int_res = -3;
 
-// float neg_real();
-// float neg_real_res = -3.14;
+// double neg_real();
+// double neg_real_res = -3.14;
 
 /*
     Conditions and branches
@@ -64,6 +64,9 @@ bool false_branch_res = false;
 int for_loop();
 int for_loop_res = 5;
 
+int inversed_for_loop();
+int inversed_for_loop_res = 10;
+
 int while_loop();
 int while_loop_res = 9;
 
@@ -73,11 +76,14 @@ int while_loop_res = 9;
 int int_array();
 int int_array_res = 2;
 
-float float_array();
-float float_array_res = 4.5;
+double float_array();
+double float_array_res = 4.5;
 
 bool boolean_array();
 bool boolean_array_res = true;
+
+int two_dim_array();
+int two_dim_array_res = 6;
 
 /*
     Records
@@ -170,6 +176,11 @@ void run_tests()
     else
         printf("For loop: failed\n");
 
+    if (inversed_for_loop() == inversed_for_loop_res)
+        printf("Inversed for loop: passed\n");
+    else
+        printf("Inversed for loop: failed\n");
+
     if (while_loop() == while_loop_res)
         printf("While loop: passed\n");
     else
@@ -190,6 +201,11 @@ void run_tests()
         printf("Boolean array: passed\n");
     else
         printf("Boolean array: failed\n");
+
+    if (two_dim_array() == two_dim_array_res)
+        printf("Two-dimensional array: passed\n");
+    else
+        printf("Two-dimensional array: failed");
 
 
     if (give_int_field() == give_int_field_res)

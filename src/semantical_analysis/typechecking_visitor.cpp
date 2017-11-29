@@ -167,11 +167,33 @@ void TypeCheckingVisitor::visit(If& node)
     if (expr->type->type != types::Boolean)
         reportError("Type of expression in if is not boolean!\n");
 
+    auto ifElseGraphNode = new ConditionGraphNode;
+    ifElseGraphNode->hasReturnStatement = false;
+    ifElseGraphNode->previous = currentGraphNode;
+    currentGraphNode->nexts.push_back(ifElseGraphNode);
+    currentGraphNode = ifElseGraphNode;
+    
+    auto ifGraphNode = new ConditionGraphNode;
+    ifGraphNode->hasReturnStatement = false;
+    ifGraphNode->previous = ifElseGraphNode;
+    ifElseGraphNode->nexts.push_back(ifGraphNode);
+    currentGraphNode = ifGraphNode;
+
     node.then->accept(*this);
     if (node.else_body)
     {
+        auto elseGraphNode = new ConditionGraphNode;
+        elseGraphNode->hasReturnStatement = false;
+        elseGraphNode->previous = ifElseGraphNode;
+        ifElseGraphNode->nexts.push_back(elseGraphNode);
+        currentGraphNode = elseGraphNode;
+
         node.else_body->accept(*this);
+
+        ifElseGraphNode->hasReturnStatement = allNextsHaveReturns(*ifElseGraphNode);
     }
+
+    currentGraphNode = ifElseGraphNode->previous;
 }
 
 /*
@@ -251,15 +273,20 @@ void TypeCheckingVisitor::visit(Routine& node)
 {
     std::cout << "Type checking Routine\n";
 
-    // Go through all statements in body
+    // Preparations for valid return checkment
     currentRoutine = &node;
+    currentGraphNode = new ConditionGraphNode;
+    currentGraphNode->hasReturnStatement = false;
+
+    // Go through all statements in body
     node.body->accept(*this);
 
+    std::cout << "Here\n" << currentGraphNode << "\n";
+
     // Check, if function returns smth in all cases
-    if (!currentRoutineReturnsSmth && node.proto->type->type != types::Void)
+    if (!allNextsHaveReturns(*currentGraphNode) && node.proto->type->type != types::Void)
         reportError("Routine " + currentRoutine->proto->name + " does not return " +
             "a value in all branches!\n");
-    currentRoutineReturnsSmth = false;
 }
 
 /*
@@ -360,8 +387,7 @@ void TypeCheckingVisitor::visit(Return& node)
     if (*((Expression*)node.expression)->type != *currentRoutine->proto->type)
         reportError("Routine " + currentRoutine->proto->name + " has incorrect " +
         "return value!\n");
-    
-    currentRoutineReturnsSmth = true;
+    currentGraphNode->hasReturnStatement = true;
 }
 
 /*

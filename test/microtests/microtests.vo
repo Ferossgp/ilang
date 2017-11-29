@@ -81,6 +81,15 @@ routine for_loop(): integer is
     return a
 end
 
+routine inversed_for_loop(): integer is
+    var a: integer is 0
+    var i: integer is 0
+    for i in reverse 10 .. 0 loop
+        a := a + 1
+    end
+    return a
+end
+
 routine while_loop(): integer is
     var a: integer is 0
     var i: integer is 0
@@ -115,6 +124,13 @@ routine boolean_array(): boolean is
     a[0] := false
     a[1] := true
     return a[1]
+end
+
+routine two_dim_array(): integer is
+    var a: array [4] array [4] integer
+    a[0][0] := 5
+    a[2][3] := 6
+    return a[2][3]
 end
 
 
