@@ -1,0 +1,23 @@
+type Point is record
+    var x: integer
+    var y: integer
+end
+
+type Line is record
+    var first: Point
+    var last: Point
+end
+
+
+routine dims(): Line is
+    var a: Line
+    var p: Point
+    var p2: Point
+    p.x := 3
+    p.y := 4
+    p2.x := 11
+    p2.y := 9
+    a.first := p
+    a.last := p2
+    return a
+end

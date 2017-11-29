@@ -126,7 +126,7 @@ ASTNode * Parser::parse_identifier_statement() {
     if(!assignee){
         return Error("Undefined Identifier");
     }
-    
+
     if ( lexer->current_token() != '('){
         Ref *ref = parse_ref((Var*)assignee);
         if ( lexer->current_token() == ':' ){
@@ -586,7 +586,7 @@ ASTNode * Parser::parse_for() {
     lexer->next();
     closeScope();
 
-    return new For(id_name, end, start, (Statements*) body, reverse);
+    return new For(id_name, start, end, (Statements*) body, reverse);
 }
 
 ASTNode * Parser::parse_while() {

@@ -73,11 +73,11 @@ int main(int argc, char *argv[]) {
     auto program = parser.parse();
     std::cout << "Program parsed\n";
 
+    AliasUnwrapVisitor().visit(*program);
     TypeDeduceVisitor().visit(*program);
     std::cout << "Types are deduced\n";
-
-    TypeCheckingVisitor tcv;
-    program->accept(tcv);
+    // TypeCheckingVisitor tcv;
+    // program->accept(tcv);
     std::cout << "Types are checked\n";
 
     CodegenVisitor v{args.output};

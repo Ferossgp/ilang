@@ -60,6 +60,7 @@ private:
     llvm::raw_fd_ostream output;
     std::error_code EC;
 
+    Var *last_decl;
     llvm::Value *last_constant;
     llvm::Function *last_function;
     std::unordered_map<std::string, llvm::Value*> last_params;
