@@ -100,4 +100,7 @@ void AliasUnwrapVisitor::unwrap(Type *&type) {
     while (type->type == types::Alias) {
         type = ((TypeDecl*)type)->ref_type;
     }
+    if (type->type == types::Array || type->type == types::Record) {
+        type->accept(*this);
+    }
 }

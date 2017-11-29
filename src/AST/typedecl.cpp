@@ -8,5 +8,5 @@ using std::string;
 
 TypeDecl::TypeDecl(const string &identifier, Type *ref_type):
         identifier(identifier), ref_type(ref_type) {
-                type = ref_type->type;
+                type = types::Alias;
         };

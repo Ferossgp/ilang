@@ -44,6 +44,7 @@ llvm::Type* CodegenVisitor::get_type(Type *type)
 {
     switch (type->type) {
     case types::Integer:
+        std::cout << "Generating integer type\n";
         return llvm::Type::getInt32Ty(TheContext);
     case types::Real:
         return llvm::Type::getDoubleTy(TheContext);
@@ -55,6 +56,7 @@ llvm::Type* CodegenVisitor::get_type(Type *type)
         auto elem_type = ((ArrayDecl *)type)->array_type;
         switch (elem_type->type) {
         case types::Integer:
+            std::cout << "Generating pointer to integer\n";
             return llvm::Type::getInt32PtrTy(TheContext);
         case types::Real:
             std::cout << "Generating pointer to double\n";
@@ -66,13 +68,13 @@ llvm::Type* CodegenVisitor::get_type(Type *type)
             return llvm::PointerType::getUnqual(get_type(elem_type));
         case types::Record:
             std::cout << "Record in Array\n";
-            auto rec = (RecordDecl*) ((TypeDecl *) type)->ref_type;
+            auto rec = (RecordDecl*) elem_type;
             return llvm::PointerType::getUnqual(get_type(elem_type));
         }
     }
     case types::Record: {
         std::cout << "Record type\n";
-        auto rec = (RecordDecl*) ((TypeDecl *) type)->ref_type;
+        auto rec = (RecordDecl*)  type;
         std::cout << "Record Referenced " << rec << "\n";
         return llvm::PointerType::getUnqual(structs[rec]);
     }
@@ -102,8 +104,6 @@ void CodegenVisitor::visit(Prototype& p)
     // function type generation
     auto ft = llvm::FunctionType::get(get_type(p.type), arg_types, false);
     last_function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, p.getName(), TheModule.get());
-
-
 }
 
 void CodegenVisitor::visit(ArrayDecl& node)
@@ -362,17 +362,38 @@ void CodegenVisitor::visit(RecordDecl& node)
         std::cout << "Record already generated\n";
         llvm::Function *f = TheModule->getFunction("malloc");
         std::vector<llvm::Value*> ArgsV;;
-        int i = 0;
+        uint64_t i = 0;
         for (auto& member : node.refs) {
             auto var = (Var *) member;
-            auto ll_type = get_type(&node);
+            auto ll_type = get_type(var->var_decl.second);
             i += TheModule->getDataLayout().getTypeAllocSize(ll_type);
         }
+        std::cout << "Record size " << i << "\n";
         last_constant = get_const_int(i);
         last_constant = Builder.CreateZExt(last_constant, llvm::Type::getInt64Ty(TheContext));
         ArgsV.push_back(last_constant);
         auto ptr = Builder.CreateCall(f, ArgsV);
-        last_constant = Builder.CreateBitCast(ptr, get_type(&node));
+        auto record_ptr = Builder.CreateBitCast(ptr, get_type(&node));
+
+        i = 0;
+        for (auto& member : node.refs) {
+            auto var = (Var *) member;
+            if (var->var_decl.second->type == types::Record ||
+                var->var_decl.second->type == types::Array) {
+                var->var_decl.second->accept(*this);
+                std::vector<llvm::Value *> indices{get_const_int(0), get_const_int(i)};
+                auto elem_address = Builder.CreateGEP(
+                    structs[&node],
+                    record_ptr,
+                    indices
+                );
+                last_constant->getType()->print(llvm::errs());
+                elem_address->getType()->print(llvm::errs());
+                Builder.CreateStore(last_constant, elem_address);
+                i++;
+            }
+        }
+        last_constant = record_ptr;
         return;
     }
     std::cout << "Generating Record Declaration\n";
@@ -470,21 +491,6 @@ void CodegenVisitor::visit(Var& node)
         Builder.CreateStore(last_constant, v);
     } else if (node.var_decl.second->type == types::Record) {
         node.var_decl.second->accept(*this);
-        std::cout << "Generating Record declaration\n";
-        llvm::Function *f = TheModule->getFunction("malloc");
-        std::vector<llvm::Value*> ArgsV;
-        auto rec = (RecordDecl*) ((TypeDecl *) node.var_decl.second)->ref_type;
-        int i = 0;
-        for (auto& member : rec->refs) {
-            auto var = (Var *) member;
-            auto ll_type = get_type(var->var_decl.second);
-            i += TheModule->getDataLayout().getTypeAllocSize(ll_type);
-        }
-        last_constant = get_const_int(i);
-        last_constant = Builder.CreateZExt(last_constant, llvm::Type::getInt64Ty(TheContext));
-        ArgsV.push_back(last_constant);
-        auto ptr = Builder.CreateCall(f, ArgsV);
-        last_constant = Builder.CreateBitCast(ptr, get_type(node.var_decl.second));
         Builder.CreateStore(last_constant, v);
     } else {
         std::cout << "Generating variable declaration\n";
@@ -552,7 +558,7 @@ void CodegenVisitor::visit(RecordRef& node) {
     node.prev->accept(*this);
     is_lvalue = old_lvalue;
     auto record_address = last_constant;
-    auto decl = (RecordDecl *)((TypeDecl *) last_decl->var_decl.second)->ref_type;
+    auto decl = (RecordDecl *)(last_decl->var_decl.second);
     auto record = structs[decl];
     int i = 0;
     while (((Var*) decl->refs[i])->var_decl.first != node.ref && i < (decl->refs.size())) {
