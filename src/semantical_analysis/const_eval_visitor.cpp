@@ -93,7 +93,9 @@ void ConstEvalVisitor::visit(Undefined& node) {
     reportError("bug: ConstEvalVisitor: visit Undefined node");
 }
 void ConstEvalVisitor::visit(Var& node) {
-    node.body->accept(*this);
+    if (node.body) {
+        node.body->accept(*this);
+    }
 }
 void ConstEvalVisitor::visit(Void& node) {
     reportError("bug: ConstEvalVisitor: visit Void node");
