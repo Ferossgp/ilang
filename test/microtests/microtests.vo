@@ -129,7 +129,7 @@ end
 
 routine two_dim_array(): integer is
     var a: array [4] array [4] integer
-    a[0][0] := 5
+    a[1][1] := 5
     a[2][3] := 6
     return a[2][3]
 end
