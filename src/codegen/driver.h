@@ -79,7 +79,7 @@ public:
     Driver(Program& program) {
         RoutineListVisitor list;
         program.accept(list);
-        
+
         std::vector<Routine*> runnable;
         std::vector<Routine*> complex;
         for (auto f : list.routines) {
@@ -126,26 +126,28 @@ public:
                 i++;
                 s << arg->var_decl.first;
             }
-            s << ");\n";
+            s << ") << \"\\n\";\n";
             s << "        return 0;\n";
             s << "    }\n";
         }
         s << "\n";
 
-        s << "    if (";
-        auto i = 0;
-        for (auto f : complex) {
-            if (i != 0) {
-                s << " || ";
+        if (!complex.empty()) {
+            s << "    if (";
+            auto i = 0;
+            for (auto f : complex) {
+                if (i != 0) {
+                    s << " || ";
+                }
+                i++;
+                s << "name == \"" << f->proto->name << "\"";
             }
-            i++;
-            s << "name == \"" << f->proto->name << "\"";
+            s << "    ) {\n";
+            s << "        std::cout << \"function input or output is complex\";\n";
+            s << "        return -1;\n";
+            s << "    }\n";
+            s << "\n";
         }
-        s << "    ) {\n";
-        s << "        std::cout << \"function input or output is complex\";\n";
-        s << "        return -1;\n";
-        s << "    }\n";
-        s << "\n";
 
         s << "    std::cout << \"function does not exist\";\n";
         s << "    return -2;\n";
@@ -182,4 +184,3 @@ public:
 };
 
 #endif // !ILANG_DRIVER_H
-
