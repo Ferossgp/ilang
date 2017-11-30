@@ -669,6 +669,16 @@ void CodegenVisitor::visit(Cast& node)
             std::cout << "Casting integer to boolean\n";
             last_constant = Builder.CreateZExt(last_constant, get_type(node.type));
         }
+    } else if (node.type->type == types::Real) {
+        std::cout << "Casting to Real\n";
+        node.value->accept(*this);
+        if (node.value->type->type == types::Integer) {
+            std::cout << "Casting real to integer\n";
+            last_constant = Builder.CreateSIToFP(last_constant, get_type(node.type));
+        } else if (node.value->type->type == types::Boolean) {
+            std::cout << "Casting real to boolean\n";
+            last_constant = Builder.CreateUIToFP(last_constant, get_type(node.type));
+        }
     }
     std::cout << "Cast Generated\n";
 }
