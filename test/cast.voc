@@ -1,0 +1,5 @@
+routine give_int(): integer is
+    var a: integer
+    a := false
+    return a
+end

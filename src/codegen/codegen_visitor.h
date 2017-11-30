@@ -47,6 +47,7 @@
 #include "../AST/recorddecl.h"
 #include "../AST/recordref.h"
 #include "../AST/typedecl.h"
+#include "../AST/cast.h"
 
 // using namespace llvm;
 
