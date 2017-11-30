@@ -26,6 +26,7 @@ add_executable(voc
     semantical_analysis/typechecking_visitor.cpp
     semantical_analysis/typededuce_visitor.cpp
     semantical_analysis/alias_unwrap_visitor.cpp
+    semantical_analysis/const_eval_visitor.cpp
     main.cpp
     AST/integer.cpp
     AST/real.cpp

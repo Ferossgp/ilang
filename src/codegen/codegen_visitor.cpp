@@ -258,6 +258,7 @@ void CodegenVisitor::visit(Binary& node)
 
 void CodegenVisitor::visit(Boolean& node)
 {
+    std::cout << "Generating Boolean\n";
     last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(1, node.value ? 1 : 0, false));
 }
 void CodegenVisitor::visit(BooleanType& node)
@@ -657,4 +658,34 @@ void CodegenVisitor::visit(Undefined& node) {
 void CodegenVisitor::visit(Cast& node)
 {
     std::cout << "Generating Cast\n";
+    std::cout << "Cast to " << (int)node.type->type << "\n";
+    if (node.type->type == types::Integer) {
+        std::cout << "Casting to integer\n";
+        node.value->accept(*this);
+        if (node.value->type->type == types::Real) {
+            std::cout << "Casting real to integer\n";
+            last_constant = Builder.CreateFPToSI(last_constant, get_type(node.type));
+        } else if (node.value->type->type == types::Boolean) {
+            std::cout << "Casting boolean to integer\n";
+            last_constant = Builder.CreateZExt(last_constant, get_type(node.type));
+        }
+    } else if (node.type->type == types::Real) {
+        std::cout << "Casting to Real\n";
+        node.value->accept(*this);
+        if (node.value->type->type == types::Integer) {
+            std::cout << "Casting integer to real\n";
+            last_constant = Builder.CreateSIToFP(last_constant, get_type(node.type));
+        } else if (node.value->type->type == types::Boolean) {
+            std::cout << "Casting boolean to real\n";
+            last_constant = Builder.CreateUIToFP(last_constant, get_type(node.type));
+        }
+    } else if (node.type->type == types::Boolean) {
+        std::cout << "Casting to Boolean\n";
+        node.value->accept(*this);
+        if (node.value->type->type == types::Integer) {
+            std::cout << "Casting integer to boolean\n";
+            last_constant = Builder.CreateICmpNE(last_constant, get_const_int(0));
+        }
+    }
+    std::cout << "Cast Generated\n";
 }

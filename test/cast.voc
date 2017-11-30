@@ -1,0 +1,6 @@
+routine give_int(b integer): boolean is
+    var a: boolean
+    a := b
+
+    return a
+end
