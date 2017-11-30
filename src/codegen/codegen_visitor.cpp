@@ -287,7 +287,11 @@ void CodegenVisitor::visit(For& node)
     // insert condition
     auto i = Builder.CreateLoad(iter, "i");
     auto pred = Builder.CreateLoad(endexpr, "pred");
-    last_constant = Builder.CreateICmpSLT(i, pred, "comp");
+    if (node.reverse) {
+        last_constant = Builder.CreateICmpSGT(i, pred, "comp");
+    } else {
+        last_constant = Builder.CreateICmpSLT(i, pred, "comp");
+    }
     Builder.CreateCondBr(last_constant, loop, end);
     // //
     std::cout << "Generating For body\n";
@@ -295,7 +299,12 @@ void CodegenVisitor::visit(For& node)
     Builder.SetInsertPoint(loop);
     node.body->accept(*this);
     i = Builder.CreateLoad(iter, "i");
-    auto incr = Builder.CreateAdd(i, get_const_int(1));
+    llvm::Value *incr;
+    if (node.reverse) {
+        incr = Builder.CreateSub(i, get_const_int(1));
+    } else {
+        incr = Builder.CreateAdd(i, get_const_int(1));
+    }
     Builder.CreateStore(incr, iter);
     Builder.CreateBr(cond);
     last_function->getBasicBlockList().push_back(end);
