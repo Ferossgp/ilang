@@ -1,5 +1,5 @@
-routine give_int(b integer): real is
-    var a: real
+routine give_int(b integer): boolean is
+    var a: boolean
     a := b
 
     return a
