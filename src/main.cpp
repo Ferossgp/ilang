@@ -8,6 +8,7 @@
 #include "parsing/Lexer.h"
 #include "parsing/Parser.h"
 #include "lib/cxxopts.hpp"
+#include "codegen/driver.h"
 
 class CmdArgsParser {
 public:
@@ -74,14 +75,22 @@ int main(int argc, char *argv[]) {
     std::cout << "Program parsed\n";
 
     AliasUnwrapVisitor().visit(*program);
+    std::cout << "alias-unwrap: done\n";
     TypeDeduceVisitor().visit(*program);
-    std::cout << "Types are deduced\n";
-    // TypeCheckingVisitor tcv;
-    // program->accept(tcv);
-    std::cout << "Types are checked\n";
+    std::cout << "type-deduce: done\n";
+    ConstEvalVisitor().visit(*program);
+    std::cout << "const-eval: done\n";
+    TypeCheckingVisitor().visit(*program);
+    std::cout << "type-checking: done\n";
 
     CodegenVisitor v{args.output};
     v.visit(*program);
     v.generate();
+    std::cout << "codegen: done\n";
+
+    Driver driver(*program);
+    std::ofstream(args.output + ".boot.cpp") << driver.code;
+    std::cout << "driver: done\n";
+
     return 0;
 }

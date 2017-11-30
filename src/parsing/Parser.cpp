@@ -445,12 +445,12 @@ Prototype * Parser::parse_prototype() {
     }
     openScope();
 
-    vector<ASTNode*> arg_names;
+    vector<Var*> arg_names;
 
     lexer->next();
 
     while ( lexer->current_token() == (int)Token::IDENTIFIER) {
-        arg_names.push_back(parse_arg());
+        arg_names.push_back((Var*)parse_arg());
 
         if ( lexer->current_token() != ',') { break; }
 
