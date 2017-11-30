@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <math.h>
 
 /*
     Integer math
@@ -13,8 +14,8 @@ int sub_two_ints_res = 5;
 int mul_two_ints();
 int mul_two_ints_res = 20;
 
-double div_two_ints();
-double div_two_ints_res = 6;
+int div_two_ints();
+int div_two_ints_res = 6;
 
 /*
     Real math
@@ -29,7 +30,7 @@ double mul_two_reals();
 double mul_two_reals_res = 8.478; // 3.14 * 2.7
 
 double div_two_reals();
-double div_two_reals_res = 1.16; // 2.5 / 1.6
+double div_two_reals_res = 1.5625; // 2.5 / 1.6
 
 /*
     Booleans
@@ -94,6 +95,7 @@ int give_int_field_res = 7;
 
 void run_tests()
 {
+    double compareEpsilon = 0.0001;
     printf("\nTesting system for Visual Obescal is now running!\n\n");
 
     if (sum_two_ints() == sum_two_ints_res)
@@ -117,22 +119,22 @@ void run_tests()
         printf("Div two ints: failed\n");
 
 
-    if (sum_two_reals() == sum_two_reals_res)
+    if (fabs(sum_two_reals() - sum_two_reals_res) < compareEpsilon)
         printf("Sum two reals: passed\n");
     else
         printf("Sum two reals: failed\n");
 
-    if (sub_two_reals() == sub_two_reals_res)
+    if (fabs(sub_two_reals() - sub_two_reals_res) < compareEpsilon)
         printf("Sub two reals: passed\n");
     else
         printf("Sub two reals: failed\n");
 
-    if (div_two_reals() == div_two_reals_res)
+    if (fabs(div_two_reals() - div_two_reals_res) < compareEpsilon)
         printf("Div two reals: passed\n");
     else
         printf("Div two reals: failed\n");
 
-    if (mul_two_reals() == mul_two_reals_res)
+    if (fabs(mul_two_reals() - mul_two_reals_res) < compareEpsilon)
         printf("Mul two reals: passed\n");
     else
         printf("Mul two reals: failed\n");
@@ -192,7 +194,7 @@ void run_tests()
     else
         printf("Integer array: failed\n");
     
-    if (float_array() == float_array_res)
+    if (fabs(float_array() - float_array_res) < compareEpsilon)
         printf("Real array: passed\n");
     else
         printf("Real array: failed\n");

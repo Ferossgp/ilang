@@ -74,7 +74,7 @@ end
 
 routine for_loop(): integer is
     var a: integer is 0
-    var i: integer is 0
+    var i: integer
     for i in 0 .. 5 loop
         a := a + 1
     end
@@ -83,7 +83,7 @@ end
 
 routine inversed_for_loop(): integer is
     var a: integer is 0
-    var i: integer is 0
+    var i: integer
     for i in reverse 10 .. 0 loop
         a := a + 1
     end
@@ -95,6 +95,7 @@ routine while_loop(): integer is
     var i: integer is 0
     while i < 9 loop
         a := a + 1
+        i := i + 1
     end
     return a
 end
@@ -128,7 +129,7 @@ end
 
 routine two_dim_array(): integer is
     var a: array [4] array [4] integer
-    a[0][0] := 5
+    a[1][1] := 5
     a[2][3] := 6
     return a[2][3]
 end
