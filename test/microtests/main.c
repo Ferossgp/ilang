@@ -14,8 +14,8 @@ int sub_two_ints_res = 5;
 int mul_two_ints();
 int mul_two_ints_res = 20;
 
-double div_two_ints();
-double div_two_ints_res = 6.0;
+int div_two_ints();
+int div_two_ints_res = 6;
 
 /*
     Real math
