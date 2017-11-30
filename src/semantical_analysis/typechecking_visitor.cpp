@@ -50,12 +50,12 @@ void TypeCheckingVisitor::visit(Assignment& node)
     }
     else if (left_type == types::Integer && right_type == types::Boolean)
     {
-        auto cast_node = new Cast { right, new BooleanType() };
+        auto cast_node = new Cast { right, new IntegerType() };
         node.value = cast_node;
     }
     else if (left_type == types::Real && right_type == types::Integer)
     {
-        auto cast_node = new Cast { right, new IntegerType() };
+        auto cast_node = new Cast { right, new RealType() };
         node.value = cast_node;
     }
     else if (left_type == types::Real && right_type == types::Real)
