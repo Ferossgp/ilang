@@ -258,6 +258,7 @@ void CodegenVisitor::visit(Binary& node)
 
 void CodegenVisitor::visit(Boolean& node)
 {
+    std::cout << "Generating Boolean\n";
     last_constant = llvm::ConstantInt::get(TheContext, llvm::APInt(1, node.value ? 1 : 0, false));
 }
 void CodegenVisitor::visit(BooleanType& node)
@@ -657,7 +658,9 @@ void CodegenVisitor::visit(Undefined& node) {
 void CodegenVisitor::visit(Cast& node)
 {
     std::cout << "Generating Cast\n";
+    std::cout << "Cast to " << (int)node.type->type << "\n";
     if (node.type->type == types::Integer) {
+        std::cout << "Casting to integer\n";
         node.value->accept(*this);
         if (node.value->type->type == types::Real) {
             std::cout << "Casting integer to real\n";
@@ -667,4 +670,5 @@ void CodegenVisitor::visit(Cast& node)
             last_constant = Builder.CreateZExt(last_constant, get_type(node.type));
         }
     }
+    std::cout << "Cast Generated\n";
 }

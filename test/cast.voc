@@ -1,5 +1,5 @@
 routine give_int(): integer is
     var a: integer
-    a := false
+    a := true
     return a
 end
